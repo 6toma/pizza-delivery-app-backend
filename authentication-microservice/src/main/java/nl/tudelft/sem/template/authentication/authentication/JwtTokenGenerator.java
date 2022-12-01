@@ -6,9 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.domain.providers.TimeProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -44,6 +42,8 @@ public class JwtTokenGenerator {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder().setClaims(claims).setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(timeProvider.getCurrentTime().toEpochMilli())).compact();
+                .setIssuedAt(new Date(timeProvider.getCurrentTime().toEpochMilli()))
+                .setExpiration(new Date(timeProvider.getCurrentTime().toEpochMilli() + JWT_TOKEN_VALIDITY))
+                .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
 }
