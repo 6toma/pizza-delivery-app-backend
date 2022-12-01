@@ -1,10 +1,10 @@
 package nl.tudelft.sem.template.authentication.application.user;
 
 import nl.tudelft.sem.template.authentication.domain.user.UserWasCreatedEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  */
 @Component
 public class UserWasCreatedListener {
-    Logger logger = LoggerFactory.getLogger(UserWasCreatedEvent.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserWasCreatedEvent.class);
 
     /**
      * The name of the function indicated which event is listened to.
