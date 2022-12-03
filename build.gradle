@@ -1,0 +1,11 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath(":build-logic")
+    }
+}
+
+group = "nl.tudelft.cse.sem.template"
