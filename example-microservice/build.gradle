@@ -1,3 +1,9 @@
+buildscript {
+	dependencies {
+		classpath(":build-logic")
+	}
+}
+
 plugins {
 	id 'microservice'
 }
