@@ -15,7 +15,6 @@ plugins {
     id 'info.solidsoft.pitest'
 }
 
-var projectPackage = 'nl.tudelft.sem.template.*'
 group = 'nl.tudelft.cse.sem.template'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 11
@@ -66,7 +65,7 @@ jacocoTestCoverageVerification() {
         rule {
             enabled = true
             element = 'CLASS'
-            includes = [projectPackage]
+            includes = ['nl.tudelft.sem.template.*']
 
             limit {
                 counter = 'BRANCH'
