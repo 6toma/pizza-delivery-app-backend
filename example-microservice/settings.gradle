@@ -1,3 +1,6 @@
 rootProject.name = 'example-microservice'
 
 includeBuild '../build-logic'
+
+include("authentication")
+project(":authentication").projectDir = new File('../authentication')
