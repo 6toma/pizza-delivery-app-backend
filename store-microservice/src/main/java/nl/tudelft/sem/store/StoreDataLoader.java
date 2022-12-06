@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @AllArgsConstructor
-public class DataLoader implements ApplicationRunner {
+public class StoreDataLoader implements ApplicationRunner {
     StoreRepository storeRepository;
 
     @Override

@@ -7,9 +7,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    /**
+     * This basically disables any security, only used for testing!
+     **/
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        // Read this: https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
         httpSecurity.csrf().disable() // disable csrf because we do not use cookies in the website
                 .authorizeRequests().antMatchers("/").permitAll();
     }

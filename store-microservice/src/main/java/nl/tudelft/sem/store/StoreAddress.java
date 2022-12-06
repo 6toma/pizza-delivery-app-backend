@@ -5,7 +5,7 @@ import lombok.*;
 import javax.persistence.Embeddable;
 
 @Data
-@Embeddable
+@Embeddable // In order to put the field from Store address directly into the Store table
 @NoArgsConstructor
 @AllArgsConstructor
 public class StoreAddress {

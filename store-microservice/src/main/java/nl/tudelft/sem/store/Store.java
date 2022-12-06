@@ -22,7 +22,9 @@ public class Store {
     @Column(name = "address", nullable = false)
     StoreAddress location;
 
-
+    /**
+     * dummy method for now to prepare pizza
+     */
     public void preparePizza() {
         System.out.println("Preparing pizza");
     }
