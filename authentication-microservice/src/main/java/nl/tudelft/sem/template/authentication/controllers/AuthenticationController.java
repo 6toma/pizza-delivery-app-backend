@@ -59,8 +59,7 @@ public class AuthenticationController {
      * @throws Exception if the user does not exist or the password is incorrect
      */
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponseModel>
-    authenticate(@RequestBody AuthenticationRequestModel request)
+    public ResponseEntity<AuthenticationResponseModel> authenticate(@RequestBody AuthenticationRequestModel request)
             throws Exception {
 
         try {
@@ -88,6 +87,7 @@ public class AuthenticationController {
      */
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody RegistrationRequestModel request) throws Exception {
+
         try {
             NetId netId = new NetId(request.getNetId());
             Password password = new Password(request.getPassword());

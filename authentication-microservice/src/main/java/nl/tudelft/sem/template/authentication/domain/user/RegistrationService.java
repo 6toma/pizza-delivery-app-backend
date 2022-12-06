@@ -7,15 +7,10 @@ import org.springframework.stereotype.Service;
  * A DDD service for registering a new user.
  */
 @Service
+@RequiredArgsConstructor
 public class RegistrationService {
     private final transient UserRepository userRepository;
     private final transient PasswordHashingService passwordHashingService;
-
-    public RegistrationService(UserRepository userRepository,
-                               PasswordHashingService passwordHashingService) {
-        this.userRepository = userRepository;
-        this.passwordHashingService = passwordHashingService;
-    }
 
     /**
      * Register a new user.

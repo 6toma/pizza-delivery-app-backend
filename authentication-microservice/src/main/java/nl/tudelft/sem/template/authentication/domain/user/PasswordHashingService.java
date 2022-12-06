@@ -1,6 +1,5 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
