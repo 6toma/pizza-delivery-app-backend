@@ -1,0 +1,6 @@
+rootProject.name = 'template'
+
+includeBuild 'build-logic'
+include 'authentication-microservice'
+include 'example-microservice'
+include 'new-microservice'
