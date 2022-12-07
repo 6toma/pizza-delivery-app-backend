@@ -38,6 +38,17 @@ public class Pizza {
         return toppings;
     }
 
+    public void addTopping(Topping topping) {
+        toppings.add(topping);
+    }
+
+    public int calculatePrice() {
+        int price = 0;
+        for(Topping topping : toppings)
+            price += topping.getPrice();
+        return price;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
