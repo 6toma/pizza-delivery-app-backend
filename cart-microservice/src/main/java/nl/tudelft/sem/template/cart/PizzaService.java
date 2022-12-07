@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class MenuService {
+public class PizzaService {
 
     private final transient PizzaRepository pizzaRepository;
 
@@ -47,10 +47,10 @@ public class MenuService {
      * @return the resulting Pizza
      * @throws Exception when the name of the pizza already exists
      */
-    public Pizza addPizza(String pizzaName, List<Topping> toppings) throws Exception {
+    public Pizza addPizza(String pizzaName, List<Topping> toppings, double price) throws Exception {
 
         if (checkPizzaIsUnique(pizzaName)) {
-            Pizza pizza = new Pizza(pizzaName, toppings);
+            Pizza pizza = new Pizza(pizzaName, toppings, price);
             pizzaRepository.save(pizza);
 
             return pizza;
@@ -74,17 +74,17 @@ public class MenuService {
     }
 
     /**
-     * Edits a piza from the DB.
+     * Edits a pizza from the DB.
      *
      * @param pizzaName the name of the pizza
      * @param toppings the topppings on the pizza
      * @throws Exception when no pizza is found with the input name
      */
-    public void editPizza(String pizzaName, List<Topping> toppings) throws Exception {
+    public void editPizza(String pizzaName, List<Topping> toppings, double price) throws Exception {
 
         try {
             removePizza(pizzaName);
-            addPizza(pizzaName, toppings);
+            addPizza(pizzaName, toppings, price);
         } catch (Exception e) {
             throw new PizzaNameNotFoundException(pizzaName);
         }

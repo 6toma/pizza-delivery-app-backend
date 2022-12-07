@@ -49,7 +49,7 @@ public class PizzaControllerTest {
         // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
 
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        Pizza pizza = new Pizza("Test", Arrays.asList(new Topping("dough", 0.5)));
+        Pizza pizza = new Pizza("Test", Arrays.asList(new Topping("dough", 0.5)), 0.5);
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
         ResultActions result = mockMvc.perform(get("/getPizzas")

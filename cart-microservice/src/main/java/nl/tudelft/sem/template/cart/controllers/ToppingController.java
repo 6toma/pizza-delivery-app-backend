@@ -2,8 +2,8 @@ package nl.tudelft.sem.template.cart.controllers;
 
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.cart.PizzaService;
-import nl.tudelft.sem.template.commons.models.PizzaModel;
 import nl.tudelft.sem.template.commons.entity.Pizza;
+import nl.tudelft.sem.template.commons.models.PizzaModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +13,10 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/pizza")
-public class PizzaController {
+@RequestMapping("/topping")
+public class ToppingController {
 
-    private final transient PizzaService pizzaService;
+    private final transient PizzaService menuService;
 
     /**
      * A post request to send a new pizza to the DB.
@@ -29,7 +29,7 @@ public class PizzaController {
     public ResponseEntity<String> addPizza(@RequestBody PizzaModel pizza) throws Exception {
 
         try {
-            pizzaService.addPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice()  );
+            menuService.addPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -48,7 +48,7 @@ public class PizzaController {
     public ResponseEntity removePizza(@RequestBody String pizzaName) throws Exception {
 
         try {
-            pizzaService.removePizza(pizzaName);
+            menuService.removePizza(pizzaName);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -67,7 +67,7 @@ public class PizzaController {
     public ResponseEntity editPizza(@RequestBody PizzaModel pizza) throws Exception {
 
         try {
-            pizzaService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
+            menuService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -82,17 +82,7 @@ public class PizzaController {
      */
     @GetMapping("/getAll")
     public List<Pizza> getPizzas() {
-        return pizzaService.getAll();
+        return menuService.getAll();
     }
 
-    /**
-     * Gets all the pizzas from the DB filtered on allergens.
-     *
-     * @param allergens the list of allergens
-     * @return the list of filtered pizzas
-     */
-    @PostMapping("/getAll")
-    public List<Pizza> getPizzas(@RequestBody List<String> allergens) {
-        return pizzaService.getAllByFilter(allergens);
-    }
 }
