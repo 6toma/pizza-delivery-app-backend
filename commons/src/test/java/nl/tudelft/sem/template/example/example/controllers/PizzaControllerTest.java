@@ -2,8 +2,8 @@ package nl.tudelft.sem.template.example.example.controllers;
 
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
-import nl.tudelft.sem.template.cart.authentication.AuthManager;
-import nl.tudelft.sem.template.cart.authentication.JwtTokenVerifier;
+import nl.tudelft.sem.template.example.authentication.AuthManager;
+import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
