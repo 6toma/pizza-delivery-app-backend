@@ -1,7 +1,6 @@
 rootProject.name = 'template'
 
 includeBuild 'build-logic'
-<<<<<<< settings.gradle
 include 'authentication-microservice'
 include 'example-microservice'
 include 'new-microservice'
@@ -10,10 +9,3 @@ include 'commons'
 include 'checkout-microservice'
 include 'store-microservice'
 include 'authentication'
-=======
-include 'authentication'
-include 'authentication-microservice'
-include 'example-microservice'
-include 'new-microservice'
-include 'store-microservice'
->>>>>>> settings.gradle
