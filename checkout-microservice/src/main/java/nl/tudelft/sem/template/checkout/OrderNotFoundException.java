@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example;
+package nl.tudelft.sem.template.checkout;
 
 public class OrderNotFoundException extends Exception{
     static final long serialVersionUID = -3387516993124229948L;

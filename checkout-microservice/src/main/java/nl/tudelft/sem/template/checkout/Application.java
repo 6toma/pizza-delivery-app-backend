@@ -1,7 +1,8 @@
-package nl.tudelft.sem.template.example;
+package nl.tudelft.sem.template.checkout;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * Example microservice application.

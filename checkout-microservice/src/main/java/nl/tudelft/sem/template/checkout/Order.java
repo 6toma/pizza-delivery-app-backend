@@ -1,8 +1,9 @@
-package nl.tudelft.sem.template.example;
+package nl.tudelft.sem.template.checkout;
 
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.template.commons.PizzaAttributeConverter;
 import nl.tudelft.sem.template.commons.ToppingAttributeConverter;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 
@@ -25,7 +26,7 @@ public class Order {
 
     @ElementCollection
     @Column(name = "pizzas", nullable = false)
-    //@Convert(converter = ToppingAttributeConverter.class)
+    @Convert(converter = PizzaAttributeConverter.class)
     private List<Pizza> pizzaList;
 
     public Order(int storeId, List<Pizza> pizzaList) {
