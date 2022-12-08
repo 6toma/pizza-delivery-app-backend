@@ -1,4 +1,4 @@
-package nl.tudelft.sem.store;
+package nl.tudelft.sem.store.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

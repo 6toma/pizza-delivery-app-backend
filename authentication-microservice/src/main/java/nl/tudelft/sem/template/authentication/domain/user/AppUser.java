@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import nl.tudelft.sem.template.authentication.domain.HasEvents;
 
 /**
@@ -17,6 +19,7 @@ import nl.tudelft.sem.template.authentication.domain.HasEvents;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
+@ToString
 public class AppUser extends HasEvents {
     /**
      * Identifier for the application user.
@@ -24,6 +27,7 @@ public class AppUser extends HasEvents {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false, unique = true)
+    @Setter
     private int id;
 
     @Column(name = "net_id", nullable = false, unique = true)
@@ -46,8 +50,16 @@ public class AppUser extends HasEvents {
         this.recordThat(new UserWasCreatedEvent(netId));
     }
 
-    public void changePassword(HashedPassword password) {
-        this.password = password;
+    /**
+     * Attempts to change the password
+     *
+     * @param newPassword new password of user
+     */
+    public void changePassword(HashedPassword newPassword) {
+        if (!newPassword.equals(this.password)) {
+            return;
+        }
+        this.password = newPassword;
         this.recordThat(new PasswordWasChangedEvent(this));
     }
 

@@ -1,10 +1,11 @@
-package nl.tudelft.sem.template.example;
+package nl.tudelft.sem.store;
 
-import nl.tudelft.sem.store.Store;
-import nl.tudelft.sem.store.StoreAddress;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import nl.tudelft.sem.store.domain.Store;
+import nl.tudelft.sem.store.domain.StoreAddress;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class StoreTest {
 
@@ -23,7 +24,8 @@ class StoreTest {
     }
 
     @Test
-    void testToString() {
-        System.out.println(store1.toString());
+    void toStringTest() {
+        assertThat(store1.toString()).contains("storeId=1");
     }
+
 }

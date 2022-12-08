@@ -1,8 +1,9 @@
-package nl.tudelft.sem.store;
-
-import lombok.*;
+package nl.tudelft.sem.store.domain;
 
 import javax.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Embeddable // In order to put the field from Store address directly into the Store table
