@@ -12,6 +12,8 @@ import javax.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import nl.tudelft.sem.template.authentication.domain.HasEvents;
 
 /**
@@ -28,6 +30,7 @@ public class AppUser extends HasEvents {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false, unique = true)
+    @Setter
     private int id;
 
     @Column(name = "net_id", nullable = false, unique = true)
