@@ -2,3 +2,4 @@ rootProject.name = 'checkout-microservice'
 
 includeBuild '../build-logic'
 include 'commons'
+project(':commons').projectDir = new File('../commons')
