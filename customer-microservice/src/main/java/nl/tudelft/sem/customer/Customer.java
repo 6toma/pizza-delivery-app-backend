@@ -1,12 +1,11 @@
-package nl.tudelft.sem.template.example;
+package nl.tudelft.sem.customer;
 
-import lombok.Data;
-
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.util.List;
+import lombok.Data;
 
 @Entity
 @Data

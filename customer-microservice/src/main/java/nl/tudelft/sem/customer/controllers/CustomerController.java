@@ -1,7 +1,7 @@
-package nl.tudelft.sem.template.example.controllers;
+package nl.tudelft.sem.customer.controllers;
 
-import nl.tudelft.sem.template.example.Customer;
-import nl.tudelft.sem.template.example.CustomerRepository;
+import nl.tudelft.sem.customer.Customer;
+import nl.tudelft.sem.customer.CustomerRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
