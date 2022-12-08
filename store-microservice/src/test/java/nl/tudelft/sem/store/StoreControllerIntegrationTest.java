@@ -25,7 +25,7 @@ public class StoreControllerIntegrationTest {
     private MockMvc mockmvc;
 
     /**
-     * Converts object to Json in order simulate a <i>real</i> post request
+     * Converts object to Json in order simulate a <i>real</i> post request.
      *
      * @param obj object to convert to json
      * @return a json representation of the object

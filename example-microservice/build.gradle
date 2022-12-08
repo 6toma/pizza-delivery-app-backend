@@ -1,6 +1,4 @@
 plugins {
 	id 'microservice'
-	id 'application'
 }
 apply plugin: 'info.solidsoft.pitest'
-applicationDefaultJvmArgs = ["-noverify"]

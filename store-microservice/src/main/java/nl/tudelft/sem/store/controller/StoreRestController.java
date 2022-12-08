@@ -21,6 +21,8 @@ public class StoreRestController {
     private StoreRepository storeRepository;
 
     /**
+     * Post request to notify store from checkout.
+     *
      * @param notifyStoreRequest notification request just has the id of the store
      * @return a String that says the notification was successfully
      * @throws StoreNotFoundException if the <code>storeId</code> is not in the database

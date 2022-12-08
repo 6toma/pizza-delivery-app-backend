@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     /**
-     * This basically disables any security, only used for testing!
+     * This basically disables any security, only used for testing.
      **/
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {

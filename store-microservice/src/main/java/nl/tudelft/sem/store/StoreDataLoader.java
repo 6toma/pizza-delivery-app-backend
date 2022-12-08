@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 
 /**
- * Class that loads the database with some default values
+ * Class that loads the database with some default values.
  * It is called just after the application started
  */
 @Component

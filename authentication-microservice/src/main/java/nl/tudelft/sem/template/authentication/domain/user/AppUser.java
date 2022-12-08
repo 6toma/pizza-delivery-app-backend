@@ -51,7 +51,7 @@ public class AppUser extends HasEvents {
     }
 
     /**
-     * Attempts to change the password
+     * Attempts to change the password.
      *
      * @param newPassword new password of user
      */

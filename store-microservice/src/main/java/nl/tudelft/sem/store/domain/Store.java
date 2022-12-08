@@ -33,7 +33,7 @@ public class Store {
     StoreAddress location;
 
     /**
-     * dummy method for now to prepare pizza
+     * Dummy method for now to prepare pizza.
      */
     public void preparePizza() {
         System.out.println("Preparing pizza");
