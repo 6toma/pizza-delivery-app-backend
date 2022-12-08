@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.authentication;
+package nl.tudelft.sem.template.authentication;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -9,7 +9,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.NonNullApi;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -18,9 +21,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 /**
  * Request filter for JWT security.
  * <p>
- * The request filter is called once for each request and makes it possible to modify the request
- * before it reaches the application. If an authorization header is present in the request,
- * the filter will validate it and authenticate the token.
+ * The request filter is called once for each request and makes it possible to modify the request before it reaches the
+ * application. If an authorization header is present in the request, the filter will validate it and authenticate the
+ * token.
  * </p>
  */
 @Component
@@ -47,8 +50,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      * @throws IOException      Exception
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         // Get authorization header
         String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
@@ -64,12 +67,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 try {
                     if (jwtTokenVerifier.validateToken(token)) {
                         String netId = jwtTokenVerifier.getNetIdFromToken(token);
+                        String role = jwtTokenVerifier.getRoleFromToken(token);
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
-                                netId,
-                                null, List.of() // no credentials and no authorities
+                            netId,
+                            null,
+                            List.of(new SimpleGrantedAuthority(role))
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource()
-                                .buildDetails(request));
+                            .buildDetails(request));
 
                         // After setting the Authentication in the context, we specify
                         // that the current user is authenticated. So it passes the
@@ -82,8 +87,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 } catch (IllegalArgumentException | JwtException e) {
                     System.err.println("Unable to parse JWT token");
                 }
+            } else {
+                System.err.println("Invalid authorization header");
             }
-            System.err.println("Invalid authorization header");
         }
 
         filterChain.doFilter(request, response);

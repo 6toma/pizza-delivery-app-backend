@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.authentication;
+package nl.tudelft.sem.template.authentication;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -34,7 +34,7 @@ public class JwtAuthenticationEntryPointTests {
     }
 
     @Test
-    public void commenceTest() throws ServletException, IOException {
+    public void commenceTest() throws IOException {
         // Act
         jwtAuthenticationEntryPoint.commence(mockRequest, mockResponse, dummyAuthenticationException);
 

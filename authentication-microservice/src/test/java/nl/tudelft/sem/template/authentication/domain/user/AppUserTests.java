@@ -22,6 +22,7 @@ public class AppUserTests {
         appUser2.setId(2);
         assertNotEquals(appUser1, appUser2);
     }
+    
 
     @Test
     void testChangePassword() {
