@@ -20,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Getter
     @Setter(onMethod = @__({@Autowired})) // add autowired annotation on setter
     private transient UserDetailsService userDetailsService;
 

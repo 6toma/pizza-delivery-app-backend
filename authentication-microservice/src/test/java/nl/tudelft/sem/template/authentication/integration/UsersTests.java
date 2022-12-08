@@ -58,6 +58,26 @@ public class UsersTests {
     @Autowired
     private transient UserRepository userRepository;
 
+
+    private RegistrationRequestModel createRegistrationRequest(NetId netId, Object password) {
+        RegistrationRequestModel model = new RegistrationRequestModel();
+        model.setNetId(netId.toString());
+        model.setPassword(password.toString());
+        return model;
+    }
+
+    private ResultActions getResultsRegister(Object model) throws Exception {
+        return mockMvc.perform(post("/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.serialize(model)));
+    }
+
+    private ResultActions getResultsAuth(Object model) throws Exception {
+        return mockMvc.perform(post("/authenticate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.serialize(model)));
+    }
+
     @Test
     public void register_withValidData_worksCorrectly() throws Exception {
         // Arrange
@@ -66,14 +86,10 @@ public class UsersTests {
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
-        RegistrationRequestModel model = new RegistrationRequestModel();
-        model.setNetId(testUser.toString());
-        model.setPassword(testPassword.toString());
+        RegistrationRequestModel model = createRegistrationRequest(testUser, testHashedPassword);
 
         // Act
-        ResultActions resultActions = mockMvc.perform(post("/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.serialize(model)));
+        ResultActions resultActions = getResultsRegister(model);
 
         // Assert
         resultActions.andExpect(status().isOk());
@@ -88,20 +104,15 @@ public class UsersTests {
     public void register_withExistingUser_throwsException() throws Exception {
         // Arrange
         final NetId testUser = new NetId("SomeUser");
-        final Password newTestPassword = new Password("password456");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
 
         AppUser existingAppUser = new AppUser(testUser, existingTestPassword);
         userRepository.save(existingAppUser);
 
-        RegistrationRequestModel model = new RegistrationRequestModel();
-        model.setNetId(testUser.toString());
-        model.setPassword(newTestPassword.toString());
+        RegistrationRequestModel model = createRegistrationRequest(testUser, existingTestPassword);
 
         // Act
-        ResultActions resultActions = mockMvc.perform(post("/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.serialize(model)));
+        ResultActions resultActions = getResultsRegister(model);
 
         // Assert
         resultActions.andExpect(status().isBadRequest());
@@ -133,14 +144,10 @@ public class UsersTests {
         AppUser appUser = new AppUser(testUser, testHashedPassword);
         userRepository.save(appUser);
 
-        AuthenticationRequestModel model = new AuthenticationRequestModel();
-        model.setNetId(testUser.toString());
-        model.setPassword(testPassword.toString());
+        RegistrationRequestModel model = createRegistrationRequest(testUser, testPassword);
 
         // Act
-        ResultActions resultActions = mockMvc.perform(post("/authenticate")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.serialize(model)));
+        ResultActions resultActions = getResultsAuth(model);
 
 
         // Assert
@@ -166,7 +173,7 @@ public class UsersTests {
 
         when(mockAuthenticationManager.authenticate(argThat(authentication ->
                 testUser.equals(authentication.getPrincipal())
-                    && testPassword.equals(authentication.getCredentials())
+                        && testPassword.equals(authentication.getCredentials())
         ))).thenThrow(new UsernameNotFoundException("User not found"));
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
@@ -174,9 +181,7 @@ public class UsersTests {
         model.setPassword(testPassword);
 
         // Act
-        ResultActions resultActions = mockMvc.perform(post("/authenticate")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.serialize(model)));
+        ResultActions resultActions = getResultsAuth(model);
 
         // Assert
         resultActions.andExpect(status().isForbidden());
@@ -210,9 +215,7 @@ public class UsersTests {
         model.setPassword(wrongPassword);
 
         // Act
-        ResultActions resultActions = mockMvc.perform(post("/authenticate")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.serialize(model)));
+        ResultActions resultActions = getResultsAuth(model);
 
         // Assert
         resultActions.andExpect(status().isUnauthorized());
