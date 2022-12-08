@@ -65,4 +65,14 @@ public class Pizza {
     public int hashCode() {
         return Objects.hash(pizzaName);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(pizzaName).append(";");
+        for(Topping t : toppings) {
+            builder.append(t.getName()).append(' ').append(t.getPrice()).append(";");
+        }
+        return builder.toString();
+    }
 }

@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example;
+package nl.tudelft.sem.template.checkout;
 
 import lombok.Data;
 import nl.tudelft.sem.template.commons.entity.Pizza;

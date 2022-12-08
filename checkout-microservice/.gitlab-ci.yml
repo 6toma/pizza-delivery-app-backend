@@ -12,12 +12,12 @@ variables:
 build-checkout-microservice:
   stage: build
   script:
-    gradle checkout-microservice:assemble example-microservice:testClasses
+    gradle checkout-microservice:assemble checkout-microservice:testClasses
 
 checkStyle-checkout-microservice:
   stage: staticAnalysis
   script:
-    gradle checkout-microservice:checkstyleMain example-microservice:checkStyleTest
+    gradle checkout-microservice:checkstyleMain checkout-microservice:checkStyleTest
   allow_failure: true
 
 
