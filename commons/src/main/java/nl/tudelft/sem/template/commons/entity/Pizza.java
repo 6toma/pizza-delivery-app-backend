@@ -70,6 +70,6 @@ public class Pizza {
         for(Topping t : toppings) {
             builder.append(t.getName()).append(' ').append(t.getPrice()).append(";");
         }
-        return builder.toString();
+        return builder.append(price).toString();
     }
 }
