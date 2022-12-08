@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.authentication;
+package nl.tudelft.sem.template.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ public class JwtTokenVerifierTests {
     @Test
     public void validateNonExpiredToken() {
         // Arrange
-        String token = generateToken(secret, "user123", -10_000_000, 10_000_000);
+        String token = generateToken(secret, "user123", UserRole.CUSTOMER, -10_000_000, 10_000_000);
 
         // Act
         boolean actual = jwtTokenVerifier.validateToken(token);
@@ -42,27 +43,27 @@ public class JwtTokenVerifierTests {
     @Test
     public void validateExpiredToken() {
         // Arrange
-        String token = generateToken(secret, "user123", -10_000_000, -5_000_000);
+        String token = generateToken(secret, "user123", UserRole.CUSTOMER, -10_000_000, -5_000_000);
 
         // Act
         ThrowableAssert.ThrowingCallable action = () -> jwtTokenVerifier.validateToken(token);
 
         // Assert
         assertThatExceptionOfType(ExpiredJwtException.class)
-                .isThrownBy(action);
+            .isThrownBy(action);
     }
 
     @Test
     public void validateTokenIncorrectSignature() {
         // Arrange
-        String token = generateToken("incorrectSecret", "user123", -10_000_000, 10_000_000);
+        String token = generateToken("incorrectSecret", "user123", UserRole.CUSTOMER, -10_000_000, 10_000_000);
 
         // Act
         ThrowableAssert.ThrowingCallable action = () -> jwtTokenVerifier.validateToken(token);
 
         // Assert
         assertThatExceptionOfType(SignatureException.class)
-                .isThrownBy(action);
+            .isThrownBy(action);
     }
 
     @Test
@@ -75,14 +76,14 @@ public class JwtTokenVerifierTests {
 
         // Assert
         assertThatExceptionOfType(MalformedJwtException.class)
-                .isThrownBy(action);
+            .isThrownBy(action);
     }
 
     @Test
     public void parseNetid() {
         // Arrange
         String expected = "user123";
-        String token = generateToken(secret, expected, -10_000_000, 10_000_000);
+        String token = generateToken(secret, expected, UserRole.CUSTOMER, -10_000_000, 10_000_000);
 
         // Act
         String actual = jwtTokenVerifier.getNetIdFromToken(token);
@@ -91,12 +92,21 @@ public class JwtTokenVerifierTests {
         assertThat(actual).isEqualTo(expected);
     }
 
-    private String generateToken(String jwtSecret, String netid, long issuanceOffset, long expirationOffset) {
+    @Test
+    public void parseRole() {
+        var role = UserRole.REGIONAL_MANAGER;
+        String token = generateToken(secret, "user123", role, -10_000_000, 10_000_000);
+        String actual = jwtTokenVerifier.getRoleFromToken(token);
+        assertThat(actual).isEqualTo(role.getJwtRoleName());
+    }
+
+    private String generateToken(String jwtSecret, String netid, UserRole role, long issuanceOffset, long expirationOffset) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role.getJwtRoleName());
         return Jwts.builder().setClaims(claims).setSubject(netid)
-                .setIssuedAt(new Date(System.currentTimeMillis() + issuanceOffset))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationOffset))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+            .setIssuedAt(new Date(System.currentTimeMillis() + issuanceOffset))
+            .setExpiration(new Date(System.currentTimeMillis() + expirationOffset))
+            .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
 
     private void injectSecret(String secret) throws NoSuchFieldException, IllegalAccessException {

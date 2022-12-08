@@ -22,14 +22,7 @@ public class AppUserTests {
         appUser2.setId(2);
         assertNotEquals(appUser1, appUser2);
     }
-
-    @Test
-    void testHashCode() {
-        assertEquals(appUser1.hashCode(), appUser2.hashCode(), "hash code should be the the same");
-
-        assertNotEquals(appUser1.hashCode(), appUser3.hashCode(), "hash code should be different");
-    }
-
+    
 
     @Test
     void testChangePassword() {

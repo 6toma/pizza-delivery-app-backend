@@ -6,15 +6,16 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import nl.tudelft.sem.template.example.authentication.AuthManager;
-import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
+import nl.tudelft.sem.template.authentication.AuthManager;
+import nl.tudelft.sem.template.authentication.JwtTokenVerifier;
+import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -22,7 +23,6 @@ import org.springframework.test.web.servlet.ResultActions;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 // activate profiles to have spring use mocks during auto-injection of certain beans.
-@ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager"})
 //@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class ExampleTest {
@@ -30,10 +30,10 @@ public class ExampleTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     private transient JwtTokenVerifier mockJwtTokenVerifier;
 
-    @Autowired
+    @MockBean
     private transient AuthManager mockAuthenticationManager;
 
 
@@ -45,12 +45,13 @@ public class ExampleTest {
         when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getRoleFromToken(anyString())).thenReturn(UserRole.CUSTOMER.getJwtRoleName());
 
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
         ResultActions result = mockMvc.perform(get("/hello")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken"));
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer MockedToken"));
 
         // Assert
         result.andExpect(status().isOk());
