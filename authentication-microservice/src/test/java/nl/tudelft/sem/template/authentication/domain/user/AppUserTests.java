@@ -24,14 +24,6 @@ public class AppUserTests {
     }
 
     @Test
-    void testHashCode() {
-        assertEquals(appUser1.hashCode(), appUser2.hashCode(), "hash code should be the the same");
-
-        assertNotEquals(appUser1.hashCode(), appUser3.hashCode(), "hash code should be different");
-    }
-
-
-    @Test
     void testChangePassword() {
         AppUser appUser = new AppUser(new NetId("1"), new HashedPassword("old password"));
         var password = new HashedPassword("new password");
