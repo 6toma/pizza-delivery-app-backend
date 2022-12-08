@@ -7,8 +7,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode
 public class NetId {
-    // adding transient will make hascode tests fail
-    private final String netIdValue;
+    private final transient String netIdValue;
 
     public NetId(String netId) {
         // validate NetID
@@ -19,5 +18,4 @@ public class NetId {
     public String toString() {
         return netIdValue;
     }
-
 }

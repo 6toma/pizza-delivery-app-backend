@@ -26,9 +26,7 @@ repositories {
 
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.24'
-    testCompileOnly('org.projectlombok:lombok:1.18.24')
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
@@ -40,7 +38,7 @@ dependencies {
 
 
     // Local test database (in-memory)
-    implementation 'com.h2database:h2'
+    implementation 'com.h2database:h2:2.1.210'
     developmentOnly 'org.hibernate:hibernate-entitymanager'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {

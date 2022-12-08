@@ -1,8 +1,7 @@
 package nl.tudelft.sem.template.example;
 
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 @Component

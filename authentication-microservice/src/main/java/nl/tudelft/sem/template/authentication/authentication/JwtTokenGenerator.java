@@ -39,15 +39,10 @@ public class JwtTokenGenerator {
      * @return the JWT token
      */
     public String generateToken(UserDetails userDetails) {
-        var roleOptional = userDetails.getAuthorities().stream().findFirst();
-        if (roleOptional.isEmpty()) {
-            throw new IllegalArgumentException("No role has been set in the UserDetails");
-        }
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", roleOptional.get().getAuthority());
         return Jwts.builder().setClaims(claims).setSubject(userDetails.getUsername())
-            .setIssuedAt(new Date(timeProvider.getCurrentTime().toEpochMilli()))
-            .setExpiration(new Date(timeProvider.getCurrentTime().toEpochMilli() + JWT_TOKEN_VALIDITY))
-            .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+                .setIssuedAt(new Date(timeProvider.getCurrentTime().toEpochMilli()))
+                .setExpiration(new Date(timeProvider.getCurrentTime().toEpochMilli() + JWT_TOKEN_VALIDITY))
+                .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
 }
