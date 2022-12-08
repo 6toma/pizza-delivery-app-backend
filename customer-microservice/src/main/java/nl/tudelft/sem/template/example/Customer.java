@@ -1,11 +1,12 @@
 package nl.tudelft.sem.template.example;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Customer {
 
-    ArrayList<String> usedCoupons;
-    ArrayList<String> allergens;
+    List<String> usedCoupons;
+    List<String> allergens;
     String customerId;
 
     /** Constructor for Customer object.
@@ -14,7 +15,7 @@ public class Customer {
      * @param allergens - the list of allergens that this customer has set for themselves.
      * @param customerId - unique customer ID //should match user ID in some way 
      */
-    public Customer(ArrayList<String> usedCoupons, ArrayList<String> allergens, String customerId) {
+    public Customer(List<String> usedCoupons, List<String> allergens, String customerId) {
         this.usedCoupons = usedCoupons;
         this.allergens = allergens;
         this.customerId = customerId;
