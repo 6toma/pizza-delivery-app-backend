@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.JwtTokenVerifier;
+import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class ExampleTest {
         when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
-        when(mockJwtTokenVerifier.getRoleFromToken(anyString())).thenReturn("ROLE_CUSTOMER");
+        when(mockJwtTokenVerifier.getRoleFromToken(anyString())).thenReturn(UserRole.CUSTOMER.getJwtRoleName());
 
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked

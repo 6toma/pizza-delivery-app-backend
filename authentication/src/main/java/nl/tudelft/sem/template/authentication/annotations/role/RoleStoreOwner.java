@@ -8,6 +8,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasRole(T(nl.tudelft.sem.template.authentication.domain.user.UserRole).STORE_OWNER.jwtRoleName)")
+@PreAuthorize("hasAuthority(T(nl.tudelft.sem.template.authentication.domain.user.UserRole).STORE_OWNER.jwtRoleName)")
 public @interface RoleStoreOwner {
 }

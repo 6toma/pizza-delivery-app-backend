@@ -13,6 +13,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,14 +61,18 @@ public class JwtRequestFilterTests {
         when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(mockJwtTokenVerifier.validateToken(token)).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
-        when(mockJwtTokenVerifier.getRoleFromToken(token)).thenReturn("ROLE_CUSTOMER");
+        when(mockJwtTokenVerifier.getRoleFromToken(token)).thenReturn(UserRole.CUSTOMER.getJwtRoleName());
 
         // Act
         jwtRequestFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
 
         // Assert
-        assertThat(SecurityContextHolder.getContext().getAuthentication().getName())
-                .isEqualTo(user);
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        assertThat(authentication.getName())
+            .isEqualTo(user);
+        assertThat(authentication.getAuthorities().size()).isEqualTo(1);
+        assertThat(authentication.getAuthorities().stream().findFirst().get().getAuthority()).isEqualTo(
+            UserRole.CUSTOMER.getJwtRoleName());
     }
 
     @Test
@@ -78,13 +83,34 @@ public class JwtRequestFilterTests {
         when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(mockJwtTokenVerifier.validateToken(token)).thenReturn(false);
         when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
+        when(mockJwtTokenVerifier.getRoleFromToken(token)).thenReturn(UserRole.CUSTOMER.getJwtRoleName());
 
         // Act
         jwtRequestFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
+    }
+
+    /**
+     * This test verifies that a user will not be authenticated when they send a JWT token without a user role.
+     *
+     * @throws ServletException Servlet exception
+     * @throws IOException Any exception related to input/output
+     */
+    @Test
+    public void tokenVerificationNoRoleClaim() throws ServletException, IOException {
+        String token = "randomtoken123";
+        String user = "user123";
+        when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + token);
+        when(mockJwtTokenVerifier.validateToken(token)).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
+        when(mockJwtTokenVerifier.getRoleFromToken(token)).thenReturn(null);
+
+        jwtRequestFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
+
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
     }
 
     /**
@@ -95,7 +121,7 @@ public class JwtRequestFilterTests {
     @ParameterizedTest
     @MethodSource("tokenVerificationExceptionGenerator")
     public void tokenVerificationException(Class<? extends Throwable> throwable)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         // Arrange
         String token = "randomtoken123";
         String user = "user123";
@@ -108,14 +134,14 @@ public class JwtRequestFilterTests {
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 
     private static Stream<Arguments> tokenVerificationExceptionGenerator() {
         return Stream.of(
-                Arguments.of(ExpiredJwtException.class),
-                Arguments.of(IllegalArgumentException.class),
-                Arguments.of(JwtException.class)
+            Arguments.of(ExpiredJwtException.class),
+            Arguments.of(IllegalArgumentException.class),
+            Arguments.of(JwtException.class)
 
         );
     }
@@ -130,7 +156,7 @@ public class JwtRequestFilterTests {
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 
     @Test
@@ -147,7 +173,7 @@ public class JwtRequestFilterTests {
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 
     @Test
@@ -164,6 +190,6 @@ public class JwtRequestFilterTests {
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 }
