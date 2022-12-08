@@ -25,9 +25,13 @@ public class Pizza {
     @Convert(converter = ToppingAttributeConverter.class)
     private List<Topping> toppings;
 
-    public Pizza(String pizzaType, List<Topping> toppings) {
+    @Column(name = "price", nullable = false)
+    private double price;
+
+    public Pizza(String pizzaType, List<Topping> toppings, double price) {
         this.pizzaName = pizzaType;
         this.toppings = toppings;
+        this.price = price;
     }
 
     public String getPizzaName() {
@@ -38,14 +42,7 @@ public class Pizza {
         return toppings;
     }
 
-    public void addTopping(Topping topping) {
-        toppings.add(topping);
-    }
-
-    public int calculatePrice() {
-        int price = 0;
-        for(Topping topping : toppings)
-            price += topping.getPrice();
+    public double getPrice() {
         return price;
     }
 
