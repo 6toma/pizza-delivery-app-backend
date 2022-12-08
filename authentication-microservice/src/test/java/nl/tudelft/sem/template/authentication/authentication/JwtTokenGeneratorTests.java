@@ -9,8 +9,8 @@ import io.jsonwebtoken.Jwts;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.domain.providers.TimeProvider;
-import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.User;
@@ -37,7 +37,7 @@ public class JwtTokenGeneratorTests {
         jwtTokenGenerator = new JwtTokenGenerator(timeProvider);
         this.injectSecret(secret);
 
-        user = User.withUsername(netId).password("someHash").roles(UserRole.CUSTOMER.name()).build();
+        user = new User(netId, "someHash", new ArrayList<>());
     }
 
     @Test
@@ -70,18 +70,12 @@ public class JwtTokenGeneratorTests {
         assertThat(claims.getSubject()).isEqualTo(netId);
     }
 
-    @Test
-    public void generatedTokenHasCorrectRole() {
-        String role = user.getAuthorities().stream().findFirst().get().getAuthority();
-        String token = jwtTokenGenerator.generateToken(user);
-
-        Claims claims = getClaims(token);
-        assertThat(claims.get("role")).isEqualTo(role);
-    }
-
     private Claims getClaims(String token) {
-        return Jwts.parser().setAllowedClockSkewSeconds(Integer.MAX_VALUE).setSigningKey(secret).parseClaimsJws(token)
-            .getBody();
+        return Jwts.parser()
+                .setAllowedClockSkewSeconds(Integer.MAX_VALUE)
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     private void injectSecret(String secret) throws NoSuchFieldException, IllegalAccessException {

@@ -33,4 +33,8 @@ public class ConfigComponents {
         return new Manager(environment.getProperty("manager.name"));
     }
 
+//    @Bean
+//    public Manager getManager_2() {
+//        return new Manager(environment.getProperty("not_existing_property","Nick"));
+//    }
 }

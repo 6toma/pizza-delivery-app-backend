@@ -1,3 +1,3 @@
-rootProject.name = 'new-microservice'
+rootProject.name = 'example-microservice'
 
 includeBuild '../build-logic'
