@@ -25,8 +25,13 @@ public class RequestAuthenticationConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
+                .antMatcher("/h2-console/**")
+                .headers()
+                .frameOptions()
+                .sameOrigin()
+                .and()
                 .authorizeRequests()
-                .antMatchers("/h2-console/**", "/addCoupon")
+                .antMatchers("/h2-console/**")
                 .permitAll()
                 .and()
                 .authorizeRequests()

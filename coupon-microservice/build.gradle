@@ -2,3 +2,10 @@ plugins {
 	id 'microservice'
 }
 apply plugin: 'info.solidsoft.pitest'
+
+bootJar {
+	enabled = false
+}
+jar {
+	enabled = true
+}
