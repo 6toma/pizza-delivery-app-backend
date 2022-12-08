@@ -38,7 +38,7 @@ dependencies {
 
 
     // Local test database (in-memory)
-    implementation 'com.h2database:h2'
+    implementation 'com.h2database:h2:2.1.210'
     developmentOnly 'org.hibernate:hibernate-entitymanager'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {

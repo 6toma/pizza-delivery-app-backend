@@ -1,0 +1,13 @@
+plugins {
+// Includes all required dependencies
+    id 'microservice'
+}
+bootJar {
+    enabled = false
+}
+jar {
+    enabled = true
+}
+// For some reason I was getting some errors if I didn't apply this plugin,
+// so please feel free to test if it actually works without this.
+apply plugin: 'info.solidsoft.pitest'
