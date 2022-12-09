@@ -67,7 +67,7 @@ public class ToppingController {
      * @throws Exception if the topping name does not exist
      */
     @PutMapping("/edit")
-    public ResponseEntity editPizza(@RequestBody ToppingModel tm) throws Exception {
+    public ResponseEntity editTopping(@RequestBody ToppingModel tm) throws Exception {
 
         try {
             ts.editTopping(tm.getName(), tm.getPrice());

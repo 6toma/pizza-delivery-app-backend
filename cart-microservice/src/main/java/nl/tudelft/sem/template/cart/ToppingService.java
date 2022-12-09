@@ -1,10 +1,9 @@
 package nl.tudelft.sem.template.cart;
 
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
+import nl.tudelft.sem.template.cart.exceptions.ToppingNotFoundException;
 import nl.tudelft.sem.template.commons.entity.Topping;
-import nl.tudelft.sem.template.commons.entity.Topping;
-import nl.tudelft.sem.template.commons.exceptions.ToppingAlreadyInUseException;
-import nl.tudelft.sem.template.commons.exceptions.ToppingNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
