@@ -1,7 +1,7 @@
 package nl.tudelft.sem.customer.controllers;
 
-import nl.tudelft.sem.customer.Customer;
-import nl.tudelft.sem.customer.CustomerRepository;
+import nl.tudelft.sem.customer.domain.Customer;
+import nl.tudelft.sem.customer.domain.CustomerRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -2,13 +2,14 @@ package nl.tudelft.sem.customer;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import nl.tudelft.sem.customer.domain.Customer;
 import org.junit.jupiter.api.Test;
 
 class CustomerTest {
 
     @Test
     public void constructNotNull(){
-        Customer customer = new Customer(null,null,null);
+        Customer customer = new Customer(null,null,0);
         assertNotNull(customer);
     }
 }

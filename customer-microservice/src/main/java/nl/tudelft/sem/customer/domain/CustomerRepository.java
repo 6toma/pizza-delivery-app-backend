@@ -1,4 +1,4 @@
-package nl.tudelft.sem.customer;
+package nl.tudelft.sem.customer.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
