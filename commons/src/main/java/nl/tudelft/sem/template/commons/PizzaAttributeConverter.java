@@ -17,10 +17,11 @@ public class PizzaAttributeConverter implements AttributeConverter<Pizza, String
         String[] arr = dbData.split(";");
         String pizzaName = arr[0];
         List<Topping> list = new ArrayList<>(arr.length);
-        for(int i = 1; i < arr.length; i++) {
+        for(int i = 1; i < arr.length - 1; i++) {
             String[] topping = arr[i].split(" ");
             list.add(new Topping(topping[0], Double.parseDouble(topping[1])));
         }
-        return new Pizza(pizzaName, list);
+        String price = arr[arr.length - 1];
+        return new Pizza(pizzaName, list, Double.parseDouble(price));
     }
 }

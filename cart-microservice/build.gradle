@@ -1,0 +1,8 @@
+plugins {
+    id 'microservice'
+}
+apply plugin: 'info.solidsoft.pitest'
+
+dependencies {
+    implementation(project(":commons"))
+}

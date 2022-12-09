@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.commons.exceptions;
+package nl.tudelft.sem.template.cart.exceptions;
 
 /**
  * Exception to indicate the NetID is already in use.
