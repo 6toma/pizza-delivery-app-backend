@@ -1,5 +1,8 @@
-package nl.tudelft.sem.template.checkout;
+package nl.tudelft.sem.checkout.controllers;
 
+import nl.tudelft.sem.checkout.domain.Order;
+import nl.tudelft.sem.checkout.domain.OrderModel;
+import nl.tudelft.sem.checkout.domain.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

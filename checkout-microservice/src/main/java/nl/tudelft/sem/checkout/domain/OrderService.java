@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.checkout;
+package nl.tudelft.sem.checkout.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

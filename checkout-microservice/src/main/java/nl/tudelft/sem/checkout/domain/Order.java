@@ -1,6 +1,7 @@
-package nl.tudelft.sem.template.checkout;
+package nl.tudelft.sem.checkout.domain;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.commons.PizzaAttributeConverter;
@@ -13,6 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 @NoArgsConstructor
+@Getter
 @EqualsAndHashCode
 public class Order {
 
@@ -32,18 +34,6 @@ public class Order {
     public Order(int storeId, List<Pizza> pizzaList) {
         this.storeId = storeId;
         this.pizzaList = pizzaList;
-    }
-
-    public int getOrderId() {
-        return orderId;
-    }
-
-    public int getStoreId() {
-        return storeId;
-    }
-
-    public List<Pizza> getPizzaList() {
-        return pizzaList;
     }
 
     public int calculatePrice() {

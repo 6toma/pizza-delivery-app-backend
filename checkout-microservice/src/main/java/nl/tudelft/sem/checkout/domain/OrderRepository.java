@@ -1,5 +1,6 @@
-package nl.tudelft.sem.template.checkout;
+package nl.tudelft.sem.checkout.domain;
 
+import nl.tudelft.sem.checkout.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
