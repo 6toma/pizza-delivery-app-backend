@@ -44,7 +44,7 @@ public class PizzaController {
      * @return ResponseEntity
      * @throws Exception if the pizza name does not exist
      */
-    @PostMapping("/remove")
+    @DeleteMapping("/remove")
     public ResponseEntity removePizza(@RequestBody String pizzaName) throws Exception {
 
         try {
