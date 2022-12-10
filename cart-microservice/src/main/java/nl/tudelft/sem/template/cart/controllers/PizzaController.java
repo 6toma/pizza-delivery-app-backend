@@ -29,7 +29,7 @@ public class PizzaController {
     public ResponseEntity<String> addPizza(@RequestBody PizzaModel pizza) throws Exception {
 
         try {
-            pizzaService.addPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice()  );
+            pizzaService.addPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -57,7 +57,7 @@ public class PizzaController {
     }
 
     /**
-     * A put request to edit the toppings of a pizza
+     * A put request to edit the toppings of a pizza.
      *
      * @param pizza the new pizza
      * @return ResponseEntity
