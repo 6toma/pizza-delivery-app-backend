@@ -3,6 +3,10 @@ plugins {
 }
 apply plugin: 'info.solidsoft.pitest'
 
-dependencies {
-    implementation(project(":authentication"))
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
 }
