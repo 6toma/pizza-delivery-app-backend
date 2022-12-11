@@ -1,18 +1,20 @@
 package nl.tudelft.sem.template.cart.controllers;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import nl.tudelft.sem.template.cart.PizzaService;
 import nl.tudelft.sem.template.cart.ToppingService;
-import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
-import nl.tudelft.sem.template.commons.models.PizzaModel;
 import nl.tudelft.sem.template.commons.models.ToppingModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -60,7 +62,7 @@ public class ToppingController {
     }
 
     /**
-     * A put request to edit the toppings of a pizza
+     * A put request to edit the toppings of a pizza.
      *
      * @param tm the new topping
      * @return ResponseEntity
