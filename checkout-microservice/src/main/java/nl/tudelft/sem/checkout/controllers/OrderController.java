@@ -4,7 +4,6 @@ import nl.tudelft.sem.checkout.domain.Order;
 import nl.tudelft.sem.checkout.domain.OrderModel;
 import nl.tudelft.sem.checkout.domain.OrderService;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
-import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwner;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,8 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 @RestController
 @RequestMapping("/orders")
@@ -36,7 +33,7 @@ public class OrderController {
     }
 
     @PostMapping("/remove/{id}")
-    public ResponseEntity<String> removeOrder(@PathVariable("id") long orderId) {
+    public ResponseEntity<String> removeOrderById(@PathVariable("id") long orderId) {
         orderService.removeOrderById(orderId);
         return ResponseEntity.ok("Order removed");
     }
