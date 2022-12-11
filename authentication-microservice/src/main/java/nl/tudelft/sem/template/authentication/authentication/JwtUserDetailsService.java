@@ -1,9 +1,9 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
-import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,7 +36,9 @@ public class JwtUserDetailsService implements UserDetailsService {
 
         var user = optionalUser.get();
 
-        return new User(user.getNetId().toString(), user.getPassword().toString(),
-                new ArrayList<>()); // no authorities/roles
+        return User.withUsername(user.getNetId().toString())
+            .password(user.getPassword().toString())
+            .authorities(new SimpleGrantedAuthority(user.getRole().getJwtRoleName()))
+            .build();
     }
 }
