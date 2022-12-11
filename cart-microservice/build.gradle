@@ -4,5 +4,6 @@ plugins {
 apply plugin: 'info.solidsoft.pitest'
 
 dependencies {
+    implementation(project(":checkout-microservice"))
     implementation(project(":commons"))
 }
