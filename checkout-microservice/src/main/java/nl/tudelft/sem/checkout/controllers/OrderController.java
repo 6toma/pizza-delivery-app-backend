@@ -3,18 +3,22 @@ package nl.tudelft.sem.checkout.controllers;
 import nl.tudelft.sem.checkout.domain.Order;
 import nl.tudelft.sem.checkout.domain.OrderModel;
 import nl.tudelft.sem.checkout.domain.OrderService;
+import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
+import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwner;
+import nl.tudelft.sem.template.commons.entity.Pizza;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 @RestController
+@RequestMapping("/orders")
 public class OrderController {
 
     private final transient OrderService orderService;
@@ -24,28 +28,55 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping("/orders/add")
+    @PostMapping("/add")
     public ResponseEntity<String> addOrder(@RequestBody OrderModel order) {
-        Order newOrder = new Order(order.getStoreId(), order.getPizzaList());
+        Order newOrder = new Order(order.getStoreId(), order.getCustomerId(), order.getPickupTime(), order.getPizzaList(), order.getCouponCodes());
         orderService.addOrder(newOrder);
         return ResponseEntity.ok("Order added");
     }
 
-    @PostMapping("/orders/remove")
-    public ResponseEntity<String> removeOrder(@RequestBody int orderId) {
+    @PostMapping("/remove/{id}")
+    public ResponseEntity<String> removeOrder(@PathVariable("id") long orderId) {
         orderService.removeOrderById(orderId);
         return ResponseEntity.ok("Order removed");
     }
 
-    @GetMapping("/orders/all")
+    @RoleRegionalManager
+    @GetMapping(path = {"", "/", "/all"})
     public List<Order> getAllOrders() {
         return orderService.getAllOrders();
     }
 
-    @GetMapping("/orders/price")
-    public int getOrderPrice(@RequestBody int orderId) throws Exception {
+    @GetMapping("/{id}")
+    public Order getOrderById(@PathVariable("id") long orderId) throws Exception {
         try {
-            return orderService.getOrderById(orderId).calculatePrice();
+            return orderService.getOrderById(orderId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/pizza_prices/{id}")
+    public List<Double> getPriceForEachPizza(@PathVariable("id") long orderId) throws Exception {
+        try {
+            Order order = orderService.getOrderById(orderId);
+
+            // list is unsorted, faster to search for min, than to sort and get first value
+            List<Double> priceList = new ArrayList<>();
+            for(Pizza pizza : order.getPizzaList())
+                priceList.add(pizza.getPrice());
+
+            return priceList;
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/price/{id}")
+    public double getOrderPrice(@PathVariable("id") long orderId) throws Exception {
+        try {
+            return orderService.getOrderById(orderId).calculatePriceWithoutDiscount();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

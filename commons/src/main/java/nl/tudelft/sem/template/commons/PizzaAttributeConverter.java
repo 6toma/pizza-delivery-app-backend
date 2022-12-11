@@ -13,6 +13,8 @@ public class PizzaAttributeConverter implements AttributeConverter<Pizza, String
     public String convertToDatabaseColumn(Pizza attribute) {
         return attribute.toString();
     }
+
+    @Override
     public Pizza convertToEntityAttribute(String dbData) {
         String[] arr = dbData.split(";");
         String pizzaName = arr[0];

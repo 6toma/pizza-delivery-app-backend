@@ -14,10 +14,10 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     List<Order> findAll();
 
-    Optional<Order> findByOrderId(int orderId);
+    Optional<Order> findByOrderId(long orderId);
 
-    boolean existsByOrderId(int orderId);
+    boolean existsByOrderId(long orderId);
 
-    void deleteOrderByOrderId(int orderId);
+    void deleteOrderByOrderId(long orderId);
 
 }

@@ -73,10 +73,4 @@ public class Pizza {
         return builder.append(price).toString();
     }
 
-    public int calculatePrice() {
-        int price = 0;
-        for(Topping topping : toppings)
-            price += topping.getPrice();
-        return price;
-    }
 }
