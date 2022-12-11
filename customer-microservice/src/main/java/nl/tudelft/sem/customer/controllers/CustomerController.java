@@ -27,25 +27,36 @@ public class CustomerController {
 
 
     /**
-     * Endpoint to get a Customer with a specific id from the Customer Repository.
-     * @param customerId = the id to search for
-     * @return the customer with the specified id
+     * Endpoint to retrieve a Customer from the Customer Repository by their unique id.
+     *
+     * @param customerId the id to search for.
+     * @return the Customer with the specified id.
      */
-    @GetMapping("/{id}")
-    public Customer getCustomer(@PathVariable int customerId) {
-        return customerService.getCustomer(customerId);
+    @GetMapping("/{customerId}")
+    public Customer getCustomerById(@PathVariable int customerId) {
+        return customerService.getCustomerById(customerId);
+    }
+
+    /**
+     * Endpoint that gets all the customers from the Customer Repository.
+     *
+     * @return the List of all Customers.
+     */
+    @GetMapping("/getAll")
+    public List<Customer> getCustomers() {
+        return customerService.getAll();
     }
 
     /**
      * Endpoint to save a Customer to the Customer Repository.
      *
-     * @param customer = the Customer object to save to the repo
+     * @param customer the Customer object to save to the repo.
      * @return ok
      */
     @PostMapping
     public ResponseEntity<String> addCustomer(@RequestBody Customer customer) {
         customerService.addCustomer(customer);
-        return ResponseEntity.ok("Customer added");
+        return ResponseEntity.ok("Customer added.");
     }
 
     /**
@@ -53,24 +64,26 @@ public class CustomerController {
      * > Should be called after an order with a coupon is placed by a customer.
      *
      * @param couponCode the coupon code used by the customer,
-     *                   ie. the coupon to be added to the list of used coupons
+     *                   i.e. the coupon to be added to the list of used coupons
      * @return ok
      */
-    @PostMapping("/{id}/coupons")
+    @PostMapping("/{customerId}/coupons")
     public ResponseEntity<String> addToUsedCoupons(@PathVariable int customerId, @RequestBody String couponCode) {
         customerService.addToUsedCoupons(customerId, couponCode);
-        return ResponseEntity.ok("Coupon used");
+        return ResponseEntity.ok("Coupon used.");
     }
 
     /**
      * Endpoint to set a customer's list of allergens.
-     * The endpoint adds the given list of allergens to the list of allergens of the customer with the provided id.
-     * @param customerId
-     * @param newToppings
+     * The endpoint adds the given list of allergens to the existing list of allergens of the customer with the provided id.
+     *
+     * @param customerId the id of the Customer whose allergens should be updated.
+     * @param newToppings the new list of toppings to be added to the existing List of Allergens.
+     * @return ok
      */
-    @PostMapping("/{id}/allergens")
+    @PostMapping("/{customerId}/allergens")
     public ResponseEntity<String> updateAllergens(@PathVariable int customerId, @RequestBody List<String> newToppings) {
         customerService.updateAllergens(customerId, newToppings);
-        return ResponseEntity.ok("Allergens updated");
+        return ResponseEntity.ok("Allergens updated.");
     }
 }
