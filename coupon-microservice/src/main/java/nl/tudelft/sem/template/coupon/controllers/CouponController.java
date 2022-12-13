@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import lombok.Data;
-import nl.tudelft.sem.template.example.authentication.AuthManager;
+import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.Coupon;
 import nl.tudelft.sem.template.example.domain.CouponRepository;
 import nl.tudelft.sem.template.example.domain.CouponType;
