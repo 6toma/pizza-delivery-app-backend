@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain;
+package nl.tudelft.sem.template.coupon.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;

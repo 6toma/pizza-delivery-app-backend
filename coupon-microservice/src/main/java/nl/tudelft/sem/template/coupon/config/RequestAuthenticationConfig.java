@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.config;
+package nl.tudelft.sem.template.coupon.config;
 
 import nl.tudelft.sem.template.authentication.JwtAuthenticationEntryPoint;
 import nl.tudelft.sem.template.authentication.JwtRequestFilter;

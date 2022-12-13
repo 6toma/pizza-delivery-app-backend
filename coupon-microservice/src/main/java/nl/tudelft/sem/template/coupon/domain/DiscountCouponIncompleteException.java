@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain;
+package nl.tudelft.sem.template.coupon.domain;
 
 public class DiscountCouponIncompleteException extends RuntimeException {
 

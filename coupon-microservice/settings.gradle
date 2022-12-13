@@ -1,3 +1,5 @@
 rootProject.name = 'coupon-microservice'
 
 includeBuild '../build-logic'
+include 'authentication'
+project(':authentication').projectDir = new File('../authentication')
