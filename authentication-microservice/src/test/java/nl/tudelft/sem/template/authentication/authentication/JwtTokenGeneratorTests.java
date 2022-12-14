@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +38,7 @@ public class JwtTokenGeneratorTests {
         jwtTokenGenerator = new JwtTokenGenerator(timeProvider);
         this.injectSecret(secret);
 
-        user = User.withUsername(netId).password("someHash").roles(UserRole.CUSTOMER.name()).build();
+        user = User.withUsername(netId).password("someHash").authorities(UserRole.CUSTOMER.getJwtRoleName()).build();
     }
 
     @Test
@@ -77,6 +78,12 @@ public class JwtTokenGeneratorTests {
 
         Claims claims = getClaims(token);
         assertThat(claims.get("role")).isEqualTo(role);
+    }
+
+    @Test
+    public void generatedHasNoRole() {
+        var user = User.withUsername(netId).password("someHash").authorities(new String[] {}).build();
+        assertThrows(IllegalArgumentException.class, () -> jwtTokenGenerator.generateToken(user));
     }
 
     private Claims getClaims(String token) {

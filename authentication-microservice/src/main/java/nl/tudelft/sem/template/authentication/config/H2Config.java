@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class H2Config {
 
-    @Getter
     private final Environment environment;
 
     public H2Config(Environment environment) {
