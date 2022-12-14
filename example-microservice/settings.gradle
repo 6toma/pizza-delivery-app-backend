@@ -1,3 +1,4 @@
 rootProject.name = 'example-microservice'
 
 includeBuild '../build-logic'
+include 'authentication'

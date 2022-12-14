@@ -1,88 +1,93 @@
 package nl.tudelft.sem.template.cart.controllers;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import nl.tudelft.sem.template.cart.PizzaService;
-import nl.tudelft.sem.template.commons.entity.Pizza;
-import nl.tudelft.sem.template.commons.models.PizzaModel;
+import nl.tudelft.sem.template.cart.ToppingService;
+import nl.tudelft.sem.template.commons.entity.Topping;
+import nl.tudelft.sem.template.commons.models.ToppingModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/topping")
 public class ToppingController {
 
-    private final transient PizzaService menuService;
+    private final transient ToppingService ts;
 
     /**
-     * A post request to send a new pizza to the DB.
+     * A post request to send a new topping to the DB.
      *
-     * @param pizza the new pizza
+     * @param tm the new topping
      * @return ResponseEntity
-     * @throws Exception if the pizza already exists
+     * @throws Exception if the topping already exists
      */
     @PostMapping("/add")
-    public ResponseEntity<String> addPizza(@RequestBody PizzaModel pizza) throws Exception {
+    public ResponseEntity<String> addTopping(@RequestBody ToppingModel tm) throws Exception {
 
         try {
-            menuService.addPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
+            ts.addTopping(tm.getName(), tm.getPrice());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 
-        return ResponseEntity.ok("Pizza added");
+        return ResponseEntity.ok("Topping added");
     }
 
     /**
-     * A post request to remove a pizza from the DB.
+     * A post request to remove a topping from the DB.
      *
-     * @param pizzaName the name of the pizza
+     * @param name the name of the topping
      * @return ResponseEntity
-     * @throws Exception if the pizza name does not exist
+     * @throws Exception if the topping name does not exist
      */
-    @PostMapping("/remove")
-    public ResponseEntity removePizza(@RequestBody String pizzaName) throws Exception {
+    @DeleteMapping("/remove")
+    public ResponseEntity removeTopping(@RequestBody String name) throws Exception {
 
         try {
-            menuService.removePizza(pizzaName);
+            ts.removeTopping(name);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 
-        return ResponseEntity.ok("Pizza removed");
+        return ResponseEntity.ok("Topping removed");
     }
 
     /**
-     * A put request to edit the toppings of a pizza
+     * A put request to edit the toppings of a pizza.
      *
-     * @param pizza the new pizza
+     * @param tm the new topping
      * @return ResponseEntity
-     * @throws Exception if the pizza name does not exist
+     * @throws Exception if the topping name does not exist
      */
     @PutMapping("/edit")
-    public ResponseEntity editPizza(@RequestBody PizzaModel pizza) throws Exception {
+    public ResponseEntity editTopping(@RequestBody ToppingModel tm) throws Exception {
 
         try {
-            menuService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
+            ts.editTopping(tm.getName(), tm.getPrice());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 
-        return ResponseEntity.ok("Pizza edited");
+        return ResponseEntity.ok("Topping edited");
     }
 
     /**
-     * Gets all the pizzas from the DB.
+     * Gets all the toppings from the DB.
      *
-     * @return the list of pizzas
+     * @return the list of toppings
      */
     @GetMapping("/getAll")
-    public List<Pizza> getPizzas() {
-        return menuService.getAll();
+    public List<Topping> getToppings() {
+        return ts.getAll();
     }
 
 }
