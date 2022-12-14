@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.config;
+package nl.tudelft.sem.template.cart;
 
 import nl.tudelft.sem.template.authentication.JwtAuthenticationEntryPoint;
 import nl.tudelft.sem.template.authentication.JwtRequestFilter;
@@ -24,7 +24,6 @@ public class RequestAuthenticationConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        System.out.println("I am configuring here");
         http.csrf().disable()
                 .authorizeRequests()
                 .anyRequest().authenticated()

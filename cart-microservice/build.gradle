@@ -4,7 +4,7 @@ plugins {
 apply plugin: 'info.solidsoft.pitest'
 
 dependencies {
-    compileOnly(project(":authentication"))
+    implementation(project(":authentication"))
     implementation(project(":checkout-microservice"))
     implementation(project(":commons"))
 }

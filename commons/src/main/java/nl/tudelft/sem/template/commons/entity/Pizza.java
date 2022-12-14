@@ -1,5 +1,8 @@
 package nl.tudelft.sem.template.commons.entity;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.commons.ToppingAttributeConverter;
 
@@ -18,6 +21,8 @@ public class Pizza {
     private int id;
 
     @Column(name = "name", nullable = false, unique = true)
+    @NotNull(message = "Pizza name can't be null")
+    @Size(min = 5, max = 30, message = "Pizza name should be between 5 and 30 characters long")
     private String pizzaName;
 
     @ElementCollection
@@ -26,6 +31,7 @@ public class Pizza {
     private List<Topping> toppings;
 
     @Column(name = "price", nullable = false)
+    @Min(value = 5, message = "The pizza's price should be at least 5 euros")
     private double price;
 
     public Pizza(String pizzaType, List<Topping> toppings, double price) {

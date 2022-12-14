@@ -13,5 +13,4 @@ public class StoreAddress {
     private String zipCode;
     private String street;
     private int number;
-
 }
