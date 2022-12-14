@@ -1,9 +1,8 @@
 package nl.tudelft.sem.template.checkout;
 
+import java.util.List;
 import lombok.Data;
 import nl.tudelft.sem.template.commons.entity.Pizza;
-
-import java.util.List;
 
 @Data
 public class OrderModel {

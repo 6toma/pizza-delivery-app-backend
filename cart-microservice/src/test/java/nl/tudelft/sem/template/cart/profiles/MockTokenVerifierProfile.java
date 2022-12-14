@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.example.profiles;
+package nl.tudelft.sem.template.cart.profiles;
 
 import nl.tudelft.sem.template.cart.authentication.JwtTokenVerifier;
 import org.mockito.Mockito;

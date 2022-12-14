@@ -6,8 +6,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import nl.tudelft.sem.template.example.authentication.AuthManager;
-import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
+import nl.tudelft.sem.template.authentication.AuthManager;
+import nl.tudelft.sem.template.authentication.JwtTokenVerifier;
+import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,13 +45,14 @@ public class ExampleTest {
         // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
         when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getRoleFromToken(anyString())).thenReturn(UserRole.CUSTOMER.getJwtRoleName());
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
 
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
         ResultActions result = mockMvc.perform(get("/hello")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken"));
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer MockedToken"));
 
         // Assert
         result.andExpect(status().isOk());
