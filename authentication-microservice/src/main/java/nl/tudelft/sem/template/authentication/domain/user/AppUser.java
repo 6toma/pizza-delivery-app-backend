@@ -33,7 +33,6 @@ public class AppUser extends HasEvents {
     private int id;
 
     @Column(name = "net_id", nullable = false, unique = true)
-    @Convert(converter = NetIdAttributeConverter.class)
     private NetId netId;
 
     @Column(name = "role", nullable = false)
