@@ -42,12 +42,10 @@ public class CartController {
     String addPizzaToCart(@RequestBody String pizzaName) {
         NetId netId = authManager.getNetIdObject();
         Cart cart = cartRepository.findByNetId(netId);
-        boolean cartWasNull = false;
         if (cart == null) {
             cart = new Cart(netId, new ArrayList<>());
-            cartWasNull = true;
+            cartRepository.save(cart);
         }
-
         var optionalPizza = pizzaService.getPizza(pizzaName);
         if (optionalPizza.isEmpty()) {
             return "Pizza name of " + pizzaName + " is not in the default pizza db";
@@ -56,12 +54,8 @@ public class CartController {
         if (cart.getPizzas().contains(pizza)) {
             return "Pizza is already in cart";
         }
-        if (cartWasNull) {
-            cartRepository.deleteByNetId(netId);
-        }
-        cart.getPizzas().add(pizza);
+        cart.addPizza(pizza);
         cartRepository.save(cart);
-
         return "Pizza was added to the cart";
     }
 

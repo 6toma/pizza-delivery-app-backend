@@ -1,13 +1,18 @@
 package nl.tudelft.sem.template.authentication;
 
+import java.io.Serializable;
+import javax.persistence.Embeddable;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * A DDD value object representing a NetID in our domain.
  */
 @EqualsAndHashCode
-public class NetId {
-    private final transient String netIdValue;
+@Embeddable
+@NoArgsConstructor
+public class NetId implements Serializable {
+    private String netIdValue;
 
     public NetId(String netId) {
         // validate NetID

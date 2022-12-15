@@ -1,40 +1,30 @@
 package nl.tudelft.sem.template.commons.entity;
 
 import java.util.List;
-import javax.persistence.*;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nl.tudelft.sem.template.commons.PizzaAttributeConverter;
 import nl.tudelft.sem.template.authentication.NetId;
-import nl.tudelft.sem.template.authentication.NetIdAttributeConverter;
-import org.springframework.beans.factory.annotation.Required;
 
 @Entity
 @Table(name = "carts")
 @NoArgsConstructor
-@Data
-@AllArgsConstructor
+@Getter
 public class Cart {
+    @EmbeddedId
+    private NetId netId;
+    @ManyToMany
+    private List<Pizza> pizzas;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", nullable = false, unique = true)
-    private int id;
-
-    public Cart(NetId netId, List<Pizza> pizzas ){
+    public Cart(NetId netId, List<Pizza> pizzas) {
         this.netId = netId;
         this.pizzas = pizzas;
     }
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name = "pizzas", nullable = false)
-    @Convert(converter = PizzaAttributeConverter.class)
-    private List<Pizza> pizzas;
-
-    @Column(name = "netId", nullable = false, unique = true)
-    @Convert(converter = NetIdAttributeConverter.class)
-    private NetId netId;
-
+    public void addPizza(Pizza pizza) {
+        pizzas.add(pizza);
+    }
 }
