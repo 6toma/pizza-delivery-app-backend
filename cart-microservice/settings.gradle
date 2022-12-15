@@ -3,4 +3,7 @@ rootProject.name = 'cart-microservice'
 includeBuild '../build-logic'
 include 'commons'
 include 'checkout-microservice'
-
+include 'authentication'
+project(':authentication').projectDir = new File('../authentication')
+project(':commons').projectDir = new File('../commons')
+project(':checkout-microservice').projectDir = new File('../checkout-microservice')
