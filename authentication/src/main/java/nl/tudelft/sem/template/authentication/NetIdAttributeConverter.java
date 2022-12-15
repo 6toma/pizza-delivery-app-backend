@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.authentication.domain.user;
+package nl.tudelft.sem.template.authentication;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

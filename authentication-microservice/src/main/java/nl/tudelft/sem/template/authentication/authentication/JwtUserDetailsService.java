@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
 import lombok.RequiredArgsConstructor;
-import nl.tudelft.sem.template.authentication.domain.user.NetId;
+import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;

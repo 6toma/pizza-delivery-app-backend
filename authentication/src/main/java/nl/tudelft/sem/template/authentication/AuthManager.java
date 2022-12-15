@@ -19,6 +19,10 @@ public class AuthManager {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
+    public NetId getNetIdObject() {
+        return new NetId(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
     public String getRole() {
         var firstAuthority =
             SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().findFirst();

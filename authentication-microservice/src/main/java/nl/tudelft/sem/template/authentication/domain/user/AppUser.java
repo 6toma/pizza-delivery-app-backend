@@ -12,6 +12,8 @@ import javax.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.NetIdAttributeConverter;
 import nl.tudelft.sem.template.authentication.domain.HasEvents;
 
 /**
