@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class RequestHelper {
      * @return a spring Response entity
      */
     public <T> ResponseEntity<T> postRequest(int port, String path, Object toSend, Class<T> responseClass) {
-        return doRequest(RequestType.POST, port, path, toSend, responseClass);
+        return doRequest(HttpMethod.POST, port, path, toSend, responseClass);
     }
 
     /**
@@ -52,7 +53,7 @@ public class RequestHelper {
      * @return a spring Response entity
      */
     public <T> ResponseEntity<T> getRequest(int port, String path, Class<T> responseClass) {
-        return doRequest(RequestType.GET, port, path, null, responseClass);
+        return doRequest(HttpMethod.GET, port, path, null, responseClass);
     }
 
     /**
@@ -68,29 +69,17 @@ public class RequestHelper {
      * @return a spring Response entity
      */
     public <T> ResponseEntity<T> deleteRequest(int port, String path, Class<T> responseClass) {
-        return doRequest(RequestType.DELETE, port, path, null, responseClass);
+        return doRequest(HttpMethod.DELETE, port, path, null, responseClass);
     }
 
     // TODO a better solution to handle post request. Right now toSend is simply null if the request is GET or DELETE
-    private <T> ResponseEntity<T> doRequest(RequestType requestType, int port, String path, Object toSend,
+    private <T> ResponseEntity<T> doRequest(HttpMethod httpMethod, int port, String path, Object toSend,
                                             Class<T> responseClass) {
         URI url = createUrl(port, path);
         logger.info("Doing a POST on " + url);
-        RequestEntity.HeadersBuilder<?> request;
         try {
-            switch (requestType) {
-                case GET:
-                    request = RequestEntity.get(url).accept(MediaType.APPLICATION_JSON);
-                    break;
-                case POST:
-                    request = RequestEntity.post(url).contentType(MediaType.APPLICATION_JSON);
-                    break;
-                case DELETE:
-                    request = RequestEntity.delete(url).accept(MediaType.APPLICATION_JSON);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Method not supported");
-            }
+            RequestEntity.HeadersBuilder<?> request =
+                RequestEntity.method(httpMethod, url).accept(MediaType.APPLICATION_JSON);
             var requestWithToken = request.header("Authorization", "Bearer " + authenticationManager.getJwtToken());
             if (toSend != null) {
                 // add to post request the object
@@ -108,9 +97,5 @@ public class RequestHelper {
     private URI createUrl(int port, String path) {
         String url = String.format("%s:%d%s", baseUrl, port, path);
         return URI.create(url);
-    }
-
-    enum RequestType {
-        POST, GET, DELETE
     }
 }
