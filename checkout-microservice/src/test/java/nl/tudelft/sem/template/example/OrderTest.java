@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class OrderTest {
 
-    Order order = new Order(1L, "Matt", LocalTime.NOON, new ArrayList<>(), List.of("ABCD12"));
+    Order order = new Order(1L, "Matt", LocalTime.NOON, new ArrayList<>(), "ABCD12");
     Pizza pizza1 = new Pizza("Margherita", new ArrayList<>(), 11);
     Pizza pizza2 = new Pizza("Hawaii", new ArrayList<>(), 10.5);
 
@@ -45,7 +45,7 @@ public class OrderTest {
         Order order2 = new Order(15L, null, null, null, null);
         Assertions.assertThat(order2.getPizzaList()).isNull();
 
-        Order order3 = new Order(15L, "Matt", LocalTime.NOON, List.of(pizza1, pizza2), List.of("ABCD12"));
+        Order order3 = new Order(15L, "Matt", LocalTime.NOON, List.of(pizza1, pizza2), "ABCD12");
         Assertions.assertThat(order3.getPizzaList()).containsExactly(pizza1, pizza2);
     }
 
@@ -61,7 +61,7 @@ public class OrderTest {
 
     @Test
     public void getCouponCodesTest() {
-        Assertions.assertThat(order.getCouponCodes()).containsExactly("ABCD12");
+        Assertions.assertThat(order.getCouponCodes()).isEqualTo("ABCD12");
 
         Order order2 = new Order(15L, null, null, null, null);
         Assertions.assertThat(order2.getPizzaList()).isNull();
@@ -71,7 +71,7 @@ public class OrderTest {
     public void calculatePriceWithoutDiscountTest() {
         Assertions.assertThat(order.calculatePriceWithoutDiscount()).isEqualTo(0);
 
-        Order order2 = new Order(15L, "Matt", LocalTime.NOON, List.of(pizza1, pizza2), List.of("ABCD12"));
+        Order order2 = new Order(15L, "Matt", LocalTime.NOON, List.of(pizza1, pizza2), "ABCD12");
         Assertions.assertThat(order2.calculatePriceWithoutDiscount()).isEqualTo(21.5);
     }
 }

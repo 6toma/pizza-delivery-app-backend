@@ -1,5 +1,6 @@
 package nl.tudelft.sem.checkout.domain;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,9 +40,10 @@ public class Order {
 
     @ElementCollection
     @Column(name = "couponCodes", nullable = false)
-    private List<String> couponCodes;
+    private String couponCodes;
 
-    public Order(long storeId, String customerId, LocalTime pickupTime, List<Pizza> pizzaList, List<String> couponCodes) {
+    @Builder
+    public Order(long storeId, String customerId, LocalTime pickupTime, List<Pizza> pizzaList, String couponCodes) {
         this.storeId = storeId;
         this.customerId = customerId;
         this.pickupTime = pickupTime;
