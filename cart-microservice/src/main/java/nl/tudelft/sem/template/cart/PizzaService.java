@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.cart;
 
 import java.util.List;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
@@ -91,13 +92,17 @@ public class PizzaService {
     }
 
     /**
-     * Checks whether this pizzaname already exists.
+     * Checks whether this pizzaName already exists.
      *
      * @param pizzaName the name to check
-     * @return true if the name is unique else false
+     * @return true if the name does not yet exist, else false
      */
     public boolean checkPizzaIsUnique(String pizzaName) {
         return !pizzaRepository.existsByPizzaName(pizzaName);
+    }
+
+    public Optional<Pizza> getPizza(String pizzaName) {
+        return pizzaRepository.findById(pizzaName);
     }
 
 }

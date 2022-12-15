@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import nl.tudelft.sem.template.authentication.AuthManager;
+import nl.tudelft.sem.template.cart.CartRepository;
 import nl.tudelft.sem.template.cart.PizzaRepository;
+import nl.tudelft.sem.template.cart.PizzaService;
 import nl.tudelft.sem.template.checkout.OrderModel;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import org.slf4j.Logger;
@@ -33,22 +35,15 @@ public class CartController {
 
     // dependencies
     private final AuthManager authManager;
-    private final PizzaRepository pizzaRepository;
+    private final PizzaService pizzaService;
+    private final CartRepository cartRepository;
 
-    CartController(AuthManager authManager, PizzaRepository pizzaRepository) {
+    CartController(AuthManager authManager, PizzaService pizzaService, CartRepository cartRepository) {
         this.authManager = authManager;
-        this.pizzaRepository = pizzaRepository;
+        this.pizzaService = pizzaService;
+        this.cartRepository = cartRepository;
     }
 
-    /**
-     * Check if a given pizza is a custom pizza or a default one.
-     *
-     * @param pizza pizza to check
-     * @return true/false if the pizza is custom
-     */
-    boolean isPizzaCustom(Pizza pizza) {
-        return (pizza.getPizzaName().equals("Custom"));
-    }
 
     /**
      * Adds pizza to the cart. Checks if the pizza provided is properly validated with <i>@Validation</i> annotation
@@ -56,23 +51,13 @@ public class CartController {
      * If the validation fails then we can get the error messages nicely in postman too. If the pizza is not custom, I think
      * it makes sense to enforce the rule that the pizza name should be a default pizza.
      *
-     * @param pizza         pizza to add to cart
-     * @param bindingResult spring binded this class so that we can check what were the validation errors
+     * @param pizzaName name of the pizza to be added to cart
      * @return
      */
     @PostMapping("/addPizza")
-    String addPizzaToCart(@RequestBody @Validated Pizza pizza, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            String defaultMessage = bindingResult.getFieldError().getDefaultMessage();
-            return Objects.requireNonNullElse(defaultMessage, "Error in creating Pizza");
-        }
-        // if is not a custom pizza and we do not have it as a default pizza we can't add it to cart
-        if (!isPizzaCustom(pizza) && !pizzaRepository.existsByPizzaName(pizza.getPizzaName())) {
-            return "The pizza name '" + pizza.getPizzaName() + "' is not in the default pizza db";
-        }
-
-        // add pizza to current cart
-        pizzaInCart.add(pizza);
+    String addPizzaToCart(@RequestBody String pizzaName) {
+        if(pizzaService.checkPizzaIsUnique(pizzaName)) return "Pizza not found";
+        Pizza pizza = pizzaService.getPizza(pizzaName).get();
         return "Pizza " + pizza + " was added to cart.";
     }
 

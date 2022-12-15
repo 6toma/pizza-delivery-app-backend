@@ -85,4 +85,22 @@ public class Pizza {
             price += topping.getPrice();
         return price;
     }
+
+    public boolean addTopping(Topping t) {
+        if(toppings.contains(t)) {
+            return false;
+        }
+        toppings.add(t);
+        price += t.getPrice();
+        return true;
+    }
+
+    public boolean removeTopping(Topping t) {
+        if(!toppings.contains(t)) {
+            return false;
+        }
+        toppings.remove(t);
+        price = price - t.getPrice();
+        return true;
+    }
 }
