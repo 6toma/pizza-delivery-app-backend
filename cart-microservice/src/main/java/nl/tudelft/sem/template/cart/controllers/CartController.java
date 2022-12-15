@@ -2,7 +2,6 @@ package nl.tudelft.sem.template.cart.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.NetId;
@@ -16,7 +15,6 @@ import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,16 +43,20 @@ public class CartController {
         NetId netId = authManager.getNetIdObject();
         Cart cart = cartRepository.findByNetId(netId);
         boolean cartWasNull = false;
-        if (cart == null){
+        if (cart == null) {
             cart = new Cart(netId, new ArrayList<>());
             cartWasNull = true;
         }
 
-        Pizza pizza = pizzaService.getPizza(pizzaName).get();
-        if (cart.getPizzas().contains(pizza)) {
-            return "Pizza not found";
+        var optionalPizza = pizzaService.getPizza(pizzaName);
+        if (optionalPizza.isEmpty()) {
+            return "Pizza name of " + pizzaName + " is not in the default pizza db";
         }
-        if(cartWasNull) {
+        Pizza pizza = optionalPizza.get();
+        if (cart.getPizzas().contains(pizza)) {
+            return "Pizza is already in cart";
+        }
+        if (cartWasNull) {
             cartRepository.deleteByNetId(netId);
         }
         cart.getPizzas().add(pizza);
