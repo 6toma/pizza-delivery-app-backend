@@ -1,3 +1,5 @@
 rootProject.name = 'commons'
 
 includeBuild '../build-logic'
+include "authentication"
+project(':authentication').projectDir = new File('../authentication')
