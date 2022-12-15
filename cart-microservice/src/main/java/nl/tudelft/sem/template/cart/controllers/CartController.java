@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/cart")
 @RequiredArgsConstructor
-@Transactional
 public class CartController {
 
     private static final Logger logger = LoggerFactory.getLogger(CartController.class);
@@ -42,21 +41,22 @@ public class CartController {
 
 
     @PostMapping("/addPizza")
-    @Transactional
     String addPizzaToCart(@RequestBody String pizzaName) {
         NetId netId = authManager.getNetIdObject();
         Cart cart = cartRepository.findByNetId(netId);
+        boolean cartWasNull = false;
         if (cart == null){
             cart = new Cart(netId, new ArrayList<>());
+            cartWasNull = true;
         }
-        else {
-            cartRepository.deleteByNetId(netId);
-        }
+
         Pizza pizza = pizzaService.getPizza(pizzaName).get();
         if (cart.getPizzas().contains(pizza)) {
             return "Pizza not found";
         }
-
+        if(cartWasNull) {
+            cartRepository.deleteByNetId(netId);
+        }
         cart.getPizzas().add(pizza);
         cartRepository.save(cart);
 

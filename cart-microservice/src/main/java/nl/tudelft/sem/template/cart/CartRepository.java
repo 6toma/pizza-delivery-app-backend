@@ -20,6 +20,7 @@ public interface CartRepository extends JpaRepository<Cart, String> {
 
         Cart findByNetId(NetId netId);
 
+        @Transactional
         void deleteByNetId(NetId netId);
 
 
