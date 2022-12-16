@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.coupon.domain;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -11,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 
 @Entity
 @Table(name = "coupons")
@@ -18,6 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Getter
 @Setter
 public class Coupon {
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemDefaultZone();
+    }
+
+    @Autowired
+    private Clock clock;
 
     @Id
     @Column(name = "code", nullable = false, unique = true)
@@ -74,14 +84,9 @@ public class Coupon {
      * @return boolean
      */
     public boolean isValid() {
-        LocalDate currDate = LocalDate.now();
-        if (currDate.getYear() > this.expiryDate.getYear()) {
-            return false;
-        }
-        if (currDate.getMonthValue() > this.expiryDate.getMonth()) {
-            return false;
-        }
-        return currDate.getDayOfMonth() <= this.expiryDate.getDay();
+        LocalDate currDate = LocalDate.now(clock);
+        LocalDate ed = LocalDate.of(expiryDate.getYear(), expiryDate.getMonth(), expiryDate.getDay());
+        return currDate.isBefore(ed);
     }
 
     /**
