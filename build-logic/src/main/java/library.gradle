@@ -86,6 +86,8 @@ checkstyle {
 pmd {
     incrementalAnalysis = true
     sourceSets = [sourceSets.main]
+    ruleSetFiles = files("${projectDir}/../config/pmd/pmd.xml")
+    ruleSets = []
 }
 
 pitest {
