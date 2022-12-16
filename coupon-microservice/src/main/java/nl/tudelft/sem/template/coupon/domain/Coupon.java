@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 @Table(name = "coupons")
@@ -34,7 +35,7 @@ public class Coupon {
     private CouponType type;
 
     @Column(name = "discountPercentage")
-    private int percentage;
+    private Integer percentage;
 
     @Override
     public boolean equals(Object o) {
@@ -53,6 +54,17 @@ public class Coupon {
     @Override
     public int hashCode() {
         return Objects.hash(code, expiryDate, storeId, type);
+    }
+
+    @Override
+    public String toString() {
+        return "Coupon{" +
+                "code='" + code + '\'' +
+                ", expiryDate=" + expiryDate +
+                ", storeId=" + storeId +
+                ", type=" + type +
+                ", percentage=" + percentage +
+                '}';
     }
 
     /**

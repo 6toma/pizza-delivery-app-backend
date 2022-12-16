@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -75,10 +77,13 @@ public class CouponController {
     @RoleStoreOwnerOrRegionalManager
     @PostMapping("/addCoupon")
     public ResponseEntity<Coupon> addCoupon(@RequestBody Coupon coupon) throws DiscountCouponIncompleteException {
+        if (coupon.getCode() == null) {
+            throw new InvalidCouponCodeException("No coupon code provided!");
+        }
         if (!Coupon.validCodeFormat(coupon.getCode())) {
             throw new InvalidCouponCodeException(coupon.getCode());
         }
-        if (coupon.getType().equals(CouponType.DISCOUNT) && Integer.valueOf(coupon.getPercentage()) == null) {
+        if (coupon.getPercentage() == null && coupon.getType() == CouponType.DISCOUNT) {
             throw new DiscountCouponIncompleteException();
         }
         try {
