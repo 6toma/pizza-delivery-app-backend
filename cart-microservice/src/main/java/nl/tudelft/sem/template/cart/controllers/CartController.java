@@ -67,7 +67,8 @@ public class CartController {
         if (!pizzas.contains(pizza)) {
             return "Pizza is not in your cart";
         }
-        pizzas.remove(pizza);
+        cart.removePizza(pizza);
+        cartRepository.save(cart);
         return "Pizza was removed from your cart";
     }
 
@@ -80,22 +81,29 @@ public class CartController {
         if (!pizzas.contains(pizza)) {
             return "Pizza not found";
         }
-        pizza.addTopping(topping);
-        pizzas.add(pizza);
+        if(pizza.getToppings().contains(topping)) {
+            return "This topping is already on the pizza";
+        }
+        cart.addTopping(pizza, topping);
+        cartRepository.save(cart);
         return "Topping was added";
     }
 
 
     @PostMapping("/removeTopping")
-    String removeToppingFromPizza(@RequestBody Pizza pizza) {
+    String removeToppingFromPizza(@RequestBody Topping topping, @RequestBody Pizza pizza) {
         NetId netId = authManager.getNetIdObject();
         Cart cart = cartRepository.findByNetId(netId);
         List<Pizza> pizzas = cart.getPizzas();
         if (!pizzas.contains(pizza)) {
-            return "Pizza is not in your cart";
+            return "Pizza not found";
         }
-        pizzas.remove(pizza);
-        return "Pizza was removed from your cart";
+        if(!pizza.getToppings().contains(topping)) {
+            return "This topping is not on the pizza";
+        }
+        cart.removeTopping(pizza, topping);
+        cartRepository.save(cart);
+        return "Topping was added";
     }
 
 

@@ -27,4 +27,24 @@ public class Cart {
     public void addPizza(Pizza pizza) {
         pizzas.add(pizza);
     }
+
+    public void removePizza(Pizza pizza) {
+        pizzas.remove(pizza);
+    }
+
+    public boolean addTopping(Pizza pizza, Topping topping) {
+        int index = pizzas.indexOf(pizza);
+        boolean success = pizza.addTopping(topping);
+        if(!success) return false;
+        pizzas.set(index, pizza);
+        return true;
+    }
+
+    public boolean removeTopping(Pizza pizza, Topping topping) {
+        int index = pizzas.indexOf(pizza);
+        boolean success = pizza.removeTopping(topping);
+        if(!success) return false;
+        pizzas.set(index, pizza);
+        return true;
+    }
 }

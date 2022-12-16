@@ -47,7 +47,7 @@ public class Topping {
             return false;
         }
         Topping t = (Topping) o;
-        return id == (t.id);
+        return name.equals(t.name) && price == t.price;
     }
 
     @Override
