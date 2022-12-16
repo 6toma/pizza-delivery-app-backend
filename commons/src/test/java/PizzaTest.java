@@ -56,6 +56,7 @@ public class PizzaTest {
         temp.addTopping(t2);
         assertTrue(temp.getToppings().size() == 2);
         assertTrue(temp.getPrice() == 8.5);
+        assertFalse(temp.addTopping(t2));
     }
 
     @Test
@@ -66,5 +67,6 @@ public class PizzaTest {
         temp.removeTopping(t1);
         assertTrue(temp.getToppings().size() == 0);
         assertTrue(temp.getPrice() == 5.5);
+        assertFalse(temp.removeTopping(t1));
     }
 }

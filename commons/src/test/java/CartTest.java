@@ -35,6 +35,7 @@ public class CartTest {
         assertEquals(c1.getPizzas().get(0).getPrice(), 8.5);
         assertEquals(c1.getPizzas().get(0).getToppings().size(), 2);
         assertEquals(c1.getPizzas().size(), 1);
+        assertFalse(c1.addTopping(p1, t2));
     }
 
     public void removeToppingTest() {
@@ -43,5 +44,6 @@ public class CartTest {
         assertEquals(c1.getPizzas().get(0).getPrice(), 5.5);
         assertEquals(c1.getPizzas().get(0).getToppings().size(), 2);
         assertEquals(c1.getPizzas().size(), 1);
+        assertFalse(c1.removeTopping(p1, t1));
     }
 }
