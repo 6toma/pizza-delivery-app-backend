@@ -63,7 +63,7 @@ public class Pizza {
             return false;
         }
         Pizza p = (Pizza) o;
-        return id == (p.id);
+        return pizzaName.equals(p.pizzaName) && toppings.equals(p.toppings) && price == p.price;
     }
 
     @Override
