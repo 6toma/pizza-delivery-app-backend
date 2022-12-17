@@ -15,10 +15,7 @@ import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/cart")
@@ -104,6 +101,11 @@ public class CartController {
         cart.removeTopping(pizza, topping);
         cartRepository.save(cart);
         return "Topping was added";
+    }
+
+    @GetMapping("/getCart")
+    Cart getCart(@RequestBody NetId netId) {
+        return cartRepository.findByNetId(netId);
     }
 
 
