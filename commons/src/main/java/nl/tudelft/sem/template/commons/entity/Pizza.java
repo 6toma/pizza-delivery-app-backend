@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.commons.entity;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.commons.ToppingAttributeConverter;
 
@@ -18,6 +19,7 @@ public class Pizza {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false, unique = true)
+    @Getter
     private int id;
 
     @Column(name = "name", nullable = false, unique = true)
@@ -84,5 +86,23 @@ public class Pizza {
         for(Topping topping : toppings)
             price += topping.getPrice();
         return price;
+    }
+
+    public boolean addTopping(Topping t) {
+        if(toppings.contains(t)) {
+            return false;
+        }
+        toppings.add(t);
+        price += t.getPrice();
+        return true;
+    }
+
+    public boolean removeTopping(Topping t) {
+        if(!toppings.contains(t)) {
+            return false;
+        }
+        toppings.remove(t);
+        price = price - t.getPrice();
+        return true;
     }
 }

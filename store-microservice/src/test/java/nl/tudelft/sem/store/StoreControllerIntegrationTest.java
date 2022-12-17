@@ -1,7 +1,11 @@
 package nl.tudelft.sem.store;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +40,16 @@ public class StoreControllerIntegrationTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    public void test_get_all() throws Exception {
+        mockmvc.perform(get("/store/getStoreNames")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("@", hasSize(StoreDataLoader.DEFAULT_STORE_LIST.size())))
+            .andExpect(jsonPath("@",
+                containsInAnyOrder(StoreDataLoader.DEFAULT_STORE_LIST.stream().map(Store::getStoreName).toArray())));
+
     }
 
     @Test

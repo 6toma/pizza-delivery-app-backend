@@ -12,6 +12,7 @@ import nl.tudelft.sem.store.domain.StoreRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.web.server.ResponseStatusException;
 
 public class StoreControllerTest {
 
@@ -30,12 +31,12 @@ public class StoreControllerTest {
         long storeId = 1;
         when(storeRepository.findById(storeId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> notifyStoreOnId(storeId)).isInstanceOf(StoreNotFoundException.class)
-            .hasMessageContaining("store with id " + storeId);
+        assertThatThrownBy(() -> notifyStoreOnId(storeId)).isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("Store with id " + storeId);
     }
 
     private void notifyStoreOnId(long storeId) {
-        storeRestController.notifyStore(new NotifyStoreRequest(storeId));
+        storeRestController.notifyStore(storeId);
     }
 
     @Test

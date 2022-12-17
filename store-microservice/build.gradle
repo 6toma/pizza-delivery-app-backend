@@ -1,4 +1,8 @@
 plugins {
     id 'microservice'
 }
+dependencies {
+    implementation(project(":authentication"))
+    implementation(project(":commons"))
+}
 apply plugin: 'info.solidsoft.pitest'

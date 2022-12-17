@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import nl.tudelft.sem.store.domain.Store;
 import nl.tudelft.sem.store.domain.StoreAddress;
 import nl.tudelft.sem.store.domain.StoreRepository;
+import nl.tudelft.sem.template.authentication.NetId;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -20,9 +21,10 @@ public class StoreDataLoader implements ApplicationRunner {
     private StoreRepository storeRepository;
 
     public static List<Store> DEFAULT_STORE_LIST = List.of(
-            new Store(1, new StoreAddress("2628", "Street", 234)),
-            new Store(2, new StoreAddress("2132", "Another Street", 123))
-    );
+        Store.builder().storeId(1).storeName("Delft Dehoven").storeOwnerNetId(new NetId("Owner1"))
+            .location(new StoreAddress("2624AK", "Papsouwselaan", 123)).build(),
+        Store.builder().storeId(2).storeName("Delft Uni").storeOwnerNetId(new NetId("Owner2"))
+            .location(new StoreAddress("2611BK", "Binnenwatersloot ", 12)).build());
 
     @Override
     public void run(ApplicationArguments args) {
