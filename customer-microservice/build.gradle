@@ -1,4 +1,8 @@
 plugins {
-	id 'microservice'
+    id 'microservice'
 }
 apply plugin: 'info.solidsoft.pitest'
+
+dependencies {
+    testImplementation(testFixtures(project(":testing")))
+}

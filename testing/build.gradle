@@ -1,0 +1,39 @@
+plugins {
+    id 'microservice'
+    id 'java-test-fixtures'
+}
+apply plugin: 'info.solidsoft.pitest'
+
+dependencies {
+    testFixturesApi(project(":authentication"))
+
+    testFixturesCompileOnly('org.projectlombok:lombok:1.18.24')
+    testFixturesAnnotationProcessor('org.projectlombok:lombok:1.18.24')
+
+    // add lombok to tests too
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter'
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-security'
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+    testFixturesImplementation 'io.jsonwebtoken:jjwt:0.9.1'
+    testFixturesImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testFixturesImplementation('org.junit.jupiter:junit-jupiter:5.8.2')
+    testFixturesImplementation group: 'org.mockito', name: 'mockito-core', version: '3.12.4'
+    testFixturesImplementation('org.assertj:assertj-core:3.23.1')
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
