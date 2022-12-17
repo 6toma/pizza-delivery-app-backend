@@ -69,17 +69,12 @@ public class ToppingController {
      *
      * @param tm the new topping
      * @return ResponseEntity
-     * @throws Exception if the topping name does not exist
      */
     @PutMapping("/edit")
     @RoleRegionalManager
-    public ResponseEntity editTopping(@RequestBody ToppingModel tm) throws Exception {
+    public ResponseEntity editTopping(@RequestBody ToppingModel tm) {
 
-        try {
-            ts.editTopping(tm.getName(), tm.getPrice());
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+        ts.editTopping(tm.getName(), tm.getPrice());
 
         return ResponseEntity.ok("Topping edited");
     }

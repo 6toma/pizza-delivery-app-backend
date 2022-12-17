@@ -65,17 +65,12 @@ public class PizzaController {
      *
      * @param pizza the new pizza
      * @return ResponseEntity
-     * @throws Exception if the pizza name does not exist
      */
     @PutMapping("/edit")
     @RoleRegionalManager
-    public ResponseEntity editPizza(@RequestBody PizzaModel pizza) throws Exception {
+    public ResponseEntity editPizza(@RequestBody PizzaModel pizza) {
 
-        try {
-            pizzaService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+        pizzaService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
 
         return ResponseEntity.ok("Pizza edited");
     }

@@ -79,16 +79,10 @@ public class PizzaService {
      *
      * @param pizzaName the name of the pizza
      * @param toppings the topppings on the pizza
-     * @throws Exception when no pizza is found with the input name
      */
-    public void editPizza(String pizzaName, List<Topping> toppings, double price) throws Exception {
+    public void editPizza(String pizzaName, List<Topping> toppings, double price) {
 
-        try {
-            removePizza(pizzaName);
-            addPizza(pizzaName, toppings, price);
-        } catch (Exception e) {
-            throw new PizzaNameNotFoundException(pizzaName);
-        }
+        pizzaRepository.save(new Pizza(pizzaName, toppings, price));
     }
 
     /**
