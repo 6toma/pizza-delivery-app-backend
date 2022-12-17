@@ -80,8 +80,6 @@ public class RequestHelper {
         logger.info("Doing a " + httpMethod.toString() + " on " + url);
 
         try {
-            RequestEntity<T> requestEntity;
-//                        RequestEntity.delete(url).
             RequestEntity.HeadersBuilder<?> request =
                 RequestEntity.method(httpMethod, url).accept(MediaType.APPLICATION_JSON);
             var requestWithToken = request.header("Authorization", "Bearer " + authenticationManager.getJwtToken());
