@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.cart.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.NetId;
@@ -12,6 +14,8 @@ import nl.tudelft.sem.template.cart.ToppingRepository;
 import nl.tudelft.sem.template.commons.entity.Cart;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
+import nl.tudelft.sem.template.commons.models.PizzaToppingModel;
+import nl.tudelft.sem.template.commons.models.ToppingModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +39,11 @@ public class CartController {
     private final ToppingRepository toppingRepository;
 
 
+    /**
+     * Adds a pizza to your cart
+     * @param pizzaName the name of the pizza to be added
+     * @return a message based on whether adding the pizza was sucesful
+     */
     @PostMapping("/addPizza")
     String addPizzaToCart(@RequestBody String pizzaName) {
         NetId netId = authManager.getNetIdObject();
@@ -71,7 +80,14 @@ public class CartController {
 
 
     @PostMapping("/addTopping")
-    String addToppingToPizza(@RequestBody Topping topping, @RequestBody Pizza pizza) {
+    String addToppingToPizza(@RequestBody PizzaToppingModel pizzaToppingModel) {
+        Pizza pizza = pizzaToppingModel.getPizza();
+        String toppingName = pizzaToppingModel.getTopping();
+        Optional<Topping> t = toppingRepository.findByName(toppingName);
+        if(t.isEmpty()) {
+            return "That is not a valid topping";
+        }
+        Topping topping = t.get();
         NetId netId = authManager.getNetIdObject();
         Cart cart = cartRepository.findByNetId(netId);
         List<Pizza> pizzas = cart.getPizzas();
@@ -88,7 +104,14 @@ public class CartController {
 
 
     @PostMapping("/removeTopping")
-    String removeToppingFromPizza(@RequestBody Topping topping, @RequestBody Pizza pizza) {
+    String removeToppingFromPizza(@RequestBody PizzaToppingModel pizzaToppingModel) {
+        Pizza pizza = pizzaToppingModel.getPizza();
+        String toppingName = pizzaToppingModel.getTopping();
+        Optional<Topping> t = toppingRepository.findByName(toppingName);
+        if(t.isEmpty()) {
+            return "That is not a valid topping";
+        }
+        Topping topping = t.get();
         NetId netId = authManager.getNetIdObject();
         Cart cart = cartRepository.findByNetId(netId);
         List<Pizza> pizzas = cart.getPizzas();

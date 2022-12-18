@@ -1,11 +1,11 @@
 package nl.tudelft.sem.template.cart;
 
-import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A repository for toppings.
@@ -30,6 +30,11 @@ public interface ToppingRepository extends JpaRepository<Topping, String> {
      * Find topping by name.
      */
     void deleteById(String name);
+
+    /**
+     * Find topping by name.
+     */
+    Optional<Topping> findByName(String name);
 
     /**
      * Check if a topping already exists with this name.
