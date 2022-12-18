@@ -101,15 +101,41 @@ public class CouponController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/selectCoupon")
+    public ResponseEntity<Tuple> selectCoupon(@RequestBody List<Double> prices, @RequestBody List<String> codes) {
+        PriorityQueue<Tuple> pq = new PriorityQueue<>();
+        for (String code : codes) {
+            ResponseEntity<Coupon> c;
+            ResponseEntity<Boolean> used = null; //TODO: endpoint needs to be created in customer
+            try {
+                c = getCouponByCode(code);
+                //TODO: call endpoint for used
+            } catch (InvalidCouponCodeException e) {
+                continue;
+            }
+            if(c.getStatusCode().equals(HttpStatus.BAD_REQUEST) || used.getBody())
+                continue;
+            Coupon coupon = c.getBody();
+            if (coupon.getType() == CouponType.DISCOUNT) {
+                pq.add(new Tuple(code, CouponService.applyDiscount(coupon, prices)));
+            } else {
+                pq.add(new Tuple(code, CouponService.applyOnePlusOne(coupon, prices)));
+            }
+        }
+        if(pq.isEmpty())
+            return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(pq.peek());
+    }
+
     public String getRoles() {
         return SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList())
-                .get(0);
+            .getContext()
+            .getAuthentication()
+            .getAuthorities()
+            .stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList())
+            .get(0);
     }
 
     public boolean authorRole(String role) {

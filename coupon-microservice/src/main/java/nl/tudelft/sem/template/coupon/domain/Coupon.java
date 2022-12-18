@@ -57,8 +57,8 @@ public class Coupon {
         }
         Coupon coupon = (Coupon) o;
         return storeId == coupon.storeId && Objects.equals(code, coupon.code)
-                && Objects.equals(expiryDate, coupon.expiryDate)
-                && Objects.equals(type, coupon.type);
+            && Objects.equals(expiryDate, coupon.expiryDate)
+            && Objects.equals(type, coupon.type);
     }
 
     @Override
@@ -69,34 +69,13 @@ public class Coupon {
     @Override
     public String toString() {
         return "Coupon{" +
-                "code='" + code + '\'' +
-                ", expiryDate=" + expiryDate +
-                ", storeId=" + storeId +
-                ", type=" + type +
-                ", percentage=" + percentage +
-                '}';
+            "code='" + code + '\'' +
+            ", expiryDate=" + expiryDate +
+            ", storeId=" + storeId +
+            ", type=" + type +
+            ", percentage=" + percentage +
+            '}';
     }
 
-    /**
-     * Method isValid checks whether a coupon is eligible.
-     * A coupon is eligible if the expiry date has not yet been met.
-     *
-     * @return boolean
-     */
-    public boolean isValid() {
-        LocalDate currDate = LocalDate.now(clock);
-        LocalDate ed = LocalDate.of(expiryDate.getYear(), expiryDate.getMonth(), expiryDate.getDay());
-        return currDate.isBefore(ed);
-    }
 
-    /**
-     * Checks if the code format is valid.
-     * A code is valid if it is composed by 4 letters followed by 2 digits.
-     *
-     * @return boolean
-     */
-    public static boolean validCodeFormat(String code) {
-        return code.length() == 6 && code.substring(0, 4).chars().allMatch(Character::isLetter)
-                && code.substring(4).chars().allMatch(Character::isDigit);
-    }
 }
