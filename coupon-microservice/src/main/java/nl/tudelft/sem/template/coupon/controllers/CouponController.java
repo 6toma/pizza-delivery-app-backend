@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.coupon.controllers;
 
+import java.util.PriorityQueue;
 import lombok.Data;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwnerOrRegionalManager;
@@ -8,6 +9,9 @@ import nl.tudelft.sem.template.coupon.domain.CouponRepository;
 import nl.tudelft.sem.template.coupon.domain.CouponType;
 import nl.tudelft.sem.template.coupon.domain.DiscountCouponIncompleteException;
 import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
+import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
+import nl.tudelft.sem.template.coupon.services.CouponService;
+import nl.tudelft.sem.template.coupon.services.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -49,7 +51,7 @@ public class CouponController {
      */
     @GetMapping("/coupon")
     public ResponseEntity<Coupon> getCouponByCode(@RequestBody String code) {
-        if (!Coupon.validCodeFormat(code)) {
+        if (!CouponService.validCodeFormat(code)) {
             throw new InvalidCouponCodeException(code);
         }
         if (!repo.existsById(code)) {
@@ -76,17 +78,20 @@ public class CouponController {
      */
     @RoleStoreOwnerOrRegionalManager
     @PostMapping("/addCoupon")
-    public ResponseEntity<Coupon> addCoupon(@RequestBody Coupon coupon) throws DiscountCouponIncompleteException {
+    public ResponseEntity<Coupon> addCoupon(@RequestBody long storeId, @RequestBody Coupon coupon) throws DiscountCouponIncompleteException {
         if (coupon.getCode() == null) {
             throw new InvalidCouponCodeException("No coupon code provided!");
         }
-        if (!Coupon.validCodeFormat(coupon.getCode())) {
+        if (!CouponService.validCodeFormat(coupon.getCode())) {
             throw new InvalidCouponCodeException(coupon.getCode());
         }
         if (coupon.getPercentage() == null && coupon.getType() == CouponType.DISCOUNT) {
             throw new DiscountCouponIncompleteException();
         }
+        if(storeId == -1 && !authorRole("ROLE_REGIONAL_MANAGER"))
+            throw new NotRegionalManagerException();
         try {
+            String netId = authManager.getNetId();
             boolean isRegionalManager = authorRole("ROLE_REGIONAL_MANAGER");
             if (isRegionalManager) {
                 coupon.setStoreId(0L);
