@@ -1,8 +1,7 @@
-package nl.tudelft.sem.template.example.config;
+package nl.tudelft.sem.template.cart;
 
 import nl.tudelft.sem.template.authentication.JwtAuthenticationEntryPoint;
 import nl.tudelft.sem.template.authentication.JwtRequestFilter;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -13,7 +12,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * The type Web security config.
  */
 @Configuration
-@ComponentScan("nl.tudelft.sem.template.authentication")
 public class RequestAuthenticationConfig extends WebSecurityConfigurerAdapter {
     private final transient JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final transient JwtRequestFilter jwtRequestFilter;
@@ -27,12 +25,12 @@ public class RequestAuthenticationConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
-            .authorizeRequests()
-            .anyRequest().authenticated()
-            .and()
-            .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-            .and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .authorizeRequests()
+                .anyRequest().authenticated()
+                .and()
+                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 

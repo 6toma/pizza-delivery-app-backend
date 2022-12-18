@@ -1,7 +1,7 @@
-package nl.tudelft.sem.template.cart.config;
+package nl.tudelft.sem.template.checkout;
 
-import nl.tudelft.sem.template.cart.authentication.JwtAuthenticationEntryPoint;
-import nl.tudelft.sem.template.cart.authentication.JwtRequestFilter;
+import nl.tudelft.sem.template.authentication.JwtAuthenticationEntryPoint;
+import nl.tudelft.sem.template.authentication.JwtRequestFilter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;

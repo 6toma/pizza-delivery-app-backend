@@ -1,8 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import lombok.RequiredArgsConstructor;
-import nl.tudelft.sem.template.example.authentication.AuthManager;
-import org.springframework.beans.factory.annotation.Autowired;
+import nl.tudelft.sem.template.authentication.AuthManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
