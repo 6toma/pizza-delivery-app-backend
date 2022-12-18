@@ -7,7 +7,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -26,7 +25,6 @@ public class Store {
 
     @Id
     @Column(name = "store_id", nullable = false, unique = true)
-    @EqualsAndHashCode.Include
     long storeId;
 
     @Column(name = "store_name", nullable = false, unique = true)
@@ -45,6 +43,7 @@ public class Store {
         System.out.println("Preparing pizza");
     }
 
+    // just to make sure the storeId is in equals
     @Override
     public boolean equals(Object o) {
         if (this == o) {

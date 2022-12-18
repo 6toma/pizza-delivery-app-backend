@@ -24,7 +24,10 @@ public class StoreDataLoader implements ApplicationRunner {
         Store.builder().storeId(1).storeName("Delft Dehoven").storeOwnerNetId(new NetId("Owner1"))
             .location(new StoreAddress("2624AK", "Papsouwselaan", 123)).build(),
         Store.builder().storeId(2).storeName("Delft Uni").storeOwnerNetId(new NetId("Owner2"))
-            .location(new StoreAddress("2611BK", "Binnenwatersloot ", 12)).build());
+            .location(new StoreAddress("2611BK", "Binnenwatersloot ", 12)).build(),
+        Store.builder().storeId(3).storeName("Rotterdam").storeOwnerNetId(new NetId("Owner3"))
+            .location(new StoreAddress("1641BK", "Rotterdam Street", 52)).build()
+    );
 
     @Override
     public void run(ApplicationArguments args) {

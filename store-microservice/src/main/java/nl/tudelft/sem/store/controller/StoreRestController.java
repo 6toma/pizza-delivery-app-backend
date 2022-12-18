@@ -26,16 +26,35 @@ public class StoreRestController {
     private StoreRepository storeRepository;
 
 
+    /**
+     * <b>GET</b> request that returns all store names in the default store db.
+     *
+     * @return a list of available store names
+     */
     @GetMapping("/getStoreNames")
     public List<String> getStoreNames() {
         return storeRepository.getAllStoreNames();
     }
 
-    @GetMapping("/getStoreByName")
+    /**
+     * <b>POST</b> request that checks if the store name given is in the database.
+     *
+     * @param storeName the name of the store you want to check
+     * @return true/false if the storeName is a valid store name
+     */
+    @PostMapping("/getStoreByName")
     public boolean storeNameExists(@RequestBody String storeName) {
         return storeRepository.existsByStoreName(storeName);
     }
 
+    /**
+     * <b>POST</b> request that checks if a combination between <code>storeId</code> and <code>storeOwnerNetId</code> is
+     * valid. It should be used in coupon microservice to check if a store owner is legitimate.
+     * <p>In case the storeId does not exist <code>400</code> response is sent.</p>
+     *
+     * @param storeOwnerValidModel request model that has <code>storeId</code> and <code>storeOwnerNetId</code>
+     * @return true/false if the store owner is legitimate or not
+     */
     @PostMapping("/checkStoreowner")
     public boolean checkStoreOwnerMatchesStoreId(@RequestBody StoreOwnerValidModel storeOwnerValidModel) {
         long storeId = storeOwnerValidModel.getStoreId();
@@ -46,7 +65,13 @@ public class StoreRestController {
             new NetId(storeOwnerValidModel.getNetId()));
     }
 
-    @GetMapping("/getStoreIdFromName")
+    /**
+     * Gets the <code>storeId</code> given a <code>storeName</code>.
+     *
+     * @param storeName name of the store
+     * @return the <code>storeId</code> if <code>storeName</code>is valid or <code>-1</code> if it is not.
+     */
+    @PostMapping("/getStoreIdFromName")
     public long storeIdFromName(@RequestBody String storeName) {
         try {
             return storeRepository.getStoreIdFromStoreName(storeName);

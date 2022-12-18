@@ -13,4 +13,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NotifyStoreRequest {
     private long storeId;
+    // TODO : maybe include order information here too
 }

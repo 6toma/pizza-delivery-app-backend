@@ -3,8 +3,10 @@ package nl.tudelft.sem.store.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nl.tudelft.sem.template.authentication.NetId;
 
+/**
+ * DTO Object used to check if a store owner is valid.
+ */
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
