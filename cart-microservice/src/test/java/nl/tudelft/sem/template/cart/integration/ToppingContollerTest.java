@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.example.controllers;
+package nl.tudelft.sem.template.cart.integration;
 
 import nl.tudelft.sem.template.cart.ToppingRepository;
 import nl.tudelft.sem.template.cart.ToppingService;

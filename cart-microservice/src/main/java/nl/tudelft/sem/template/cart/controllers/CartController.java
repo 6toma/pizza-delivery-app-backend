@@ -1,24 +1,36 @@
 package nl.tudelft.sem.template.cart.controllers;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.NetId;
-import nl.tudelft.sem.template.cart.*;
+import nl.tudelft.sem.template.cart.CartRepository;
+import nl.tudelft.sem.template.cart.CustomPizzaRepository;
+import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
+import nl.tudelft.sem.template.cart.PizzaService;
+import nl.tudelft.sem.template.cart.ToppingRepository;
 import nl.tudelft.sem.template.commons.entity.Cart;
 import nl.tudelft.sem.template.commons.entity.CustomPizza;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
+import nl.tudelft.sem.template.commons.models.CartPizza;
 import nl.tudelft.sem.template.commons.models.PizzaToppingModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.HashMap;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/cart")
@@ -44,53 +56,85 @@ public class CartController {
 
     private CustomPizza getDefaultPizza(int defaultPizzaId) {
         DefaultPizza pizza = requireNotEmpty(defaultPizzaRepository.findById(defaultPizzaId),
-                "Custom pizza not found with id " + defaultPizzaId);
+            "Custom pizza not found with id " + defaultPizzaId);
         return CustomPizza.CustomPizzaCreator(pizza);
     }
 
     private CustomPizza getCustomPizza(int customPizzaId) {
         return requireNotEmpty(customPizzaRepository.findById(customPizzaId),
-                "Custom pizza not found with id " + customPizzaId);
+            "Custom pizza not found with id " + customPizzaId);
     }
 
     private Topping getTopping(int toppingId) {
-        return requireNotEmpty(toppingRepository.findById(toppingId),
-                "Topping not found with id " + toppingId);
+        return requireNotEmpty(toppingRepository.findById(toppingId), "Topping not found with id " + toppingId);
 
     }
 
     private <T> T requireNotEmpty(Optional<T> optional, String message) {
         if (optional.isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, message);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
         return optional.get();
     }
 
-    @PostMapping("/addPizza/{id}")
-    String addPizzaToCart(@PathVariable("id") int defaultPizzaId) {
-        CustomPizza customPizza = getCustomPizza(defaultPizzaId);
+    private void assertInCart(Cart cart, CustomPizza pizza) {
+        if (!cart.getPizzasMap().containsKey(pizza)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pizza is not in cart" + pizza);
+        }
+    }
+
+
+    private Cart getCart() {
         Cart cart = getCartFromNetId();
         if (cart == null) {
-            HashMap<CustomPizza, Integer> map = new HashMap<>();
-            cart = new Cart(authManager.getNetIdObject(), map);
-            cartRepository.save(cart);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You don't currently have a cart");
         }
+        return cart;
+    }
+
+    @PostMapping("/addPizza/{id}")
+    @Transactional
+    int addPizzaToCart(@PathVariable("id") int defaultPizzaId) {
+        CustomPizza customPizza = getDefaultPizza(defaultPizzaId);
+        Cart cart = getCartFromNetId();
+        if (cart == null) {
+            var id = authManager.getNetIdObject();
+            cart = new Cart(id, new HashMap<>());
+        }
+        customPizza = customPizzaRepository.save(customPizza);
         cart.addPizza(customPizza);
         cartRepository.save(cart);
-        return "Pizza was added to the cart";
+        return customPizza.getId();
+    }
+
+    @PostMapping("/incrementPizza/{id}")
+    ResponseEntity<String> incrementPizza(@PathVariable("id") int customPizzaId) {
+        CustomPizza customPizza = getCustomPizza(customPizzaId);
+        Cart cart = getCart();
+        assertInCart(cart, customPizza);
+        cart.addPizza(customPizza);
+        cartRepository.save(cart);
+        return ResponseEntity.ok("Changed amount to " + cart.getPizzasMap().get(customPizza));
+    }
+
+    @PostMapping("/decrementPizza/{id}")
+    ResponseEntity<String> decrementPizza(@PathVariable("id") int customPizzaId) {
+        CustomPizza customPizza = getCustomPizza(customPizzaId);
+        Cart cart = getCart();
+        assertInCart(cart, customPizza);
+        if (!cart.removePizza(customPizza)) {
+            customPizzaRepository.delete(customPizza);
+        }
+        cartRepository.save(cart);
+        return ResponseEntity.ok("Changed amount to " + cart.getPizzasMap().get(customPizza));
     }
 
     @PostMapping("/removePizza/{id}")
     ResponseEntity<String> removePizzaFromCart(@PathVariable("id") int customPizzaId) {
-        Cart cart = getCartFromNetId();
-        if (cart == null) {
-            return ResponseEntity.badRequest().body("You don't currently have a cart");
-        }
+        Cart cart = getCart();
         CustomPizza customPizza = getCustomPizza(customPizzaId);
-        if (!cart.removePizza(customPizza)) {
-            return ResponseEntity.badRequest().body("Can't remove pizza from cart");
-        }
+        assertInCart(cart, customPizza);
+        cart.removePizzaAll(customPizza);
         customPizzaRepository.delete(customPizza);
         return ResponseEntity.ok().build();
     }
@@ -100,7 +144,8 @@ public class CartController {
     ResponseEntity<String> addToppingToPizza(@RequestBody PizzaToppingModel pizzaToppingModel) {
         var pizza = getCustomPizza(pizzaToppingModel.getPizzaId());
         var topping = getTopping(pizzaToppingModel.getToppingId());
-
+        Cart cart = getCart();
+        assertInCart(cart, pizza);
         if (pizza.addTopping(topping)) {
             customPizzaRepository.save(pizza);
         } else {
@@ -114,34 +159,30 @@ public class CartController {
     ResponseEntity<String> removeToppingFromPizza(@RequestBody PizzaToppingModel pizzaToppingModel) {
         var pizza = getCustomPizza(pizzaToppingModel.getPizzaId());
         var topping = getTopping(pizzaToppingModel.getToppingId());
+        Cart cart = getCart();
+        assertInCart(cart, pizza);
         if (pizza.removeTopping(topping)) {
             customPizzaRepository.save(pizza);
+        } else {
+            return ResponseEntity.badRequest().body("This topping is not on the pizza");
         }
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/getCart")
-    Cart getCart(@RequestBody NetId netId) {
-        return cartRepository.findByNetId(netId);
-    }
-
-
     /**
-     * Submits an order to a store, removing the items from the cart.
+     * Gets the cart and clears the cart contents at the same time.
      *
-     * @param storeId store to send the order to
-     * @return a string that indicates if the order was placed or weather an error occured.
+     * @param netId netId of the user
+     * @return the cart
      */
-    /*@PostMapping("/submitOrder")
-    String selectPickupStore(@RequestBody int storeId) {
-        // TODO check if cart is empty
-        OrderModel orderModel = new OrderModel(storeId, pizzaInCart);
-        ResponseEntity<String> outcome = requestHelper.postRequest(8082, "/orders/add", orderModel, String.class);
-
-
-        if (Objects.equals(outcome.getBody(), "Order added")) {
-            return String.format("order of %d pizzas was placed.", pizzaInCart.size());
+    @GetMapping("/getCart/{netId}")
+    List<CartPizza> getCart(@PathVariable("netId") NetId netId) {
+        Cart cart = cartRepository.findByNetId(netId);
+        if (cart == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This user doesn't have a cart");
         }
-        return "Something went wrong!";
-    }*/
+        cartRepository.deleteByNetId(netId);
+        return cart.getPizzasMap().entrySet().stream().map(entry -> new CartPizza(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList());
+    }
 }

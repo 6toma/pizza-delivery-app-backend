@@ -1,3 +1,6 @@
+import java.util.Arrays;
+import nl.tudelft.sem.template.commons.entity.CustomPizza;
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import org.junit.jupiter.api.Test;
@@ -11,9 +14,11 @@ public class PizzaTest {
 
     private Topping t1 = new Topping("pineapple", 1.5);
     private Topping t2 = new Topping("salami", 1.5);
-    private Pizza p1 = new Pizza("hawaii", List.of(t1), 7);
-    private Pizza p2 = new Pizza("hawaii", List.of(t1), 7);
-    private Pizza p3 = new Pizza("american", List.of(t1, t2), 8.5);
+    private Topping t3 = new Topping("tomatoes", 8.5);
+
+    private DefaultPizza p1 = new DefaultPizza("hawaii", List.of(t1), 7);
+    private DefaultPizza p2 = new DefaultPizza("hawaii", List.of(t1), 7);
+    private DefaultPizza p3 = new DefaultPizza("american", List.of(t1, t2), 8.5);
 
 
     @Test
@@ -44,18 +49,18 @@ public class PizzaTest {
 
     @Test
     public void testEquals() {
-        assertTrue(p1.equals(p2));
-        assertTrue(!p1.equals(p3));
+        assertEquals(p1, p2);
+        assertNotEquals(p1, p3);
     }
 
     @Test
     public void testAddTopping() {
         List<Topping> list = new ArrayList<>();
         list.add(t1);
-        Pizza temp = new Pizza("hawaii", list, 7);
+        DefaultPizza temp = new DefaultPizza("hawaii", list, 7);
         temp.addTopping(t2);
-        assertTrue(temp.getToppings().size() == 2);
-        assertTrue(temp.getPrice() == 8.5);
+        assertEquals(2, temp.getToppings().size());
+        assertEquals(8.5, temp.getPrice());
         assertFalse(temp.addTopping(t2));
     }
 
@@ -63,10 +68,15 @@ public class PizzaTest {
     public void testRemoveTopping() {
         List<Topping> list = new ArrayList<>();
         list.add(t1);
-        Pizza temp = new Pizza("hawaii", list, 7);
+        DefaultPizza temp = new DefaultPizza("hawaii", list, 7);
         temp.removeTopping(t1);
-        assertTrue(temp.getToppings().size() == 0);
-        assertTrue(temp.getPrice() == 5.5);
+        assertEquals(0, temp.getToppings().size());
+        assertEquals(5.5, temp.getPrice());
         assertFalse(temp.removeTopping(t1));
     }
+
+
+
+
+
 }

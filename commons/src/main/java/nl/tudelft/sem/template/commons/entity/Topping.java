@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.commons.entity;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -13,9 +14,10 @@ public class Topping {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false, unique = true)
+    @Getter
     private int id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "price", nullable = false, unique = false)
@@ -52,6 +54,6 @@ public class Topping {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(name, price);
     }
 }

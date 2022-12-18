@@ -1,21 +1,25 @@
 package nl.tudelft.sem.template.commons.entity;
 
+import java.util.HashSet;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nl.tudelft.sem.template.commons.ToppingAttributeConverter;
-
-import javax.persistence.*;
-import java.util.List;
-import java.util.Objects;
+import lombok.ToString;
 
 /**
  *
  */
 @MappedSuperclass
 @NoArgsConstructor
+@ToString
 public class Pizza {
 
     @Id
@@ -34,29 +38,28 @@ public class Pizza {
     @Getter
     private double price;
 
-    public Pizza(double price, List<Topping> toppings){
+    public Pizza(double price, List<Topping> toppings) {
         this.price = price;
         this.toppings = toppings;
     }
 
     /**
-     *
      * @return
      */
     public int calculatePrice() {
         int price = 0;
-        for(Topping topping : toppings)
+        for (Topping topping : toppings) {
             price += topping.getPrice();
+        }
         return price;
     }
 
     /**
-     *
      * @param t
      * @return
      */
     public boolean addTopping(Topping t) {
-        if(toppings.contains(t)) {
+        if (toppings.contains(t)) {
             return false;
         }
         toppings.add(t);
@@ -64,15 +67,26 @@ public class Pizza {
     }
 
     /**
-     *
      * @param t
      * @return
      */
     public boolean removeTopping(Topping t) {
-        if(!toppings.contains(t)) {
+        if (!toppings.contains(t)) {
             return false;
         }
         toppings.remove(t);
         return true;
+    }
+
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o instanceof Pizza) {
+            Pizza that = (Pizza) o;
+            return that.getPrice() == this.getPrice() &&
+                new HashSet<>(toppings).equals(new HashSet<>(that.getToppings()));
+        }
+        return false;
     }
 }

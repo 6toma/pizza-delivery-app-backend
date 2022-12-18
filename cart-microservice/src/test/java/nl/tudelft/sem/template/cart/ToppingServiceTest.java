@@ -1,3 +1,5 @@
+package nl.tudelft.sem.template.cart;
+
 import nl.tudelft.sem.template.cart.ToppingRepository;
 import nl.tudelft.sem.template.cart.ToppingService;
 import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;

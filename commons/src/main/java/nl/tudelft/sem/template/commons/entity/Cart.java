@@ -1,8 +1,11 @@
 package nl.tudelft.sem.template.commons.entity;
 
 import java.util.Map;
-import javax.persistence.*;
-
+import javax.persistence.ElementCollection;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.authentication.NetId;
@@ -14,7 +17,9 @@ import nl.tudelft.sem.template.authentication.NetId;
 public class Cart {
     @EmbeddedId
     private NetId netId;
+
     @ElementCollection
+    @MapKeyColumn(name = "id")
     private Map<CustomPizza, Integer> pizzasMap;
 
     public Cart(NetId netId, Map<CustomPizza, Integer> pizzas) {
@@ -23,33 +28,45 @@ public class Cart {
     }
 
     public void addPizza(CustomPizza pizza) {
-        if(pizzasMap.get(pizza) == null){
+        if (pizzasMap.get(pizza) == null) {
             pizzasMap.put(pizza, 1);
             return;
         }
         pizzasMap.put(pizza, pizzasMap.get(pizza) + 1);
     }
 
+    /**
+     * @param customPizza
+     * @return Returns whether the pizza still exists in the cart after decrementing
+     */
     public boolean removePizza(CustomPizza customPizza) {
-        if(pizzasMap.get(customPizza) == null){
+        if (pizzasMap.get(customPizza) == null) {
             return false;
         }
-        if(pizzasMap.get(customPizza) == 1) {
+        if (pizzasMap.get(customPizza) == 1) {
             pizzasMap.remove(customPizza);
+            return false;
         } else {
             pizzasMap.put(customPizza, pizzasMap.get(customPizza) - 1);
         }
         return true;
     }
 
-    public boolean addTopping(CustomPizza pizza, Topping topping) {
-        if(pizzasMap.get(pizza) == null) {
+    public boolean removePizzaAll(CustomPizza customPizza) {
+        if (!pizzasMap.containsKey(customPizza)) {
             return false;
         }
-        if(pizzasMap.get(pizza) == 1) {
-            pizzasMap.remove(pizza);
+        pizzasMap.remove(customPizza);
+        return true;
+    }
+
+    public boolean addTopping(CustomPizza pizza, Topping topping) {
+        if (pizzasMap.get(pizza) == null) {
+            return false;
         }
-        else {
+        if (pizzasMap.get(pizza) == 1) {
+            pizzasMap.remove(pizza);
+        } else {
             pizzasMap.put(pizza, pizzasMap.get(pizza) - 1);
         }
         pizza.addTopping(topping);
@@ -58,13 +75,12 @@ public class Cart {
     }
 
     public boolean removeTopping(CustomPizza pizza, Topping topping) {
-        if(pizzasMap.get(pizza) == null) {
+        if (pizzasMap.get(pizza) == null) {
             return false;
         }
-        if(pizzasMap.get(pizza) == 1) {
+        if (pizzasMap.get(pizza) == 1) {
             pizzasMap.remove(pizza);
-        }
-        else {
+        } else {
             pizzasMap.put(pizza, pizzasMap.get(pizza) - 1);
         }
         pizza.removeTopping(topping);

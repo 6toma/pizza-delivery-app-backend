@@ -1,3 +1,5 @@
+package nl.tudelft.sem.template.cart;
+
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
 import nl.tudelft.sem.template.cart.PizzaService;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;

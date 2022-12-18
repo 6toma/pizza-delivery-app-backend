@@ -5,6 +5,7 @@ plugins {
 apply plugin: 'info.solidsoft.pitest'
 
 dependencies {
+    implementation(project(":authentication"))
     testFixturesApi(project(":authentication"))
     testFixturesCompileOnly('org.projectlombok:lombok:1.18.24')
     testFixturesAnnotationProcessor('org.projectlombok:lombok:1.18.24')
