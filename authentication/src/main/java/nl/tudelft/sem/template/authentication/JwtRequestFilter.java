@@ -1,16 +1,15 @@
 package nl.tudelft.sem.template.authentication;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.NonNullApi;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,9 +34,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final transient JwtTokenVerifier jwtTokenVerifier;
 
+    private AuthManager authManager;
+
     @Autowired
-    public JwtRequestFilter(JwtTokenVerifier jwtTokenVerifier) {
+    public JwtRequestFilter(JwtTokenVerifier jwtTokenVerifier, AuthManager authManager) {
         this.jwtTokenVerifier = jwtTokenVerifier;
+        this.authManager = authManager;
     }
 
     /**
@@ -79,6 +81,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         // After setting the Authentication in the context, we specify
                         // that the current user is authenticated. So it passes the
                         // Spring Security Configurations successfully.
+                        authManager.setToken(token);
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     }
 

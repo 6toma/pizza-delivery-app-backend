@@ -29,6 +29,7 @@ dependencies {
     testFixturesImplementation('org.assertj:assertj-core:3.23.1')
 
     implementation('org.springframework.boot:spring-boot-starter-validation')
+    implementation(project(":authentication"))
 }
 
 bootJar {

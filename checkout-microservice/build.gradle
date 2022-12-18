@@ -6,4 +6,9 @@ apply plugin: 'info.solidsoft.pitest'
 dependencies {
 	implementation(project(":commons"))
 	testImplementation(testFixtures(project(":commons")))
+	implementation(project(":authentication"))
+}
+
+jar {
+	enabled = true
 }
