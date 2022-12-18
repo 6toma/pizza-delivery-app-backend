@@ -1,25 +1,24 @@
 package nl.tudelft.sem.template.cart.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.NetId;
-import nl.tudelft.sem.template.cart.CartRepository;
-import nl.tudelft.sem.template.cart.PizzaRepository;
-import nl.tudelft.sem.template.cart.PizzaService;
-import nl.tudelft.sem.template.cart.ToppingRepository;
+import nl.tudelft.sem.template.cart.*;
 import nl.tudelft.sem.template.commons.entity.Cart;
-import nl.tudelft.sem.template.commons.entity.Pizza;
+import nl.tudelft.sem.template.commons.entity.CustomPizza;
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.models.PizzaToppingModel;
-import nl.tudelft.sem.template.commons.models.ToppingModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.HashMap;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/cart")
@@ -27,103 +26,98 @@ import org.springframework.web.bind.annotation.*;
 public class CartController {
 
     private static final Logger logger = LoggerFactory.getLogger(CartController.class);
-    private static final String CHECKOUT_URL = "http://localhost:8082/orders/add";
-
 
     // dependencies
     private final RequestHelper requestHelper;
-    private final PizzaRepository pizzaRepository;
+    private final DefaultPizzaRepository defaultPizzaRepository;
+    private final CustomPizzaRepository customPizzaRepository;
     private final PizzaService pizzaService;
     private final CartRepository cartRepository;
     private final AuthManager authManager;
     private final ToppingRepository toppingRepository;
 
 
-    /**
-     * Adds a pizza to your cart
-     * @param pizzaName the name of the pizza to be added
-     * @return a message based on whether adding the pizza was sucesful
-     */
-    @PostMapping("/addPizza")
-    String addPizzaToCart(@RequestBody String pizzaName) {
+    private Cart getCartFromNetId() {
         NetId netId = authManager.getNetIdObject();
-        Cart cart = cartRepository.findByNetId(netId);
+        return cartRepository.findByNetId(netId);
+    }
+
+    private CustomPizza getDefaultPizza(int defaultPizzaId) {
+        DefaultPizza pizza = requireNotEmpty(defaultPizzaRepository.findById(defaultPizzaId),
+                "Custom pizza not found with id " + defaultPizzaId);
+        return CustomPizza.CustomPizzaCreator(pizza);
+    }
+
+    private CustomPizza getCustomPizza(int customPizzaId) {
+        return requireNotEmpty(customPizzaRepository.findById(customPizzaId),
+                "Custom pizza not found with id " + customPizzaId);
+    }
+
+    private Topping getTopping(int toppingId) {
+        return requireNotEmpty(toppingRepository.findById(toppingId),
+                "Topping not found with id " + toppingId);
+
+    }
+
+    private <T> T requireNotEmpty(Optional<T> optional, String message) {
+        if (optional.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, message);
+        }
+        return optional.get();
+    }
+
+    @PostMapping("/addPizza/{id}")
+    String addPizzaToCart(@PathVariable("id") int defaultPizzaId) {
+        CustomPizza customPizza = getCustomPizza(defaultPizzaId);
+        Cart cart = getCartFromNetId();
         if (cart == null) {
-            cart = new Cart(netId, new ArrayList<>());
+            HashMap<CustomPizza, Integer> map = new HashMap<>();
+            cart = new Cart(authManager.getNetIdObject(), map);
             cartRepository.save(cart);
         }
-        var optionalPizza = pizzaService.getPizza(pizzaName);
-        if (optionalPizza.isEmpty()) {
-            return "Pizza name of " + pizzaName + " is not in the default pizza db";
-        }
-        Pizza pizza = optionalPizza.get();
-        if (cart.getPizzas().contains(pizza)) {
-            return "Pizza is already in cart";
-        }
-        cart.addPizza(pizza);
+        cart.addPizza(customPizza);
         cartRepository.save(cart);
         return "Pizza was added to the cart";
     }
 
-    @PostMapping("/removePizza")
-    String removePizzaFromCart(@RequestBody Pizza pizza) {
-        NetId netId = authManager.getNetIdObject();
-        Cart cart = cartRepository.findByNetId(netId);
-        List<Pizza> pizzas = cart.getPizzas();
-        if (!pizzas.contains(pizza)) {
-            return "Pizza is not in your cart";
+    @PostMapping("/removePizza/{id}")
+    ResponseEntity<String> removePizzaFromCart(@PathVariable("id") int customPizzaId) {
+        Cart cart = getCartFromNetId();
+        if (cart == null) {
+            return ResponseEntity.badRequest().body("You don't currently have a cart");
         }
-        cart.removePizza(pizza);
-        cartRepository.save(cart);
-        return "Pizza was removed from your cart";
+        CustomPizza customPizza = getCustomPizza(customPizzaId);
+        if (!cart.removePizza(customPizza)) {
+            return ResponseEntity.badRequest().body("Can't remove pizza from cart");
+        }
+        customPizzaRepository.delete(customPizza);
+        return ResponseEntity.ok().build();
     }
 
 
     @PostMapping("/addTopping")
-    String addToppingToPizza(@RequestBody PizzaToppingModel pizzaToppingModel) {
-        Pizza pizza = pizzaToppingModel.getPizza();
-        String toppingName = pizzaToppingModel.getTopping();
-        Optional<Topping> t = toppingRepository.findByName(toppingName);
-        if(t.isEmpty()) {
-            return "That is not a valid topping";
+    ResponseEntity<String> addToppingToPizza(@RequestBody PizzaToppingModel pizzaToppingModel) {
+        var pizza = getCustomPizza(pizzaToppingModel.getPizzaId());
+        var topping = getTopping(pizzaToppingModel.getToppingId());
+
+        if (pizza.addTopping(topping)) {
+            customPizzaRepository.save(pizza);
+        } else {
+            return ResponseEntity.badRequest().body("You have already added this topping");
         }
-        Topping topping = t.get();
-        NetId netId = authManager.getNetIdObject();
-        Cart cart = cartRepository.findByNetId(netId);
-        List<Pizza> pizzas = cart.getPizzas();
-        if (!pizzas.contains(pizza)) {
-            return "Pizza not found";
-        }
-        if(pizza.getToppings().contains(topping)) {
-            return "This topping is already on the pizza";
-        }
-        cart.addTopping(pizza, topping);
-        cartRepository.save(cart);
-        return "Topping was added";
+        return ResponseEntity.ok("Topping was added");
     }
 
 
     @PostMapping("/removeTopping")
-    String removeToppingFromPizza(@RequestBody PizzaToppingModel pizzaToppingModel) {
-        Pizza pizza = pizzaToppingModel.getPizza();
-        String toppingName = pizzaToppingModel.getTopping();
-        Optional<Topping> t = toppingRepository.findByName(toppingName);
-        if(t.isEmpty()) {
-            return "That is not a valid topping";
+    ResponseEntity<String> removeToppingFromPizza(@RequestBody PizzaToppingModel pizzaToppingModel) {
+        var pizza = getCustomPizza(pizzaToppingModel.getPizzaId());
+        var topping = getTopping(pizzaToppingModel.getToppingId());
+        if (pizza.removeTopping(topping)) {
+            customPizzaRepository.save(pizza);
         }
-        Topping topping = t.get();
-        NetId netId = authManager.getNetIdObject();
-        Cart cart = cartRepository.findByNetId(netId);
-        List<Pizza> pizzas = cart.getPizzas();
-        if (!pizzas.contains(pizza)) {
-            return "Pizza not found";
-        }
-        if(!pizza.getToppings().contains(topping)) {
-            return "This topping is not on the pizza";
-        }
-        cart.removeTopping(pizza, topping);
-        cartRepository.save(cart);
-        return "Topping was added";
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/getCart")

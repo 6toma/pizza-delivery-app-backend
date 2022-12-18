@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class PizzaToppingModel {
     @NotNull
-    private Pizza pizza;
+    private int pizzaId;
     @NotNull
-    private String topping;
+    private int toppingId;
 }

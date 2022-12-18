@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.cart.controllers;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
 import nl.tudelft.sem.template.cart.PizzaService;
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.models.PizzaModel;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import org.springframework.http.HttpStatus;
@@ -49,7 +50,7 @@ public class PizzaController {
      */
     @DeleteMapping("/remove")
     @RoleRegionalManager
-    public ResponseEntity removePizza(@RequestBody String pizzaName) throws Exception {
+    public ResponseEntity<String> removePizza(@RequestBody String pizzaName) throws Exception {
 
         try {
             pizzaService.removePizza(pizzaName);
@@ -68,10 +69,8 @@ public class PizzaController {
      */
     @PutMapping("/edit")
     @RoleRegionalManager
-    public ResponseEntity editPizza(@RequestBody PizzaModel pizza) {
-
+    public ResponseEntity<String> editPizza(@RequestBody PizzaModel pizza) {
         pizzaService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
-
         return ResponseEntity.ok("Pizza edited");
     }
 
@@ -81,7 +80,7 @@ public class PizzaController {
      * @return the list of pizzas
      */
     @GetMapping("/getAll")
-    public List<Pizza> getPizzas() {
+    public List<DefaultPizza> getPizzas() {
         return pizzaService.getAll();
     }
 
@@ -92,7 +91,7 @@ public class PizzaController {
      * @return the list of filtered pizzas
      */
     @PostMapping("/getAll")
-    public List<Pizza> getPizzas(@RequestBody List<String> allergens) {
+    public List<DefaultPizza> getPizzas(@RequestBody List<String> allergens) {
         return pizzaService.getAllByFilter(allergens);
     }
 }

@@ -20,30 +20,30 @@ public class CartTest {
     @Test
     public void addPizzaTest() {
         c1.addPizza(p1);
-        assertEquals(c1.getPizzas().size(), 1);
+        assertEquals(c1.getPizzasMap().size(), 1);
     }
 
     public void removePizzaTest() {
         c1.addPizza(p1);
         c1.removePizza(p1);
-        assertEquals(c1.getPizzas().size(), 0);
+        assertEquals(c1.getPizzasMap().size(), 0);
     }
 
     public void addToppingTest() {
         c1.addPizza(p1);
         c1.addTopping(p1, t2);
-        assertEquals(c1.getPizzas().get(0).getPrice(), 8.5);
-        assertEquals(c1.getPizzas().get(0).getToppings().size(), 2);
-        assertEquals(c1.getPizzas().size(), 1);
+        assertEquals(c1.getPizzasMap().get(0).getPrice(), 8.5);
+        assertEquals(c1.getPizzasMap().get(0).getToppings().size(), 2);
+        assertEquals(c1.getPizzasMap().size(), 1);
         assertFalse(c1.addTopping(p1, t2));
     }
 
     public void removeToppingTest() {
         c1.addPizza(p1);
         c1.removeTopping(p1, t1);
-        assertEquals(c1.getPizzas().get(0).getPrice(), 5.5);
-        assertEquals(c1.getPizzas().get(0).getToppings().size(), 2);
-        assertEquals(c1.getPizzas().size(), 1);
+        assertEquals(c1.getPizzasMap().get(0).getPrice(), 5.5);
+        assertEquals(c1.getPizzasMap().get(0).getToppings().size(), 2);
+        assertEquals(c1.getPizzasMap().size(), 1);
         assertFalse(c1.removeTopping(p1, t1));
     }
 }

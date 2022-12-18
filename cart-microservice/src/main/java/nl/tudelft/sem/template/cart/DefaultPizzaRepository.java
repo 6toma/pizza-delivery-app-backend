@@ -1,7 +1,8 @@
 package nl.tudelft.sem.template.cart;
 
-import java.util.List;
 import java.util.Optional;
+
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * A repository for pizzas.
  */
 @Repository
-public interface PizzaRepository extends JpaRepository<Pizza, Integer> {
+public interface DefaultPizzaRepository extends JpaRepository<DefaultPizza, Integer> {
     /**
      * Find pizza by name.
      */

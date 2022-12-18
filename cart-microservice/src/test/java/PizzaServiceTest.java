@@ -1,36 +1,29 @@
-import nl.tudelft.sem.template.cart.PizzaRepository;
+import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
 import nl.tudelft.sem.template.cart.PizzaService;
-import nl.tudelft.sem.template.cart.ToppingRepository;
-import nl.tudelft.sem.template.cart.ToppingService;
-import nl.tudelft.sem.template.cart.controllers.PizzaController;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameNotFoundException;
-import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
-import nl.tudelft.sem.template.cart.exceptions.ToppingNotFoundException;
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
-import nl.tudelft.sem.template.commons.models.PizzaModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class PizzaServiceTest {
 
-    private Topping t1 = new Topping("pineapple", 1.5);
-    private Pizza p1 = new Pizza("hawaii", List.of(t1), 6);
+    private final Topping t1 = new Topping("pineapple", 1.5);
+    private final DefaultPizza p1 = new DefaultPizza("hawaii", List.of(t1), 6);
     private PizzaService ps;
-    private PizzaRepository pr;
+    private DefaultPizzaRepository pr;
 
     @BeforeEach
     void beforeEach() {
-        pr = Mockito.mock(PizzaRepository.class);
+        pr = Mockito.mock(DefaultPizzaRepository.class);
         ps = new PizzaService(pr);
     }
 
@@ -43,7 +36,7 @@ public class PizzaServiceTest {
     @Test
     public void checkPizzaIsUniqueTest() {
         when(pr.existsByPizzaName("hawaii")).thenReturn(true);
-        assertEquals(false, ps.checkPizzaIsUnique("hawaii"));
+        assertFalse(ps.checkPizzaIsUnique("hawaii"));
     }
 
     @Test
@@ -55,7 +48,7 @@ public class PizzaServiceTest {
     }
 
     @Test
-    public void addPizzaTestException() throws Exception {
+    public void addPizzaTestException() {
         when(pr.existsByPizzaName("hawaii")).thenReturn(true);
         assertThrows(PizzaNameAlreadyInUseException.class, () -> {
             ps.addPizza("hawaii", List.of(t1), 6);
@@ -70,7 +63,7 @@ public class PizzaServiceTest {
     }
 
     @Test
-    public void removePizzaTestException() throws Exception {
+    public void removePizzaTestException() {
         when(pr.existsByPizzaName("hawaii")).thenReturn(false);
         assertThrows(PizzaNameNotFoundException.class, () -> {
             ps.removePizza("hawaii");
@@ -78,8 +71,8 @@ public class PizzaServiceTest {
     }
 
     @Test
-    public void editPizzaTest() throws Exception {
+    public void editPizzaTest() {
         ps.editPizza("hawaii", List.of(t1), 7);
-        verify(pr, times(1)).save(new Pizza("hawaii", List.of(t1), 7));
+        verify(pr, times(1)).save(new DefaultPizza("hawaii", List.of(t1), 7));
     }
 }

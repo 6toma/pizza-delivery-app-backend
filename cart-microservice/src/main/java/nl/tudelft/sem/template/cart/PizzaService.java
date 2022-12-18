@@ -1,14 +1,15 @@
 package nl.tudelft.sem.template.cart;
 
-import java.util.List;
-import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameNotFoundException;
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Menu service responsible for managing the pizza DB.
@@ -17,14 +18,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PizzaService {
 
-    private final transient PizzaRepository pizzaRepository;
+    private final transient DefaultPizzaRepository pizzaRepository;
 
     /**
      * Retrieves all the pizzas from the DB.
      *
      * @return List of pizzas
      */
-    public List<Pizza> getAll() {
+    public List<DefaultPizza> getAll() {
         return pizzaRepository.findAll();
     }
 
@@ -34,8 +35,8 @@ public class PizzaService {
      * @param allergens the list of allergens
      * @return List of filtered pizzas
      */
-    public List<Pizza> getAllByFilter(List<String> allergens) {
-        List<Pizza> pizzas = pizzaRepository.findAll();
+    public List<DefaultPizza> getAllByFilter(List<String> allergens) {
+        List<DefaultPizza> pizzas = pizzaRepository.findAll();
         //Todo implement filter
         return pizzas;
     }
@@ -44,14 +45,14 @@ public class PizzaService {
      * Adds a pizza to the DB.
      *
      * @param pizzaName the name of the pizza
-     * @param toppings the toppings on the pizza
+     * @param toppings  the toppings on the pizza
      * @return the resulting Pizza
      * @throws Exception when the name of the pizza already exists
      */
-    public Pizza addPizza(String pizzaName, List<Topping> toppings, double price) throws Exception {
+    public DefaultPizza addPizza(String pizzaName, List<Topping> toppings, double price) throws Exception {
 
         if (checkPizzaIsUnique(pizzaName)) {
-            Pizza pizza = new Pizza(pizzaName, toppings, price);
+            DefaultPizza pizza = new DefaultPizza(pizzaName, toppings, price);
             pizzaRepository.save(pizza);
 
             return pizza;
@@ -78,11 +79,11 @@ public class PizzaService {
      * Edits a pizza from the DB.
      *
      * @param pizzaName the name of the pizza
-     * @param toppings the topppings on the pizza
+     * @param toppings  the topppings on the pizza
      */
     public void editPizza(String pizzaName, List<Topping> toppings, double price) {
 
-        pizzaRepository.save(new Pizza(pizzaName, toppings, price));
+        pizzaRepository.save(new DefaultPizza(pizzaName, toppings, price));
     }
 
     /**

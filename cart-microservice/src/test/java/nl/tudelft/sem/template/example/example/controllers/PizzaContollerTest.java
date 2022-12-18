@@ -6,6 +6,7 @@ import nl.tudelft.sem.template.cart.controllers.PizzaController;
 import nl.tudelft.sem.template.cart.controllers.ToppingController;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.models.PizzaModel;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.doThrow;
 public class PizzaContollerTest {
 
     private Topping t1 = new Topping("pineapple", 1.5);
-    private Pizza p1 = new Pizza("hawaii", List.of(t1), 6);
+    private DefaultPizza p1 = new DefaultPizza("hawaii", List.of(t1), 6);
     private PizzaService ps;
     private PizzaController pc;
     private PizzaModel pm = new PizzaModel();
