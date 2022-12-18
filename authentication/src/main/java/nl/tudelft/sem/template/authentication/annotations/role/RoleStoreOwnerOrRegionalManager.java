@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasAnyAuthority(T(nl.tudelft.sem.template.authentication.domain.user.UserRole).STORE_OWNER.jwtRoleName, T(nl.tudelft.sem.template.authentication.domain.user.UserRole).REGIONAL_MANAGER.jwtRoleName)")
+@PreAuthorize("hasAnyAuthority(T(nl.tudelft.sem.template.authentication.domain.user.UserRole).STORE_OWNER.jwtRoleName, "
+    + "T(nl.tudelft.sem.template.authentication.domain.user.UserRole).REGIONAL_MANAGER.jwtRoleName)")
 public @interface RoleStoreOwnerOrRegionalManager {
 }
