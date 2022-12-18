@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.coupon.domain;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,7 +11,6 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.stream.Stream;
-
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,6 +27,7 @@ class CouponTest {
     private Clock clock;
     private Clock fixedClock;
 
+    @SneakyThrows
     @BeforeEach
     void setup() {
         c1 = new Coupon();
@@ -49,6 +50,7 @@ class CouponTest {
         assertThat(in1.equals(in2)).isEqualTo(expected);
     }
 
+    @SneakyThrows
     static Stream<Arguments> equalsCases() {
         Coupon c1 = new Coupon();
         c1.setCode("ABCD12");
@@ -77,12 +79,14 @@ class CouponTest {
         );
     }
 
+    @SneakyThrows
     @Test
     void isValid() {
         coupon.setExpiryDate(new Date(24, 05, 2023));
         assertTrue(coupon.isValid());
     }
 
+    @SneakyThrows
     @Test
     void isValidFalse() {
         coupon.setExpiryDate(new Date(24, 05, 2003));
@@ -110,6 +114,7 @@ class CouponTest {
         assertEquals(c1.getCode(), "ABCD12");
     }
 
+    @SneakyThrows
     @Test
     void getExpiryDate() {
         assertEquals(c1.getExpiryDate(), new Date(10, 10, 2023));
