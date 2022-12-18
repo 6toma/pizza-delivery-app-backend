@@ -27,7 +27,7 @@ public class Store {
     @Getter
     long storeId;
 
-
+    // TODO : name
     @Column(name = "address", nullable = false)
     StoreAddress location;
 
