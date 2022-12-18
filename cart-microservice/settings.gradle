@@ -5,5 +5,3 @@ include 'commons'
 project(':commons').projectDir = new File('../commons')
 include 'authentication'
 project(':authentication').projectDir = new File('../authentication')
-include 'testing'
-project(':testing').projectDir = new File('../testing')

@@ -1,5 +1,0 @@
-rootProject.name = 'testing'
-
-includeBuild '../build-logic'
-include 'authentication'
-project(':authentication').projectDir = new File('../authentication')

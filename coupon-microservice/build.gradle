@@ -4,7 +4,7 @@ plugins {
 apply plugin: 'info.solidsoft.pitest'
 
 dependencies {
-	testImplementation(testFixtures(project(":testing")))
+	testImplementation(testFixtures(project(":commons")))
 }
 
 bootJar {
