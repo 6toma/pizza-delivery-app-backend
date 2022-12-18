@@ -1,5 +1,6 @@
 package nl.tudelft.sem.checkout.domain;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +20,16 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
+    /**
+     * Retrieves an order based on the order id
+     * @param orderId the id of the order to be returned
+     * @return the order with the id specified in the parameter
+     * @throws Exception if the order with the given ID does not exist in the repository
+     */
     public Order getOrderById(long orderId) throws Exception{
-        if(orderRepository.existsByOrderId(orderId))
-            return orderRepository.findByOrderId(orderId).get();
+        Optional<Order> order = orderRepository.findByOrderId(orderId);
+        if(order.isPresent())
+            return order.get();
         throw new OrderNotFoundException(orderId);
     }
 
@@ -32,14 +40,14 @@ public class OrderService {
     public void addOrder(Order order) {
         orderRepository.save(order);
     }
-
-    /**
-     * Removes an order from the DB
-     * @param order - the Order object to be removed
-     */
-    public void removeOrder(Order order) {
-        orderRepository.deleteOrderByOrderId(order.getOrderId());
-    }
+//
+//    /**
+//     * Removes an order from the DB
+//     * @param order - the Order object to be removed
+//     */
+//    public void removeOrder(Order order) {
+//        orderRepository.deleteOrderByOrderId(order.getOrderId());
+//    }
 
     /**
      * Removes an order from the DB

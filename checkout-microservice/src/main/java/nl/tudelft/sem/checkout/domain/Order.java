@@ -38,17 +38,16 @@ public class Order {
     @Convert(converter = PizzaAttributeConverter.class)
     private List<Pizza> pizzaList;
 
-    @ElementCollection
-    @Column(name = "couponCodes", nullable = false)
-    private String couponCodes;
+    @Column(name = "coupon", nullable = false)
+    private String coupon;
 
     @Builder
-    public Order(long storeId, String customerId, LocalTime pickupTime, List<Pizza> pizzaList, String couponCodes) {
+    public Order(long storeId, String customerId, LocalTime pickupTime, List<Pizza> pizzaList, String coupon) {
         this.storeId = storeId;
         this.customerId = customerId;
         this.pickupTime = pickupTime;
         this.pizzaList = pizzaList;
-        this.couponCodes = couponCodes;
+        this.coupon = coupon;
     }
 
     public double calculatePriceWithoutDiscount() {

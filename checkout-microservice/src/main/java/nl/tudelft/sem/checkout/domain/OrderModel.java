@@ -15,5 +15,5 @@ public class OrderModel {
     private String customerId;
     private LocalTime pickupTime;
     private List<Pizza> pizzaList;
-    private String couponCodes;
+    private String coupon;
 }
