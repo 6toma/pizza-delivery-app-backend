@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.coupon.controllers;
 
 import nl.tudelft.sem.template.authentication.AuthManager;
+import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import nl.tudelft.sem.template.coupon.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,12 +18,14 @@ class CouponControllerTest {
     private CouponController couponController;
     private CouponRepository repo;
     private AuthManager authManager;
+    private RequestHelper requestHelper;
 
     @BeforeEach
     void setup() {
         repo = Mockito.mock(CouponRepository.class);
         authManager = Mockito.mock(AuthManager.class);
-        couponController = new CouponController(authManager, repo);
+        requestHelper = Mockito.mock(RequestHelper.class);
+        couponController = new CouponController(authManager, requestHelper, repo);
     }
 
     @Test
@@ -58,7 +61,7 @@ class CouponControllerTest {
     @Test
     void addCouponNullCode() {
         Coupon coupon = new Coupon();
-        assertThrows(InvalidCouponCodeException.class, () -> couponController.addCoupon(coupon));
+        assertThrows(InvalidCouponCodeException.class, () -> couponController.addCoupon(1L, coupon));
     }
 
     @Test
@@ -66,7 +69,7 @@ class CouponControllerTest {
         String code = "AB56";
         Coupon coupon = new Coupon();
         coupon.setCode(code);
-        assertThrows(InvalidCouponCodeException.class, () -> couponController.addCoupon(coupon));
+        assertThrows(InvalidCouponCodeException.class, () -> couponController.addCoupon(1L, coupon));
     }
 
     @Test
@@ -75,7 +78,7 @@ class CouponControllerTest {
         Coupon coupon = new Coupon();
         coupon.setCode(code);
         coupon.setType(CouponType.DISCOUNT);
-        assertThrows(DiscountCouponIncompleteException.class, () -> couponController.addCoupon(coupon));
+        assertThrows(DiscountCouponIncompleteException.class, () -> couponController.addCoupon(1L, coupon));
     }
 
     @Test
