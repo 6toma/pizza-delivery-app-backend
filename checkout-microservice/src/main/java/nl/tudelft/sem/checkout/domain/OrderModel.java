@@ -1,5 +1,6 @@
 package nl.tudelft.sem.checkout.domain;
 
+import java.time.LocalDateTime;
 import lombok.Data;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 
@@ -13,7 +14,7 @@ import java.util.List;
 public class OrderModel {
     private int storeId;
     private String customerId;
-    private LocalTime pickupTime;
+    private LocalDateTime pickupTime;
     private List<Pizza> pizzaList;
     private String coupon;
 }

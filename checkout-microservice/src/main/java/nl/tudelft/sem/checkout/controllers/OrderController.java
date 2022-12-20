@@ -4,8 +4,10 @@ import java.util.Collections;
 import nl.tudelft.sem.checkout.domain.Order;
 import nl.tudelft.sem.checkout.domain.OrderModel;
 import nl.tudelft.sem.checkout.domain.OrderService;
+import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
 import nl.tudelft.sem.template.commons.entity.Pizza;
+import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +21,14 @@ import java.util.List;
 @RequestMapping("/orders")
 public class OrderController {
 
+    private final transient AuthManager authManager;
+    private final transient RequestHelper requestHelper;
     private final transient OrderService orderService;
 
     @Autowired
-    public OrderController(OrderService orderService) {
+    public OrderController(AuthManager authManager, RequestHelper requestHelper, OrderService orderService) {
+        this.authManager = authManager;
+        this.requestHelper = requestHelper;
         this.orderService = orderService;
     }
 
@@ -40,25 +46,44 @@ public class OrderController {
 
     @PostMapping("/remove/{id}")
     public ResponseEntity<String> removeOrderById(@PathVariable("id") long orderId) {
-        orderService.removeOrderById(orderId);
-        return ResponseEntity.ok("Order removed");
-    }
-
-    @RoleRegionalManager
-    @GetMapping(path = {"", "/", "/all"})
-    public List<Order> getAllOrders() {
-        return Collections.unmodifiableList(orderService.getAllOrders());
-    }
-
-    @GetMapping("/{id}")
-    public Order getOrderById(@PathVariable("id") long orderId) throws Exception {
+        String netId = authManager.getNetId();
+        String role = authManager.getRole();
         try {
-            return orderService.getOrderById(orderId);
+            Order orderToBeRemoved = orderService.getOrderById(orderId);
+            if(role.equals("ROLE_STORE_OWNER"))
+                return ResponseEntity.badRequest().body("Store owners can't cancel orders");
+            if(role.equals("ROLE_REGIONAL_MANGER") || orderService.getOrdersForCustomer(netId).contains(orderToBeRemoved)) {
+                orderService.removeOrderById(orderId);
+                return ResponseEntity.ok("Order removed");
+            }
+            else return ResponseEntity.badRequest().body("Order does not belong to customer, so they cannot cancel it");
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
+    @RoleRegionalManager
+    @GetMapping(path = {"", "/", "/all"})
+    public List<Order> getAllOrders() {
+        return orderService.getAllOrders();
+    }
+
+    @GetMapping("/{id}")
+    public Order getOrderById(@PathVariable("id") long orderId) throws Exception {
+        String netId = authManager.getNetId();
+        String role = authManager.getRole();
+        try {
+            Order order = orderService.getOrderById(orderId);
+            if(role.equals("ROLE_REGIONAL_MANAGER") || role.equals("ROLE_STORE_OWENR") ||
+                (role.equals("ROLE_CUSTOMER") && orderService.getOrdersForCustomer(netId).contains(order)))
+              return order;
+            else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order does not belong to customer, so they cannot check it");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    // This is strictly for interactions
     @GetMapping("/pizza_prices/{id}")
     public List<Double> getPriceForEachPizza(@PathVariable("id") long orderId) throws Exception {
         try {
@@ -78,8 +103,14 @@ public class OrderController {
 
     @GetMapping("/price/{id}")
     public double getOrderPrice(@PathVariable("id") long orderId) throws Exception {
+        String netId = authManager.getNetId();
+        String role = authManager.getRole();
         try {
-            return orderService.getOrderById(orderId).calculatePriceWithoutDiscount();
+            Order order = orderService.getOrderById(orderId);
+            if(role.equals("ROLE_REGIONAL_MANAGER") || role.equals("ROLE_STORE_OWENR") ||
+                (role.equals("ROLE_CUSTOMER") && orderService.getOrdersForCustomer(netId).contains(order)))
+                return order.calculatePriceWithoutDiscount();
+            else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order does not belong to customer, so they cannot check the price");
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

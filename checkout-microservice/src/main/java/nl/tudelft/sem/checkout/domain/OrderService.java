@@ -20,6 +20,10 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
+    public List<Order> getOrdersForCustomer(String netId) {
+        return orderRepository.findOrdersForCustomer(netId);
+    }
+
     /**
      * Retrieves an order based on the order id
      * @param orderId the id of the order to be returned
@@ -27,7 +31,7 @@ public class OrderService {
      * @throws Exception if the order with the given ID does not exist in the repository
      */
     public Order getOrderById(long orderId) throws Exception{
-        Optional<Order> order = orderRepository.findByOrderId(orderId);
+        Optional<Order> order = orderRepository.findById(orderId);
         if(order.isPresent())
             return order.get();
         throw new OrderNotFoundException(orderId);
@@ -54,7 +58,7 @@ public class OrderService {
      * @param orderId - the id of the Order object to be removed
      */
     public void removeOrderById(long orderId) {
-        orderRepository.deleteOrderByOrderId(orderId);
+        orderRepository.deleteById(orderId);
     }
 
 }

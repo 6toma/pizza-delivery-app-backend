@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @ComponentScan({"nl.tudelft.sem.template.authentication", "nl.tudelft.sem.checkout", "nl.tudelft.sem.template.commons.utils"})
-@EntityScan({"nl.tudelft.sem.template.commons", "nl.tudelft.sem.checkout"})
+@EntityScan({"nl.tudelft.sem.checkout", "nl.tudelft.sem.template.commons"})
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

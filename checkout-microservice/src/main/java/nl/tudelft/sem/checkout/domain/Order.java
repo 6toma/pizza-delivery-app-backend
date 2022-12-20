@@ -1,10 +1,12 @@
 package nl.tudelft.sem.checkout.domain;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.commons.PizzaAttributeConverter;
+import nl.tudelft.sem.template.commons.entity.CustomPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 
 import javax.persistence.*;
@@ -30,19 +32,18 @@ public class Order {
     private String customerId;
 
     @Column(name = "pickupTime", nullable = false)
-    @Convert(converter = LocalTimeConverter.class)
-    private LocalTime pickupTime;
+    @Convert(converter = LocalDateTimeConverter.class)
+    private LocalDateTime pickupTime;
 
     @OneToMany
     @Column(name = "pizzas", nullable = false)
-    //@Convert(converter = PizzaAttributeConverter.class)
-    private List<Pizza> pizzaList;
+    private List<CustomPizza> pizzaList;
 
     @Column(name = "coupon", nullable = false)
     private String coupon;
 
     @Builder
-    public Order(long storeId, String customerId, LocalTime pickupTime, List<Pizza> pizzaList, String coupon) {
+    public Order(long storeId, String customerId, LocalDateTime pickupTime, List<CustomPizza> pizzaList, String coupon) {
         this.storeId = storeId;
         this.customerId = customerId;
         this.pickupTime = pickupTime;
