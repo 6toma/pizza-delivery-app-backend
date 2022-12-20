@@ -87,7 +87,7 @@ public class OrderTest {
 
     @Test
     public void getPickupTimeTest() {
-        Assertions.assertThat(order.getPickupTime()).isEqualTo(LocalTime.NOON);
+        Assertions.assertThat(order.getPickupTime()).isEqualTo(ldt);
     }
 
     @Test
