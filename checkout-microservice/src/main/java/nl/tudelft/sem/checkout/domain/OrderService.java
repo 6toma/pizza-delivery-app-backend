@@ -57,8 +57,10 @@ public class OrderService {
      * Removes an order from the DB
      * @param orderId - the id of the Order object to be removed
      */
-    public void removeOrderById(long orderId) {
-        orderRepository.deleteById(orderId);
+    public void removeOrderById(long orderId) throws Exception{
+        if(orderRepository.existsById(orderId))
+            orderRepository.deleteById(orderId);
+        else throw new OrderNotFoundException(orderId);
     }
 
 }

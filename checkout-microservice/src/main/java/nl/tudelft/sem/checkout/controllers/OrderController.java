@@ -74,10 +74,10 @@ public class OrderController {
         String role = authManager.getRole();
         try {
             Order order = orderService.getOrderById(orderId);
-            if(role.equals("ROLE_REGIONAL_MANAGER") || role.equals("ROLE_STORE_OWENR") ||
+            if(role.equals("ROLE_REGIONAL_MANAGER") || role.equals("ROLE_STORE_OWNER") ||
                 (role.equals("ROLE_CUSTOMER") && orderService.getOrdersForCustomer(netId).contains(order)))
               return order;
-            else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order does not belong to customer, so they cannot check it");
+            else throw new Exception("Order does not belong to customer, so they cannot check it");
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -107,10 +107,10 @@ public class OrderController {
         String role = authManager.getRole();
         try {
             Order order = orderService.getOrderById(orderId);
-            if(role.equals("ROLE_REGIONAL_MANAGER") || role.equals("ROLE_STORE_OWENR") ||
+            if(role.equals("ROLE_REGIONAL_MANAGER") || role.equals("ROLE_STORE_OWNER") ||
                 (role.equals("ROLE_CUSTOMER") && orderService.getOrdersForCustomer(netId).contains(order)))
                 return order.calculatePriceWithoutDiscount();
-            else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order does not belong to customer, so they cannot check the price");
+            else throw new Exception("Order does not belong to customer, so they cannot check the price");
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
