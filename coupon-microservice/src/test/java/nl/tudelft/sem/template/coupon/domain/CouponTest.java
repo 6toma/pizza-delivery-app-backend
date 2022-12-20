@@ -36,7 +36,7 @@ class CouponTest {
         c1.setPercentage(10);
         c1.setType(CouponType.DISCOUNT);
         c1.setExpiryDate(new Date(10, 10, 2023));
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         //tell tests to return the specified LOCAL_DATE when calling LocalDate.now(clock)
         fixedClock = Clock.fixed(LOCAL_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
@@ -105,7 +105,9 @@ class CouponTest {
                 Arguments.of("Abdf67", true),
                 Arguments.of("6735AB", false),
                 Arguments.of("AB23", false),
-                Arguments.of("ABCD?2", false)
+                Arguments.of("ABCD?2", false),
+                Arguments.of("", false),
+                Arguments.of(null, false)
         );
     }
 

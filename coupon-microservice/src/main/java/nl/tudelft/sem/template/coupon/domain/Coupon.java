@@ -96,6 +96,8 @@ public class Coupon {
      * @return boolean
      */
     public static boolean validCodeFormat(String code) {
+        if(code == null)
+            return false;
         return code.length() == 6 && code.substring(0, 4).chars().allMatch(Character::isLetter)
                 && code.substring(4).chars().allMatch(Character::isDigit);
     }
