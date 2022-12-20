@@ -1,6 +1,8 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.NetIdAlreadyInUseException;
 import org.springframework.stereotype.Service;
 
 /**
