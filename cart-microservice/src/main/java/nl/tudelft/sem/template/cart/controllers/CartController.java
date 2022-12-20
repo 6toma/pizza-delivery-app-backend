@@ -11,7 +11,6 @@ import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.cart.CartRepository;
 import nl.tudelft.sem.template.cart.CustomPizzaRepository;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
-import nl.tudelft.sem.template.cart.PizzaService;
 import nl.tudelft.sem.template.cart.ToppingRepository;
 import nl.tudelft.sem.template.commons.entity.Cart;
 import nl.tudelft.sem.template.commons.entity.CustomPizza;
@@ -20,8 +19,6 @@ import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.models.CartPizza;
 import nl.tudelft.sem.template.commons.models.PizzaToppingModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,13 +34,10 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class CartController {
 
-    private static final Logger logger = LoggerFactory.getLogger(CartController.class);
-
     // dependencies
     private final RequestHelper requestHelper;
     private final DefaultPizzaRepository defaultPizzaRepository;
     private final CustomPizzaRepository customPizzaRepository;
-    private final PizzaService pizzaService;
     private final CartRepository cartRepository;
     private final AuthManager authManager;
     private final ToppingRepository toppingRepository;
@@ -57,7 +51,7 @@ public class CartController {
     private CustomPizza getDefaultPizza(int defaultPizzaId) {
         DefaultPizza pizza = requireNotEmpty(defaultPizzaRepository.findById(defaultPizzaId),
             "Custom pizza not found with id " + defaultPizzaId);
-        return CustomPizza.CustomPizzaCreator(pizza);
+        return CustomPizza.customPizzaCreator(pizza);
     }
 
     private CustomPizza getCustomPizza(int customPizzaId) {
@@ -176,7 +170,7 @@ public class CartController {
      * @return the cart
      */
     @GetMapping("/getCart/{netId}")
-    List<CartPizza> getCart(@PathVariable("netId") NetId netId) {
+    List<CartPizza> getCartFromNetId(@PathVariable("netId") NetId netId) {
         Cart cart = cartRepository.findByNetId(netId);
         if (cart == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This user doesn't have a cart");

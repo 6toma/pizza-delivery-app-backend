@@ -19,10 +19,20 @@ public class AuthManager {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
+    /**
+     * Gets the <code>NetId</code> object of the current authenticated user.
+     *
+     * @return a full NetId object of the authenticated user
+     */
     public NetId getNetIdObject() {
         return new NetId(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
+    /**
+     * Gets the role of the user in the format ROLE_rolename
+     *
+     * @return the role of the user a String
+     */
     public String getRole() {
         var firstAuthority =
             SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().findFirst();

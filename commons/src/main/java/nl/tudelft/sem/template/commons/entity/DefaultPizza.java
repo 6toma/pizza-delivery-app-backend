@@ -1,20 +1,21 @@
 package nl.tudelft.sem.template.commons.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "default_pizza")
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = "pizzaName")
 public class DefaultPizza extends Pizza {
 
     @Column(name = "name", nullable = false, unique = true)

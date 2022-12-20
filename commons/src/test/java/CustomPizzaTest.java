@@ -2,6 +2,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.Arrays;
+import nl.tudelft.sem.template.commons.entity.CustomPizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import org.junit.jupiter.api.Test;
 
@@ -12,19 +13,17 @@ public class CustomPizzaTest {
 
     @Test
     public void testCustomPizzaEq() {
-        nl.tudelft.sem.template.commons.entity.CustomPizza
-            pizza2 = new nl.tudelft.sem.template.commons.entity.CustomPizza("name1",1, Arrays.asList(t1, t2,t3));
-        nl.tudelft.sem.template.commons.entity.CustomPizza
-            pizza1 = new nl.tudelft.sem.template.commons.entity.CustomPizza("name1",1, Arrays.asList(t3,t1, t2));
-        assertEquals(pizza1,pizza2);
+        CustomPizza pizza2 = new CustomPizza("name1", 1, Arrays.asList(t1, t2, t3));
+        CustomPizza pizza1 = new CustomPizza("name1", 1, Arrays.asList(t3, t1, t2));
+        assertEquals(pizza1, pizza2);
     }
 
     @Test
     public void testCustomPizzaNotEq() {
-        nl.tudelft.sem.template.commons.entity.CustomPizza
-            pizza2 = new nl.tudelft.sem.template.commons.entity.CustomPizza("name1",1, Arrays.asList(t1, t2,t3));
-        nl.tudelft.sem.template.commons.entity.CustomPizza
-            pizza1 = new nl.tudelft.sem.template.commons.entity.CustomPizza("name2",1, Arrays.asList(t3,t1, t2));
+        CustomPizza
+            pizza2 = new CustomPizza("name1",1, Arrays.asList(t1, t2,t3));
+        CustomPizza
+            pizza1 = new CustomPizza("name2",1, Arrays.asList(t3,t1, t2));
         assertNotEquals(pizza1,pizza2);
     }
 }

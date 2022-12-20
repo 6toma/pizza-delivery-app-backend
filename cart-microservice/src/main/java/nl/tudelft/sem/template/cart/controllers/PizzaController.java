@@ -31,7 +31,6 @@ public class PizzaController {
     @PostMapping("/add")
     @RoleRegionalManager
     public ResponseEntity<String> addPizza(@RequestBody PizzaModel pizza) throws Exception {
-
         try {
             pizzaService.addPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
         } catch (Exception e) {

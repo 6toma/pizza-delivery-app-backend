@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example;
 
 import nl.tudelft.sem.checkout.domain.Order;
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,8 +30,8 @@ public class OrderTest {
         .coupon(null)
         .build();
 
-    Pizza pizza1 = new Pizza("Margherita", new ArrayList<>(), 11);
-    Pizza pizza2 = new Pizza("Hawaii", new ArrayList<>(), 10.5);
+    Pizza pizza1 = new DefaultPizza("Margherita", new ArrayList<>(), 11);
+    Pizza pizza2 = new DefaultPizza("Hawaii", new ArrayList<>(), 10.5);
 
     @Test
     public void constructorNotNull() {

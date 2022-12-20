@@ -1,7 +1,9 @@
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import nl.tudelft.sem.template.commons.entity.Topping;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ToppingTest {
 
@@ -32,7 +34,7 @@ public class ToppingTest {
 
     @Test
     public void testEquals() {
-        assertTrue(t1.equals(t2));
-        assertTrue(!t1.equals(t3));
+        assertEquals(t1, t2);
+        assertFalse(t1.equals(t3));
     }
 }

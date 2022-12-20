@@ -27,6 +27,11 @@ public class Cart {
         this.pizzasMap = pizzas;
     }
 
+    /**
+     * Method that adds a new pizza to the cart by incrementing the amount that was previously there.
+     *
+     * @param pizza custom pizza to add to the cart
+     */
     public void addPizza(CustomPizza pizza) {
         if (pizzasMap.get(pizza) == null) {
             pizzasMap.put(pizza, 1);
@@ -36,7 +41,9 @@ public class Cart {
     }
 
     /**
-     * @param customPizza
+     * Removes a pizza from a cart by decrementing the amount.
+     *
+     * @param customPizza custom pizza that is in cart
      * @return Returns whether the pizza still exists in the cart after decrementing
      */
     public boolean removePizza(CustomPizza customPizza) {
@@ -52,39 +59,15 @@ public class Cart {
         return true;
     }
 
-    public boolean removePizzaAll(CustomPizza customPizza) {
+    /**
+     * Remove a custom pizza entirely from the cart.
+     *
+     * @param customPizza custom pizza to remove entirely
+     */
+    public void removePizzaAll(CustomPizza customPizza) {
         if (!pizzasMap.containsKey(customPizza)) {
-            return false;
+            return;
         }
         pizzasMap.remove(customPizza);
-        return true;
-    }
-
-    public boolean addTopping(CustomPizza pizza, Topping topping) {
-        if (pizzasMap.get(pizza) == null) {
-            return false;
-        }
-        if (pizzasMap.get(pizza) == 1) {
-            pizzasMap.remove(pizza);
-        } else {
-            pizzasMap.put(pizza, pizzasMap.get(pizza) - 1);
-        }
-        pizza.addTopping(topping);
-        pizzasMap.put(pizza, pizzasMap.get(pizza) + 1);
-        return true;
-    }
-
-    public boolean removeTopping(CustomPizza pizza, Topping topping) {
-        if (pizzasMap.get(pizza) == null) {
-            return false;
-        }
-        if (pizzasMap.get(pizza) == 1) {
-            pizzasMap.remove(pizza);
-        } else {
-            pizzasMap.put(pizza, pizzasMap.get(pizza) - 1);
-        }
-        pizza.removeTopping(topping);
-        pizzasMap.put(pizza, pizzasMap.get(pizza) + 1);
-        return true;
     }
 }

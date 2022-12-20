@@ -9,7 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.Min;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -44,14 +43,16 @@ public class Pizza {
     }
 
     /**
-     * @return
+     * Calculates the price as the sum of the defaultPrice and toppings price.
+     *
+     * @return total price of the pizza
      */
-    public int calculatePrice() {
-        int price = 0;
+    public double calculatePrice() {
+        double sum = price;
         for (Topping topping : toppings) {
-            price += topping.getPrice();
+            sum += topping.getPrice();
         }
-        return price;
+        return sum;
     }
 
     /**

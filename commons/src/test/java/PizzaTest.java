@@ -1,23 +1,21 @@
-import java.util.Arrays;
-import nl.tudelft.sem.template.commons.entity.CustomPizza;
-import nl.tudelft.sem.template.commons.entity.DefaultPizza;
-import nl.tudelft.sem.template.commons.entity.Pizza;
-import nl.tudelft.sem.template.commons.entity.Topping;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
+import nl.tudelft.sem.template.commons.entity.Topping;
+import org.junit.jupiter.api.Test;
 
 public class PizzaTest {
 
     private Topping t1 = new Topping("pineapple", 1.5);
-    private Topping t2 = new Topping("salami", 1.5);
+    private Topping t2 = new Topping("salami", 2.5);
     private Topping t3 = new Topping("tomatoes", 8.5);
 
     private DefaultPizza p1 = new DefaultPizza("hawaii", List.of(t1), 7);
-    private DefaultPizza p2 = new DefaultPizza("hawaii", List.of(t1), 7);
+    private DefaultPizza p2 = new DefaultPizza("hawaii", List.of(t2), 7);
     private DefaultPizza p3 = new DefaultPizza("american", List.of(t1, t2), 8.5);
 
 
@@ -32,14 +30,17 @@ public class PizzaTest {
     }
 
     @Test
+    public void getPriceWithToppings() {
+        assertEquals(p1.getPrice() + t1.getPrice(), p1.calculatePrice());
+        assertEquals(p2.getPrice() + t2.getPrice(), p2.calculatePrice());
+        assertEquals(p3.getPrice() + t1.getPrice() + t2.getPrice(), p3.calculatePrice());
+    }
+
+    @Test
     public void getToppingsTest() {
         assertEquals(p1.getToppings(), List.of(t1));
     }
 
-    @Test
-    public void toStringTest() {
-        assertEquals(p3.toString(), "american;pineapple 1.5;salami 1.5;8.5");
-    }
 
     @Test
     public void hashCodeTest() {
@@ -55,23 +56,19 @@ public class PizzaTest {
 
     @Test
     public void testAddTopping() {
-        List<Topping> list = new ArrayList<>();
-        list.add(t1);
-        DefaultPizza temp = new DefaultPizza("hawaii", list, 7);
+        DefaultPizza temp = new DefaultPizza("hawaii", new ArrayList<>(List.of(t1)), 7);
         temp.addTopping(t2);
         assertEquals(2, temp.getToppings().size());
-        assertEquals(8.5, temp.getPrice());
+        assertEquals(temp.getPrice() + t1.getPrice() + t2.getPrice(), temp.calculatePrice());
         assertFalse(temp.addTopping(t2));
     }
 
     @Test
     public void testRemoveTopping() {
-        List<Topping> list = new ArrayList<>();
-        list.add(t1);
-        DefaultPizza temp = new DefaultPizza("hawaii", list, 7);
+        DefaultPizza temp = new DefaultPizza("hawaii", new ArrayList<>(List.of(t1)), 7);
         temp.removeTopping(t1);
         assertEquals(0, temp.getToppings().size());
-        assertEquals(5.5, temp.getPrice());
+        assertEquals(7, temp.calculatePrice());
         assertFalse(temp.removeTopping(t1));
     }
 

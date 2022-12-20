@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
@@ -16,7 +16,6 @@ import nl.tudelft.sem.template.cart.CartRepository;
 import nl.tudelft.sem.template.cart.CustomPizzaRepository;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
 import nl.tudelft.sem.template.cart.ToppingRepository;
-import nl.tudelft.sem.template.commons.entity.Cart;
 import nl.tudelft.sem.template.commons.entity.CustomPizza;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
@@ -75,7 +74,8 @@ public class CartControllerTest extends IntegrationTest {
 
     @Test
     void testAddToCartDifferentPizzas() throws Exception {
-        int id1 = defaultPizza1.getId(), id2 = defaultPizza2.getId();
+        int id1 = defaultPizza1.getId();
+        int id2 = defaultPizza2.getId();
         addPizzaRequest(id1).andExpect(status().isOk());
         addPizzaRequest(id2).andExpect(status().isOk());
         assertEquals(2, customRepository.count());
@@ -113,7 +113,7 @@ public class CartControllerTest extends IntegrationTest {
     @Test
     void testIncrementEmptyCart() throws Exception {
         int id = defaultPizza1.getId();
-        CustomPizza customPizza = CustomPizza.CustomPizzaCreator(defaultPizza1);
+        CustomPizza customPizza = CustomPizza.customPizzaCreator(defaultPizza1);
         customRepository.save(customPizza);
 
         incrementPizzaRequest(customPizza.getId()).andExpect(status().isBadRequest());
@@ -121,7 +121,7 @@ public class CartControllerTest extends IntegrationTest {
 
     @Test
     void testIncrementNotInCart() throws Exception {
-        CustomPizza customPizza = customRepository.save(CustomPizza.CustomPizzaCreator(defaultPizza1));
+        CustomPizza customPizza = customRepository.save(CustomPizza.customPizzaCreator(defaultPizza1));
         addPizzaRequest(defaultPizza2.getId());
         incrementPizzaRequest(customPizza.getId()).andExpect(status().isBadRequest());
     }
@@ -146,14 +146,14 @@ public class CartControllerTest extends IntegrationTest {
     @Test
     void testDecrementEmptyCart() throws Exception {
         int id = defaultPizza1.getId();
-        CustomPizza customPizza = CustomPizza.CustomPizzaCreator(defaultPizza1);
+        CustomPizza customPizza = CustomPizza.customPizzaCreator(defaultPizza1);
         customRepository.save(customPizza);
         decrementPizzaRequest(customPizza.getId()).andExpect(status().isBadRequest());
     }
 
     @Test
     void testDecrementNotInCart() throws Exception {
-        CustomPizza customPizza = CustomPizza.CustomPizzaCreator(defaultPizza1);
+        CustomPizza customPizza = CustomPizza.customPizzaCreator(defaultPizza1);
         customRepository.save(customPizza);
         addPizzaRequest(defaultPizza2.getId());
         decrementPizzaRequest(customPizza.getId()).andExpect(status().isBadRequest());
@@ -187,7 +187,7 @@ public class CartControllerTest extends IntegrationTest {
 
     @Test
     void testRemovePizzaNotInCart() throws Exception {
-        CustomPizza customPizza = CustomPizza.CustomPizzaCreator(defaultPizza1);
+        CustomPizza customPizza = CustomPizza.customPizzaCreator(defaultPizza1);
         customRepository.save(customPizza);
         addPizzaRequest(defaultPizza2.getId());
         removePizzaRequest(customPizza.getId()).andExpect(status().isBadRequest());
@@ -196,7 +196,7 @@ public class CartControllerTest extends IntegrationTest {
     @Test
     void testRemovePizzaEmptyCart() throws Exception {
         int id = defaultPizza1.getId();
-        CustomPizza customPizza = CustomPizza.CustomPizzaCreator(defaultPizza1);
+        CustomPizza customPizza = CustomPizza.customPizzaCreator(defaultPizza1);
         customRepository.save(customPizza);
         removePizzaRequest(customPizza.getId()).andExpect(status().isBadRequest());
     }
@@ -240,7 +240,7 @@ public class CartControllerTest extends IntegrationTest {
 
     @Test
     void testAddToppingPizzaNotInCart() throws Exception {
-        CustomPizza customPizza = CustomPizza.CustomPizzaCreator(defaultPizza1);
+        CustomPizza customPizza = CustomPizza.customPizzaCreator(defaultPizza1);
         customRepository.save(customPizza);
         addPizzaRequest(defaultPizza2.getId()).andExpect(status().isOk());
 
@@ -282,7 +282,7 @@ public class CartControllerTest extends IntegrationTest {
 
     @Test
     void testRemoveToppingPizzaNotInCart() throws Exception {
-        CustomPizza customPizza = CustomPizza.CustomPizzaCreator(defaultPizza1);
+        CustomPizza customPizza = CustomPizza.customPizzaCreator(defaultPizza1);
         customRepository.save(customPizza);
         addPizzaRequest(defaultPizza2.getId());
         var topping = toppingRepository.save(new Topping("Test topping", 100));

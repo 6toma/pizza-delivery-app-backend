@@ -1,15 +1,21 @@
 package nl.tudelft.sem.checkout.domain;
 
+import java.time.LocalTime;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nl.tudelft.sem.template.commons.PizzaAttributeConverter;
+import nl.tudelft.sem.template.commons.entity.CustomPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
-
-import javax.persistence.*;
-import java.time.LocalTime;
-import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -36,13 +42,13 @@ public class Order {
     @OneToMany
     @Column(name = "pizzas", nullable = false)
     //@Convert(converter = PizzaAttributeConverter.class)
-    private List<Pizza> pizzaList;
+    private List<CustomPizza> pizzaList;
 
     @Column(name = "coupon", nullable = false)
     private String coupon;
 
     @Builder
-    public Order(long storeId, String customerId, LocalTime pickupTime, List<Pizza> pizzaList, String coupon) {
+    public Order(long storeId, String customerId, LocalTime pickupTime, List<CustomPizza> pizzaList, String coupon) {
         this.storeId = storeId;
         this.customerId = customerId;
         this.pickupTime = pickupTime;
