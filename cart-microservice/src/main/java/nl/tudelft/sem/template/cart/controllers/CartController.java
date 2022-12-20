@@ -90,7 +90,7 @@ public class CartController {
     <T> ResponseEntity<T> postRequest(OrderModel orderModel, Class<T> responseClass) {
         var request = RequestEntity.post(URI.create(CHECKOUT_URL))
             .contentType(MediaType.APPLICATION_JSON)
-            .header("Authorization", "Bearer " + authManager.getJwtToken())
+            .header("Authorization", "Bearer " + "WILL B DELETED")
             .body(orderModel);
         var restTemplate = new RestTemplate();
         return restTemplate.exchange(request, responseClass);

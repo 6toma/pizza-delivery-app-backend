@@ -1,14 +1,19 @@
 package nl.tudelft.sem.template.commons.utils;
 
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
+import nl.tudelft.sem.template.authentication.JwtTokenGenerator;
+import nl.tudelft.sem.template.authentication.annotations.role.MicroServiceInteraction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -20,6 +25,9 @@ public class RequestHelper {
     private static final Logger logger = LoggerFactory.getLogger(RequestHelper.class);
     // TODO: Generate a new token (make it fast and easy for now)
     private final AuthManager authenticationManager;
+    private final JwtTokenGenerator jwtTokenGenerator;
+    private String currentToken;
+    private long tokenExpiryTime;
 
     // TODO : don't harcode
     private final String baseUrl = "http://localhost";
@@ -82,7 +90,7 @@ public class RequestHelper {
         try {
             RequestEntity.HeadersBuilder<?> request =
                 RequestEntity.method(httpMethod, url).accept(MediaType.APPLICATION_JSON);
-            var requestWithToken = request.header("Authorization", "Bearer " + authenticationManager.getJwtToken());
+            var requestWithToken = request.header("Authorization", "Bearer " + getAuthenticationToken());
             if (toSend != null) {
                 // add to post request the object
                 var postRequest = ((RequestEntity.BodyBuilder) requestWithToken).body(toSend);
@@ -105,5 +113,27 @@ public class RequestHelper {
     private URI createUrl(int port, String path) {
         String url = String.format("%s:%d%s", baseUrl, port, path);
         return URI.create(url);
+    }
+
+    /**
+     * Generates a token with the right authority to make requests to protected microservice interaction endpoints.
+     *
+     * @return The current token
+     */
+    private String getAuthenticationToken() {
+        // If token is null (not generated yet) or it has expired, generate a new token
+        if (currentToken == null || System.currentTimeMillis() >= tokenExpiryTime) {
+            currentToken = jwtTokenGenerator.generateToken(
+                User.withUsername("microservice-interaction@microservice.com")
+                    .authorities(MicroServiceInteraction.AUTHORITY)
+                    .password("")
+                    .build()
+            );
+            // Subtract one minute to give it some slack, we don't want microservice interactions to
+            // fail due to the token being expired.
+            tokenExpiryTime =
+                System.currentTimeMillis() + JwtTokenGenerator.JWT_TOKEN_VALIDITY - TimeUnit.MINUTES.toMillis(1);
+        }
+        return currentToken;
     }
 }

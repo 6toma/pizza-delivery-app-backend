@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.authentication.authentication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import lombok.SneakyThrows;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
 import nl.tudelft.sem.template.authentication.domain.user.NetId;
@@ -32,6 +33,7 @@ public class JwtUserDetailsServiceTests {
     private transient UserRepository userRepository;
 
     @Test
+    @SneakyThrows
     public void loadUserByUsername_withValidUser_returnsCorrectUser() {
         // Arrange
         final NetId testUser = new NetId("SomeUser");
