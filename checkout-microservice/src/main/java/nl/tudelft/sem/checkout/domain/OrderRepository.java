@@ -1,5 +1,6 @@
-package nl.tudelft.sem.template.checkout;
+package nl.tudelft.sem.checkout.domain;
 
+import nl.tudelft.sem.checkout.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,10 +14,10 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     List<Order> findAll();
 
-    Optional<Order> findByOrderId(int orderId);
+    Optional<Order> findByOrderId(long orderId);
 
-    boolean existsByOrderId(int orderId);
+    boolean existsByOrderId(long orderId);
 
-    void deleteOrderByOrderId(int orderId);
+    void deleteOrderByOrderId(long orderId);
 
 }
