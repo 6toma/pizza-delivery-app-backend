@@ -15,17 +15,17 @@ public class AuthManager {
      *
      * @return The name of the user.
      */
-    public String getNetId() {
+    public String getEmail() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     /**
-     * Gets the <code>NetId</code> object of the current authenticated user.
+     * Gets the <code>Email</code> object of the current authenticated user.
      *
-     * @return a full NetId object of the authenticated user
+     * @return a full Email object of the authenticated user
      */
-    public NetId getNetIdObject() {
-        return new NetId(SecurityContextHolder.getContext().getAuthentication().getName());
+    public UserEmail getEmailObject() {
+        return new UserEmail(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     /**

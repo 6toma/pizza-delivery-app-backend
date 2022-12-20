@@ -12,8 +12,7 @@ import javax.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nl.tudelft.sem.template.authentication.NetId;
-import nl.tudelft.sem.template.authentication.NetIdAttributeConverter;
+import nl.tudelft.sem.template.authentication.UserEmail;
 import nl.tudelft.sem.template.authentication.domain.HasEvents;
 
 /**
@@ -32,8 +31,8 @@ public class AppUser extends HasEvents {
     @Column(name = "id", nullable = false, unique = true)
     private int id;
 
-    @Column(name = "net_id", nullable = false, unique = true)
-    private NetId netId;
+    @Column(name = "email", nullable = false, unique = true)
+    private UserEmail email;
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -47,28 +46,28 @@ public class AppUser extends HasEvents {
     /**
      * Create new application user. By default, their role will be set to customer.
      *
-     * @param netId    The NetId for the new user
+     * @param email    The Email for the new user
      * @param password The password for the new user
      */
-    public AppUser(NetId netId, HashedPassword password) {
-        this.netId = netId;
+    public AppUser(UserEmail email, HashedPassword password) {
+        this.email = email;
         this.role = UserRole.CUSTOMER;
         this.password = password;
-        this.recordThat(new UserWasCreatedEvent(netId));
+        this.recordThat(new UserWasCreatedEvent(email));
     }
 
     /**
      * Create new application user with specific role.
      *
-     * @param netId    The NetId for the new user
+     * @param email    The Email for the new user
      * @param role     The role of the new user
      * @param password The password for the new user
      */
-    public AppUser(NetId netId, UserRole role, HashedPassword password) {
-        this.netId = netId;
+    public AppUser(UserEmail email, UserRole role, HashedPassword password) {
+        this.email = email;
         this.role = role;
         this.password = password;
-        this.recordThat(new UserWasCreatedEvent(netId));
+        this.recordThat(new UserWasCreatedEvent(email));
     }
 
     /**
@@ -81,8 +80,8 @@ public class AppUser extends HasEvents {
         this.recordThat(new PasswordWasChangedEvent(this));
     }
 
-    public NetId getNetId() {
-        return netId;
+    public UserEmail getEmail() {
+        return email;
     }
 
     public HashedPassword getPassword() {

@@ -12,7 +12,7 @@ import java.io.UnsupportedEncodingException;
 import lombok.SneakyThrows;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.JwtTokenVerifier;
-import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.UserEmail;
 import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
@@ -42,7 +42,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @Execution(ExecutionMode.CONCURRENT)
 public class IntegrationTest {
 
-    protected static final String TEST_USER = "test_user";
+    protected static final String TEST_USER = "example@gmail.com";
 
     protected final ObjectMapper mapper = new ObjectMapper();
 
@@ -113,7 +113,7 @@ public class IntegrationTest {
     }
 
     /**
-     * Adds authentication to a request by using the default netid (test_user) and the customer role.
+     * Adds authentication to a request by using the default email (test_user) and the customer role.
      *
      * @param builder Your request
      * @return The modified builder with the authorization header included
@@ -123,18 +123,18 @@ public class IntegrationTest {
     }
 
     /**
-     * Adds authentication to a request by using a specific netid and the customer role.
+     * Adds authentication to a request by using a specific email and the customer role.
      *
      * @param builder Your request
-     * @param netId   The netid you want to use for authentication
+     * @param email   The email you want to use for authentication
      * @return The modified builder with the authorization header included
      */
-    protected MockHttpServletRequestBuilder authenticated(MockHttpServletRequestBuilder builder, String netId) {
-        return authenticated(builder, netId, UserRole.CUSTOMER);
+    protected MockHttpServletRequestBuilder authenticated(MockHttpServletRequestBuilder builder, String email) {
+        return authenticated(builder, email, UserRole.CUSTOMER);
     }
 
     /**
-     * Adds authentication to a request by using the default net id (test_user) and the specified role.
+     * Adds authentication to a request by using the default email (test_user) and the specified role.
      *
      * @param builder Your request
      * @param role    The role of the user you want to authenticate as
@@ -149,16 +149,16 @@ public class IntegrationTest {
      * authentication and adds the authorization header to your request.
      *
      * @param builder Your request
-     * @param netId   The net id of the user you want to authenticate as
+     * @param email   The email of the user you want to authenticate as
      * @param role    The role of the user you want to authenticate as
      * @return The modified builder with the authorization header included
      */
-    protected MockHttpServletRequestBuilder authenticated(MockHttpServletRequestBuilder builder, String netId,
+    protected MockHttpServletRequestBuilder authenticated(MockHttpServletRequestBuilder builder, String email,
                                                           UserRole role) {
-        when(mockAuthenticationManager.getNetId()).thenReturn(netId);
-        when(mockAuthenticationManager.getNetIdObject()).thenReturn(new NetId(netId));
+        when(mockAuthenticationManager.getEmail()).thenReturn(email);
+        when(mockAuthenticationManager.getEmailObject()).thenReturn(new UserEmail(email));
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(netId);
+        when(mockJwtTokenVerifier.getEmailFromToken(anyString())).thenReturn(email);
         when(mockJwtTokenVerifier.getRoleFromToken(anyString())).thenReturn(role.getJwtRoleName());
         return builder.header("Authorization", "Bearer SomeRandomToken");
     }

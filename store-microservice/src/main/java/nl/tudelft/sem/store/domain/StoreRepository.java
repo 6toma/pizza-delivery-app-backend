@@ -1,7 +1,7 @@
 package nl.tudelft.sem.store.domain;
 
 import java.util.List;
-import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.UserEmail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,9 +11,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     boolean existsByStoreName(String storeName);
 
-    @Query(value = "SELECT store_id FROM store WHERE store_name = :storeName"
-        , nativeQuery = true)
+    @Query(value = "SELECT store_id FROM store WHERE store_name = :storeName", nativeQuery = true)
     long getStoreIdFromStoreName(String storeName);
 
-    boolean existsByStoreIdAndStoreOwnerNetId(long storeId, NetId storeOwnerId);
+    boolean existsByStoreIdAndStoreOwnerEmail(long storeId, UserEmail storeOwnerEmail);
 }

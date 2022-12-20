@@ -8,7 +8,7 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.UserEmail;
 
 @Entity
 @Table(name = "carts")
@@ -16,14 +16,14 @@ import nl.tudelft.sem.template.authentication.NetId;
 @Getter
 public class Cart {
     @EmbeddedId
-    private NetId netId;
+    private UserEmail userEmail;
 
     @ElementCollection
     @MapKeyColumn(name = "id")
     private Map<CustomPizza, Integer> pizzasMap;
 
-    public Cart(NetId netId, Map<CustomPizza, Integer> pizzas) {
-        this.netId = netId;
+    public Cart(UserEmail userEmail, Map<CustomPizza, Integer> pizzas) {
+        this.userEmail = userEmail;
         this.pizzasMap = pizzas;
     }
 

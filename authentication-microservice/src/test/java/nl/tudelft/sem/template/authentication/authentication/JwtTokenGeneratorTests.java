@@ -23,7 +23,7 @@ public class JwtTokenGeneratorTests {
 
     private final String secret = "testSecret123";
 
-    private String netId = "andy";
+    private String email = "andy";
     private UserDetails user;
 
     /**
@@ -37,7 +37,7 @@ public class JwtTokenGeneratorTests {
         jwtTokenGenerator = new JwtTokenGenerator(timeProvider);
         this.injectSecret(secret);
 
-        user = User.withUsername(netId).password("someHash").roles(UserRole.CUSTOMER.name()).build();
+        user = User.withUsername(email).password("someHash").roles(UserRole.CUSTOMER.name()).build();
     }
 
     @Test
@@ -61,13 +61,13 @@ public class JwtTokenGeneratorTests {
     }
 
     @Test
-    public void generatedTokenHasCorrectNetId() {
+    public void generatedTokenHasCorrectEmail() {
         // Act
         String token = jwtTokenGenerator.generateToken(user);
 
         // Assert
         Claims claims = getClaims(token);
-        assertThat(claims.getSubject()).isEqualTo(netId);
+        assertThat(claims.getSubject()).isEqualTo(email);
     }
 
     @Test

@@ -3,7 +3,7 @@ package nl.tudelft.sem.template.authentication.authentication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.UserEmail;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
@@ -34,7 +34,7 @@ public class JwtUserDetailsServiceTests {
     @Test
     public void loadUserByUsername_withValidUser_returnsCorrectUser() {
         // Arrange
-        final NetId testUser = new NetId("SomeUser");
+        final UserEmail testUser = new UserEmail("some.user@gmail.com");
         final HashedPassword testHashedPassword = new HashedPassword("password123Hash");
 
         AppUser appUser = new AppUser(testUser, testHashedPassword);
@@ -51,9 +51,9 @@ public class JwtUserDetailsServiceTests {
     @Test
     public void loadUserByUsername_withNonexistentUser_throwsException() {
         // Arrange
-        final String testNonexistentUser = "SomeUser";
+        final String testNonexistentUser = "example.not.there@gmail.com";
 
-        final NetId testUser = new NetId("AnotherUser");
+        final UserEmail testUser = new UserEmail("another.user@gmail.com");
         final String testPasswordHash = "password123Hash";
 
         AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash));

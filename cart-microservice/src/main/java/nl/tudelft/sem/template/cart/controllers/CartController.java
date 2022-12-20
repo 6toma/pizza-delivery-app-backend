@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
-import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.UserEmail;
 import nl.tudelft.sem.template.cart.CartRepository;
 import nl.tudelft.sem.template.cart.CustomPizzaRepository;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
@@ -43,9 +43,9 @@ public class CartController {
     private final ToppingRepository toppingRepository;
 
 
-    private Cart getCartFromNetId() {
-        NetId netId = authManager.getNetIdObject();
-        return cartRepository.findByNetId(netId);
+    private Cart getCartFromEmail() {
+        UserEmail userEmail = authManager.getEmailObject();
+        return cartRepository.findByUserEmail(userEmail);
     }
 
     private CustomPizza getDefaultPizza(int defaultPizzaId) {
@@ -79,7 +79,7 @@ public class CartController {
 
 
     private Cart getCart() {
-        Cart cart = getCartFromNetId();
+        Cart cart = getCartFromEmail();
         if (cart == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You don't currently have a cart");
         }
@@ -90,9 +90,9 @@ public class CartController {
     @Transactional
     int addPizzaToCart(@PathVariable("id") int defaultPizzaId) {
         CustomPizza customPizza = getDefaultPizza(defaultPizzaId);
-        Cart cart = getCartFromNetId();
+        Cart cart = getCartFromEmail();
         if (cart == null) {
-            var id = authManager.getNetIdObject();
+            var id = authManager.getEmailObject();
             cart = new Cart(id, new HashMap<>());
         }
         customPizza = customPizzaRepository.save(customPizza);
@@ -166,16 +166,16 @@ public class CartController {
     /**
      * Gets the cart and clears the cart contents at the same time.
      *
-     * @param netId netId of the user
+     * @param userEmail email of the user
      * @return the cart
      */
-    @GetMapping("/getCart/{netId}")
-    List<CartPizza> getCartFromNetId(@PathVariable("netId") NetId netId) {
-        Cart cart = cartRepository.findByNetId(netId);
+    @GetMapping("/getCart/{email}")
+    List<CartPizza> getCartFromEmail(@PathVariable("email") UserEmail userEmail) {
+        Cart cart = cartRepository.findByUserEmail(userEmail);
         if (cart == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This user doesn't have a cart");
         }
-        cartRepository.deleteByNetId(netId);
+        cartRepository.deleteByUserEmail(userEmail);
         return cart.getPizzasMap().entrySet().stream().map(entry -> new CartPizza(entry.getKey(), entry.getValue()))
             .collect(Collectors.toList());
     }

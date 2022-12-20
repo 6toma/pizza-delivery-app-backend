@@ -77,9 +77,9 @@ public class RoleAuthorizationTests {
 
     @BeforeEach
     void setup() {
-        when(mockAuthManager.getNetId()).thenReturn("ExampleUser");
+        when(mockAuthManager.getEmail()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getEmailFromToken(anyString())).thenReturn("ExampleUser");
     }
 
     /**

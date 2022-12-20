@@ -1,18 +1,18 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
-import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.UserEmail;
 
 /**
  * A DDD domain event that indicated a user was created.
  */
 public class UserWasCreatedEvent {
-    private final NetId netId;
+    private final UserEmail userEmail;
 
-    public UserWasCreatedEvent(NetId netId) {
-        this.netId = netId;
+    public UserWasCreatedEvent(UserEmail userEmail) {
+        this.userEmail = userEmail;
     }
 
-    public NetId getNetId() {
-        return this.netId;
+    public UserEmail getEmail() {
+        return this.userEmail;
     }
 }

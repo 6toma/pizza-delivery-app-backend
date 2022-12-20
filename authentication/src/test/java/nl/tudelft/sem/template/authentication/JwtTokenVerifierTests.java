@@ -80,13 +80,13 @@ public class JwtTokenVerifierTests {
     }
 
     @Test
-    public void parseNetid() {
+    public void parseEmail() {
         // Arrange
         String expected = "user123";
         String token = generateToken(secret, expected, UserRole.CUSTOMER, -10_000_000, 10_000_000);
 
         // Act
-        String actual = jwtTokenVerifier.getNetIdFromToken(token);
+        String actual = jwtTokenVerifier.getEmailFromToken(token);
 
         // Assert
         assertThat(actual).isEqualTo(expected);
@@ -100,10 +100,10 @@ public class JwtTokenVerifierTests {
         assertThat(actual).isEqualTo(role.getJwtRoleName());
     }
 
-    private String generateToken(String jwtSecret, String netid, UserRole role, long issuanceOffset, long expirationOffset) {
+    private String generateToken(String jwtSecret, String email, UserRole role, long issuanceOffset, long expirationOffset) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role.getJwtRoleName());
-        return Jwts.builder().setClaims(claims).setSubject(netid)
+        return Jwts.builder().setClaims(claims).setSubject(email)
             .setIssuedAt(new Date(System.currentTimeMillis() + issuanceOffset))
             .setExpiration(new Date(System.currentTimeMillis() + expirationOffset))
             .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();

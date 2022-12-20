@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.UserEmail;
 
 
 @Entity
@@ -33,8 +33,8 @@ public class Store {
     @Column(name = "address", nullable = false)
     StoreAddress location;
 
-    @Column(name = "store_owner_netid", nullable = false)
-    NetId storeOwnerNetId;
+    @Column(name = "store_owner_email", nullable = false)
+    UserEmail storeOwnerEmail;
 
     /**
      * Dummy method for now to prepare pizza.

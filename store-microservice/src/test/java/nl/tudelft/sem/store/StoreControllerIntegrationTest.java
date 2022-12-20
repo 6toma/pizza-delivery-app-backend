@@ -61,12 +61,12 @@ public class StoreControllerIntegrationTest extends IntegrationTest {
 
     @Test
     public void test_owner_id_fake_but_good_store() {
-        // store owner has netId of store index 0
+        // store owner has email of store index 0
         // the store_id that is passed is actually store index 1
         Store store = defaultStoreList.get(0);
         StoreOwnerValidModel storeOwnerValidModel =
             new StoreOwnerValidModel(
-                store.getStoreOwnerNetId().toString(), defaultStoreList.get(1).getStoreId());
+                store.getStoreOwnerEmail().toString(), defaultStoreList.get(1).getStoreId());
         expectStoreOwnerToBe(storeOwnerValidModel, false);
     }
 
@@ -76,7 +76,7 @@ public class StoreControllerIntegrationTest extends IntegrationTest {
         for (Store store : defaultStoreList) {
             StoreOwnerValidModel storeOwnerValidModel =
                 new StoreOwnerValidModel(
-                    store.getStoreOwnerNetId().toString(), store.getStoreId());
+                    store.getStoreOwnerEmail().toString(), store.getStoreId());
             expectStoreOwnerToBe(storeOwnerValidModel, true);
         }
     }
@@ -85,7 +85,7 @@ public class StoreControllerIntegrationTest extends IntegrationTest {
     public void test_check_store_owner_but_not_existing_store_id() throws Exception {
         // store number -1 is invalid
         StoreOwnerValidModel storeOwnerValidModel =
-            new StoreOwnerValidModel(defaultStoreList.get(0).getStoreOwnerNetId().toString(), -1);
+            new StoreOwnerValidModel(defaultStoreList.get(0).getStoreOwnerEmail().toString(), -1);
 
         doRequest(post("/store/checkStoreowner").contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(storeOwnerValidModel)))

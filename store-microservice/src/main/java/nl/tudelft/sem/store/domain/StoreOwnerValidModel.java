@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StoreOwnerValidModel {
-    private String netId;
+    private String email;
     private long storeId;
 }

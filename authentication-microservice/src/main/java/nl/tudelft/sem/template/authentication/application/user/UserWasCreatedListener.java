@@ -24,6 +24,6 @@ public class UserWasCreatedListener {
     @EventListener
     public void onAccountWasCreated(UserWasCreatedEvent event) {
         // Handler code here
-        logger.info("Account with netID: " + event.getNetId().toString() + " was created.");
+        logger.info("Account with email: " + event.getEmail().toString() + " was created.");
     }
 }

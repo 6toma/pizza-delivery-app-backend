@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
 import lombok.RequiredArgsConstructor;
-import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.UserEmail;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -28,7 +28,7 @@ public class JwtUserDetailsService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var optionalUser = userRepository.findByNetId(new NetId(username));
+        var optionalUser = userRepository.findByEmail(new UserEmail(username));
 
         if (optionalUser.isEmpty()) {
             throw new UsernameNotFoundException("User does not exist");
@@ -36,7 +36,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
         var user = optionalUser.get();
 
-        return User.withUsername(user.getNetId().toString())
+        return User.withUsername(user.getEmail().toString())
             .password(user.getPassword().toString())
             .authorities(new SimpleGrantedAuthority(user.getRole().getJwtRoleName()))
             .build();

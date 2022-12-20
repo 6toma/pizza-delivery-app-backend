@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Arrays;
 import java.util.Collection;
 import javax.transaction.Transactional;
-import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.UserEmail;
 import nl.tudelft.sem.template.cart.CartRepository;
 import nl.tudelft.sem.template.cart.CustomPizzaRepository;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
@@ -301,7 +301,7 @@ public class CartControllerTest extends IntegrationTest {
         addPizzaRequest(defaultPizza1.getId());
         addPizzaRequest(defaultPizza2.getId());
         var cart = cartRepository.findAll().get(0);
-        var result = getCartRequest(new NetId(TEST_USER)).andExpect(status().isOk());
+        var result = getCartRequest(new UserEmail(TEST_USER)).andExpect(status().isOk());
         var cartPizzas = Arrays.asList(parseResponseJson(result, CartPizza[].class));
         assertThat(cartRepository.count()).isZero();
         assertEquals(cart.getPizzasMap().size(), cartPizzas.size());
@@ -315,7 +315,7 @@ public class CartControllerTest extends IntegrationTest {
 
     @Test
     void testGetCartNoCartForId() throws Exception {
-        getCartRequest(new NetId("Not a real ID")).andExpect(status().isBadRequest());
+        getCartRequest(new UserEmail("not.in.db@gmail.com")).andExpect(status().isBadRequest());
     }
 
     private CustomPizza search(Collection<CustomPizza> pizzas, String name) {
@@ -342,8 +342,8 @@ public class CartControllerTest extends IntegrationTest {
         return mockMvc.perform(authenticated(post("/cart/removePizza/" + pizzaId)));
     }
 
-    private ResultActions getCartRequest(NetId netId) throws Exception {
-        return mockMvc.perform(authenticated(get("/cart/getCart/" + netId)));
+    private ResultActions getCartRequest(UserEmail userEmail) throws Exception {
+        return mockMvc.perform(authenticated(get("/cart/getCart/" + userEmail)));
     }
 
     private ResultActions addToppingRequest(int pizzaId, int toppingId) throws Exception {

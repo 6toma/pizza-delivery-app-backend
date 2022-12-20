@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import nl.tudelft.sem.store.domain.Store;
 import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.store.domain.StoreRepository;
-import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.UserEmail;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,11 +47,11 @@ public class StoreRestController {
     }
 
     /**
-     * <b>POST</b> request that checks if a combination between <code>storeId</code> and <code>storeOwnerNetId</code> is
+     * <b>POST</b> request that checks if a combination between <code>storeId</code> and <code>storeOwnerEmail</code> is
      * valid. It should be used in coupon microservice to check if a store owner is legitimate.
      * <p>In case the storeId does not exist <code>400</code> response is sent.</p>
      *
-     * @param storeOwnerValidModel request model that has <code>storeId</code> and <code>storeOwnerNetId</code>
+     * @param storeOwnerValidModel request model that has <code>storeId</code> and <code>storeOwnerEmail</code>
      * @return true/false if the store owner is legitimate or not
      */
     @PostMapping("/checkStoreowner")
@@ -60,8 +60,8 @@ public class StoreRestController {
         if (storeRepository.findById(storeId).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Store with id " + storeId + " not found");
         }
-        return storeRepository.existsByStoreIdAndStoreOwnerNetId(storeOwnerValidModel.getStoreId(),
-            new NetId(storeOwnerValidModel.getNetId()));
+        return storeRepository.existsByStoreIdAndStoreOwnerEmail(storeOwnerValidModel.getStoreId(),
+            new UserEmail(storeOwnerValidModel.getEmail()));
     }
 
     /**
