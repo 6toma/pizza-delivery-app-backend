@@ -65,16 +65,10 @@ public class ToppingService {
      *
      * @param toppingName the name of the Topping
      * @param price is the price of the topping
-     * @throws Exception when no Topping is found with the input name
      */
-    public void editTopping(String toppingName, double price) throws Exception {
+    public void editTopping(String toppingName, double price) {
 
-        try {
-            removeTopping(toppingName);
-            addTopping(toppingName, price);
-        } catch (Exception e) {
-            throw new ToppingNotFoundException(toppingName);
-        }
+        tr.save(new Topping(toppingName, price));
     }
 
     /**

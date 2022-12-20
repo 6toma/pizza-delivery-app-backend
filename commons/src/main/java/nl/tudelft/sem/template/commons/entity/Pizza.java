@@ -1,82 +1,92 @@
 package nl.tudelft.sem.template.commons.entity;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import lombok.NoArgsConstructor;
-import nl.tudelft.sem.template.commons.ToppingAttributeConverter;
-
-import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.Min;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@Entity
-@Table(name = "pizzas")
+/**
+ *
+ */
+@MappedSuperclass
 @NoArgsConstructor
+@ToString
 public class Pizza {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false, unique = true)
+    @Getter
     private int id;
 
-    @Column(name = "name", nullable = false, unique = true)
-    @NotNull(message = "Pizza name can't be null")
-    @Size(min = 5, max = 30, message = "Pizza name should be between 5 and 30 characters long")
-    private String pizzaName;
-
-    @ElementCollection
     @Column(name = "toppings", nullable = false)
-    @Convert(converter = ToppingAttributeConverter.class)
+    @ManyToMany
+    @Getter
     private List<Topping> toppings;
 
     @Column(name = "price", nullable = false)
     @Min(value = 5, message = "The pizza's price should be at least 5 euros")
+    @Getter
     private double price;
 
-    public Pizza(String pizzaType, List<Topping> toppings, double price) {
-        this.pizzaName = pizzaType;
-        this.toppings = toppings;
+    public Pizza(double price, List<Topping> toppings) {
         this.price = price;
+        this.toppings = toppings;
     }
 
-    public String getPizzaName() {
-        return pizzaName;
-    }
-
-    public List<Topping> getToppings() {
-        return toppings;
-    }
-
-    public double getPrice() {
+    /**
+     * @return
+     */
+    public int calculatePrice() {
+        int price = 0;
+        for (Topping topping : toppings) {
+            price += topping.getPrice();
+        }
         return price;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
+    /**
+     * @param t
+     * @return
+     */
+    public boolean addTopping(Topping t) {
+        if (toppings.contains(t)) {
             return false;
         }
-        Pizza p = (Pizza) o;
-        return id == (p.id);
+        toppings.add(t);
+        return true;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(pizzaName);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(pizzaName).append(";");
-        for(Topping t : toppings) {
-            builder.append(t.getName()).append(' ').append(t.getPrice()).append(";");
+    /**
+     * @param t
+     * @return
+     */
+    public boolean removeTopping(Topping t) {
+        if (!toppings.contains(t)) {
+            return false;
         }
-        return builder.append(price).toString();
+        toppings.remove(t);
+        return true;
     }
 
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o instanceof Pizza) {
+            Pizza that = (Pizza) o;
+            return that.getPrice() == this.getPrice() &&
+                new HashSet<>(toppings).equals(new HashSet<>(that.getToppings()));
+        }
+        return false;
+    }
 }

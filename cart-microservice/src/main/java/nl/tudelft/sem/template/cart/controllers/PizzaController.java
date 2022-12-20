@@ -1,7 +1,9 @@
 package nl.tudelft.sem.template.cart.controllers;
 
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
 import nl.tudelft.sem.template.cart.PizzaService;
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.models.PizzaModel;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ public class PizzaController {
 
     private final transient PizzaService pizzaService;
 
+
     /**
      * A post request to send a new pizza to the DB.
      *
@@ -26,6 +29,7 @@ public class PizzaController {
      * @throws Exception if the pizza already exists
      */
     @PostMapping("/add")
+    @RoleRegionalManager
     public ResponseEntity<String> addPizza(@RequestBody PizzaModel pizza) throws Exception {
 
         try {
@@ -45,7 +49,8 @@ public class PizzaController {
      * @throws Exception if the pizza name does not exist
      */
     @DeleteMapping("/remove")
-    public ResponseEntity removePizza(@RequestBody String pizzaName) throws Exception {
+    @RoleRegionalManager
+    public ResponseEntity<String> removePizza(@RequestBody String pizzaName) throws Exception {
 
         try {
             pizzaService.removePizza(pizzaName);
@@ -61,17 +66,11 @@ public class PizzaController {
      *
      * @param pizza the new pizza
      * @return ResponseEntity
-     * @throws Exception if the pizza name does not exist
      */
     @PutMapping("/edit")
-    public ResponseEntity editPizza(@RequestBody PizzaModel pizza) throws Exception {
-
-        try {
-            pizzaService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-
+    @RoleRegionalManager
+    public ResponseEntity<String> editPizza(@RequestBody PizzaModel pizza) {
+        pizzaService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
         return ResponseEntity.ok("Pizza edited");
     }
 
@@ -81,7 +80,7 @@ public class PizzaController {
      * @return the list of pizzas
      */
     @GetMapping("/getAll")
-    public List<Pizza> getPizzas() {
+    public List<DefaultPizza> getPizzas() {
         return pizzaService.getAll();
     }
 
@@ -92,7 +91,7 @@ public class PizzaController {
      * @return the list of filtered pizzas
      */
     @PostMapping("/getAll")
-    public List<Pizza> getPizzas(@RequestBody List<String> allergens) {
+    public List<DefaultPizza> getPizzas(@RequestBody List<String> allergens) {
         return pizzaService.getAllByFilter(allergens);
     }
 }

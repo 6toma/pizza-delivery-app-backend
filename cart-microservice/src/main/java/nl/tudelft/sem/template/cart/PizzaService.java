@@ -1,13 +1,15 @@
 package nl.tudelft.sem.template.cart;
 
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameNotFoundException;
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Menu service responsible for managing the pizza DB.
@@ -16,14 +18,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PizzaService {
 
-    private final transient PizzaRepository pizzaRepository;
+    private final transient DefaultPizzaRepository pizzaRepository;
 
     /**
      * Retrieves all the pizzas from the DB.
      *
      * @return List of pizzas
      */
-    public List<Pizza> getAll() {
+    public List<DefaultPizza> getAll() {
         return pizzaRepository.findAll();
     }
 
@@ -33,8 +35,8 @@ public class PizzaService {
      * @param allergens the list of allergens
      * @return List of filtered pizzas
      */
-    public List<Pizza> getAllByFilter(List<String> allergens) {
-        List<Pizza> pizzas = pizzaRepository.findAll();
+    public List<DefaultPizza> getAllByFilter(List<String> allergens) {
+        List<DefaultPizza> pizzas = pizzaRepository.findAll();
         //Todo implement filter
         return pizzas;
     }
@@ -43,14 +45,14 @@ public class PizzaService {
      * Adds a pizza to the DB.
      *
      * @param pizzaName the name of the pizza
-     * @param toppings the toppings on the pizza
+     * @param toppings  the toppings on the pizza
      * @return the resulting Pizza
      * @throws Exception when the name of the pizza already exists
      */
-    public Pizza addPizza(String pizzaName, List<Topping> toppings, double price) throws Exception {
+    public DefaultPizza addPizza(String pizzaName, List<Topping> toppings, double price) throws Exception {
 
         if (checkPizzaIsUnique(pizzaName)) {
-            Pizza pizza = new Pizza(pizzaName, toppings, price);
+            DefaultPizza pizza = new DefaultPizza(pizzaName, toppings, price);
             pizzaRepository.save(pizza);
 
             return pizza;
@@ -67,7 +69,7 @@ public class PizzaService {
     public void removePizza(String pizzaName) throws Exception {
 
         if (!checkPizzaIsUnique(pizzaName)) {
-            pizzaRepository.deleteById(pizzaName);
+            pizzaRepository.deleteByPizzaName(pizzaName);
             return;
         }
         throw new PizzaNameNotFoundException(pizzaName);
@@ -77,27 +79,25 @@ public class PizzaService {
      * Edits a pizza from the DB.
      *
      * @param pizzaName the name of the pizza
-     * @param toppings the topppings on the pizza
-     * @throws Exception when no pizza is found with the input name
+     * @param toppings  the topppings on the pizza
      */
-    public void editPizza(String pizzaName, List<Topping> toppings, double price) throws Exception {
+    public void editPizza(String pizzaName, List<Topping> toppings, double price) {
 
-        try {
-            removePizza(pizzaName);
-            addPizza(pizzaName, toppings, price);
-        } catch (Exception e) {
-            throw new PizzaNameNotFoundException(pizzaName);
-        }
+        pizzaRepository.save(new DefaultPizza(pizzaName, toppings, price));
     }
 
     /**
-     * Checks whether this pizzaname already exists.
+     * Checks whether this pizzaName already exists.
      *
      * @param pizzaName the name to check
-     * @return true if the name is unique else false
+     * @return true if the name does not yet exist, else false
      */
     public boolean checkPizzaIsUnique(String pizzaName) {
         return !pizzaRepository.existsByPizzaName(pizzaName);
+    }
+
+    public Optional<Pizza> getPizza(String pizzaName) {
+        return pizzaRepository.findByPizzaName(pizzaName);
     }
 
 }

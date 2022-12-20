@@ -1,6 +1,8 @@
 package nl.tudelft.sem.template.cart;
 
-import java.util.List;
+import java.util.Optional;
+
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -9,28 +11,16 @@ import org.springframework.stereotype.Repository;
  * A repository for pizzas.
  */
 @Repository
-public interface PizzaRepository extends JpaRepository<Pizza, String> {
-
-    /**
-     * Saves a pizza.
-     *
-     * @param pizza must not be {@literal null}.
-     * @return the saved pizza
-     */
-    Pizza save(Pizza pizza);
-
-    /**
-     * Find all pizzas.
-     */
-    List<Pizza> findAll();
-
+public interface DefaultPizzaRepository extends JpaRepository<DefaultPizza, Integer> {
     /**
      * Find pizza by name.
      */
-    void deleteById(String pizzaName);
+    void deleteByPizzaName(String pizzaName);
 
     /**
      * Check if a pizza already exists with this name.
      */
     boolean existsByPizzaName(String pizzaName);
+
+    Optional<Pizza> findByPizzaName(String pizzaName);
 }

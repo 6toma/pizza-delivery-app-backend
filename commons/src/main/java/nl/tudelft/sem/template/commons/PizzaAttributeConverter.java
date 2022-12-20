@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.commons;
 
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 
@@ -24,6 +25,6 @@ public class PizzaAttributeConverter implements AttributeConverter<Pizza, String
             list.add(new Topping(topping[0], Double.parseDouble(topping[1])));
         }
         String price = arr[arr.length - 1];
-        return new Pizza(pizzaName, list, Double.parseDouble(price));
+        return new DefaultPizza(pizzaName, list, Double.parseDouble(price));
     }
 }

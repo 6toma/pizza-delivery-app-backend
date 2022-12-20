@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.cart.controllers;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
 import nl.tudelft.sem.template.cart.ToppingService;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.models.ToppingModel;
@@ -31,6 +32,7 @@ public class ToppingController {
      * @throws Exception if the topping already exists
      */
     @PostMapping("/add")
+    @RoleRegionalManager
     public ResponseEntity<String> addTopping(@RequestBody ToppingModel tm) throws Exception {
 
         try {
@@ -50,6 +52,7 @@ public class ToppingController {
      * @throws Exception if the topping name does not exist
      */
     @DeleteMapping("/remove")
+    @RoleRegionalManager
     public ResponseEntity removeTopping(@RequestBody String name) throws Exception {
 
         try {
@@ -66,16 +69,12 @@ public class ToppingController {
      *
      * @param tm the new topping
      * @return ResponseEntity
-     * @throws Exception if the topping name does not exist
      */
     @PutMapping("/edit")
-    public ResponseEntity editTopping(@RequestBody ToppingModel tm) throws Exception {
+    @RoleRegionalManager
+    public ResponseEntity editTopping(@RequestBody ToppingModel tm) {
 
-        try {
-            ts.editTopping(tm.getName(), tm.getPrice());
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+        ts.editTopping(tm.getName(), tm.getPrice());
 
         return ResponseEntity.ok("Topping edited");
     }
