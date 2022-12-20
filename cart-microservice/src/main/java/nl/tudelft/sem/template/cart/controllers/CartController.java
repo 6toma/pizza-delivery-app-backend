@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import nl.tudelft.sem.template.cart.PizzaRepository;
-import nl.tudelft.sem.template.checkout.OrderModel;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -69,25 +67,5 @@ public class CartController {
         // add pizza to current cart
         pizzaInCart.add(pizza);
         return "Pizza " + pizza + " was added to cart.";
-    }
-
-
-    /**
-     * Submits an order to a store, removing the items from the cart.
-     *
-     * @param storeId store to send the order to
-     * @return a string that indicates if the order was placed or weather an error occured.
-     */
-    @PostMapping("/submitOrder")
-    String selectPickupStore(@RequestBody int storeId) {
-        // TODO check if cart is empty
-        OrderModel orderModel = new OrderModel(storeId, pizzaInCart);
-        ResponseEntity<String> outcome = requestHelper.postRequest(8082, "/orders/add", orderModel, String.class);
-
-
-        if (Objects.equals(outcome.getBody(), "Order added")) {
-            return String.format("order of %d pizzas was placed.", pizzaInCart.size());
-        }
-        return "Something went wrong!";
     }
 }
