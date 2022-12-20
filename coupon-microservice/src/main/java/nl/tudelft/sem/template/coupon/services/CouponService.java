@@ -2,20 +2,30 @@ package nl.tudelft.sem.template.coupon.services;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import nl.tudelft.sem.template.coupon.domain.Coupon;
+import nl.tudelft.sem.template.coupon.domain.CouponType;
 import nl.tudelft.sem.template.coupon.domain.Date;
 
 public class CouponService {
 
     public static double applyDiscount(Coupon coupon, List<Double> prices) {
+        if(coupon.getType() != CouponType.DISCOUNT)
+            return -1;
         return prices.stream().mapToDouble(Double::doubleValue).sum()
             * (100 - coupon.getPercentage()) / 100;
     }
 
     public static double applyOnePlusOne(Coupon coupon, List<Double> prices) {
-        prices.remove(prices.stream().sorted().findFirst());
-        return prices.stream().mapToDouble(Double::doubleValue).sum();
+        if(coupon.getType() != CouponType.ONE_PLUS_ONE)
+            return -1;
+        List<Double> copy = new ArrayList<>(prices);
+        Collections.sort(copy);
+        copy.remove(0);
+        return copy.stream().mapToDouble(Double::doubleValue).sum();
     }
 
     /**
@@ -24,7 +34,7 @@ public class CouponService {
      *
      * @return boolean
      */
-    public boolean isValid(Clock clock, Date expiryDate) {
+    public static boolean isValid(Clock clock, Date expiryDate) {
         LocalDate currDate = LocalDate.now(clock);
         LocalDate ed = LocalDate.of(expiryDate.getYear(), expiryDate.getMonth(), expiryDate.getDay());
         return currDate.isBefore(ed);
