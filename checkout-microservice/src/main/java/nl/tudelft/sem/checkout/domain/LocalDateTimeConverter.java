@@ -8,16 +8,19 @@ public class LocalDateTimeConverter implements AttributeConverter<LocalDateTime,
 
     @Override
     public String convertToDatabaseColumn(LocalDateTime attribute) {
-        return String.valueOf(attribute.getYear()) + ':'
-            + attribute.getMonth() + ':'
-            + attribute.getDayOfMonth() + ':'
+        return String.valueOf(attribute.getYear()) + '-'
+            + attribute.getMonth() + '-'
+            + attribute.getDayOfMonth() + ' '
             + attribute.getHour() + ':'
             + attribute.getMinute();
     }
 
     @Override
     public LocalDateTime convertToEntityAttribute(String dbData) {
-        String[] data = dbData.split(":");
-        return LocalDateTime.of(Integer.parseInt(data[0]), Integer.parseInt(data[1]), Integer.parseInt(data[2]), Integer.parseInt(data[3]), Integer.parseInt(data[4]));
+        return LocalDateTime.of(Integer.parseInt(dbData.substring(0, 4)),
+            Integer.parseInt(dbData.substring(5, 7)),
+            Integer.parseInt(dbData.substring(8, 10)),
+            Integer.parseInt(dbData.substring(11, 13)),
+            Integer.parseInt(dbData.substring(14)));
     }
 }
