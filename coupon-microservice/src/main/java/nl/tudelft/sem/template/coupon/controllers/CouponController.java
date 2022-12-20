@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.coupon.controllers;
 import java.util.PriorityQueue;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwnerOrRegionalManager;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
@@ -10,21 +11,19 @@ import nl.tudelft.sem.template.coupon.domain.Coupon;
 import nl.tudelft.sem.template.coupon.domain.CouponRepository;
 import nl.tudelft.sem.template.coupon.domain.CouponType;
 import nl.tudelft.sem.template.coupon.domain.DiscountCouponIncompleteException;
+import nl.tudelft.sem.template.coupon.domain.IncompleteCouponException;
 import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
+import nl.tudelft.sem.template.coupon.domain.InvalidStoreIdException;
 import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
 import nl.tudelft.sem.template.coupon.services.CouponService;
 import nl.tudelft.sem.template.coupon.services.Tuple;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Coupon Controller.
@@ -57,12 +56,8 @@ public class CouponController {
     }
 
     @GetMapping("/getCouponsForStore")
-    public ResponseEntity<List<Coupon>> getCouponsForStore() {
-        return ResponseEntity.ok(repo.findByStoreId(getStoreId()));
-    }
-
-    private long getStoreId() {
-        return 1L; //TODO: change this to request
+    public ResponseEntity<List<Coupon>> getCouponsForStore(@RequestBody long storeId) {
+        return ResponseEntity.ok(repo.findByStoreId(storeId));
     }
 
     /**
@@ -74,7 +69,7 @@ public class CouponController {
      */
     @RoleStoreOwnerOrRegionalManager
     @PostMapping("/addCoupon")
-    public ResponseEntity<Coupon> addCoupon(@RequestBody long storeId, @RequestBody Coupon coupon) throws DiscountCouponIncompleteException {
+    public ResponseEntity<Coupon> addCoupon(@RequestBody Coupon coupon) {
         if (coupon.getCode() == null) {
             throw new InvalidCouponCodeException("No coupon code provided!");
         }
@@ -84,22 +79,25 @@ public class CouponController {
         if (coupon.getPercentage() == null && coupon.getType() == CouponType.DISCOUNT) {
             throw new DiscountCouponIncompleteException();
         }
-        if(storeId == -1 && !authorRole("ROLE_REGIONAL_MANAGER"))
-            throw new NotRegionalManagerException();
-        try {
-            String netId = authManager.getNetId();
-            if (true) { //TODO: call endpoint from store to verify storeId
-                coupon.setStoreId(storeId);
-                repo.save(coupon);
-            }
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        if (coupon.getStoreId() == null) {
+            throw new InvalidStoreIdException();
         }
-        return ResponseEntity.ok().build();
+        if (coupon.getStoreId() == -1 && !authManager.getRole().equals("ROLE_REGIONAL_MANAGER"))
+            throw new NotRegionalManagerException();
+        if (coupon.getType() == null || coupon.getExpiryDate() == null)
+            throw new IncompleteCouponException();
+        StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), coupon.getStoreId());
+        if(requestHelper.postRequest(8084, "/checkStoreowner", sovm, Boolean.class))
+            repo.save(coupon);
+        else
+            throw new InvalidStoreIdException();
+        return ResponseEntity.ok(coupon);
     }
 
     @PostMapping("/selectCoupon")
     public ResponseEntity<Tuple> selectCoupon(@RequestBody List<Double> prices, @RequestBody List<String> codes) {
+        if (prices.isEmpty())
+            return ResponseEntity.badRequest().build();
         PriorityQueue<Tuple> pq = new PriorityQueue<>();
         for (String code : codes) {
             ResponseEntity<Coupon> c;
@@ -122,21 +120,6 @@ public class CouponController {
         if(pq.isEmpty())
             return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(pq.peek());
-    }
-
-    public String getRoles() {
-        return SecurityContextHolder
-            .getContext()
-            .getAuthentication()
-            .getAuthorities()
-            .stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toList())
-            .get(0);
-    }
-
-    public boolean authorRole(String role) {
-        return getRoles().equals(role);
     }
 
 }
