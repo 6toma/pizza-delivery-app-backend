@@ -7,6 +7,7 @@ import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import nl.tudelft.sem.template.coupon.domain.*;
+import nl.tudelft.sem.template.coupon.services.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -65,8 +66,18 @@ class CouponControllerTest {
     }
 
     @Test
+    void getCouponsForStoreInvalid() {
+        long storeId = 1L;
+        when(requestHelper.postRequest(8084, "/existsByStoreId", storeId, Boolean.class))
+            .thenReturn(false);
+        assertThrows(InvalidStoreIdException.class, () -> couponController.getCouponsForStore(storeId));
+    }
+
+    @Test
     void getCouponsForStoreEmpty() {
         long storeId = 1L;
+        when(requestHelper.postRequest(8084, "/existsByStoreId", storeId, Boolean.class))
+            .thenReturn(true);
         when(repo.findByStoreId(storeId)).thenReturn(new ArrayList<>());
         ResponseEntity<List<Coupon>> res = couponController.getCouponsForStore(storeId);
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -79,6 +90,8 @@ class CouponControllerTest {
         Coupon c2 = new Coupon();
         c2.setStoreId(storeId);
         c.setStoreId(storeId);
+        when(requestHelper.postRequest(8084, "/existsByStoreId", storeId, Boolean.class))
+            .thenReturn(true);
         when(repo.findByStoreId(storeId)).thenReturn(List.of(c, c2));
         ResponseEntity<List<Coupon>> res = couponController.getCouponsForStore(storeId);
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -185,6 +198,41 @@ class CouponControllerTest {
         verify(repo).save(c);
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(res.getBody()).isEqualTo(c);
+    }
+
+    @Test
+    void selectCouponEmptyPriceList() {
+        ResponseEntity<Tuple> res = couponController.selectCoupon(new ArrayList<>(), List.of("ABDC12"));
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void selectCouponEmptyCouponList() {
+        ResponseEntity<Tuple> res = couponController.selectCoupon(List.of(10.0), new ArrayList<>());
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void selectCouponInvalidCoupon() {
+        ResponseEntity<Tuple> res = couponController.selectCoupon(List.of(10.0), List.of("ABC76"));
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void selectCouponUsedCoupon() {
+
+    }
+
+    @Test
+    void selectCouponExpensiveOverUsed() {
+        Coupon c2 = new Coupon();
+        c2.setType(CouponType.DISCOUNT);
+        c2.setPercentage(90);
+    }
+
+    @Test
+    void selectCouponNormal() {
+        
     }
 
     @Test

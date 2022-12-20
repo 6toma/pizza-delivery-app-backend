@@ -57,6 +57,8 @@ public class CouponController {
 
     @GetMapping("/getCouponsForStore")
     public ResponseEntity<List<Coupon>> getCouponsForStore(@RequestBody long storeId) {
+        if(!requestHelper.postRequest(8084, "/existsByStoreId", storeId, Boolean.class))
+            throw new InvalidStoreIdException();
         return ResponseEntity.ok(repo.findByStoreId(storeId));
     }
 
