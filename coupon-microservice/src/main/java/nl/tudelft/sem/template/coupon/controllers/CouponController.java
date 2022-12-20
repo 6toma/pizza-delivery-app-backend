@@ -2,8 +2,10 @@ package nl.tudelft.sem.template.coupon.controllers;
 
 import java.util.PriorityQueue;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwnerOrRegionalManager;
+import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import nl.tudelft.sem.template.coupon.domain.Coupon;
 import nl.tudelft.sem.template.coupon.domain.CouponRepository;
 import nl.tudelft.sem.template.coupon.domain.CouponType;
@@ -12,7 +14,6 @@ import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
 import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
 import nl.tudelft.sem.template.coupon.services.CouponService;
 import nl.tudelft.sem.template.coupon.services.Tuple;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,18 +30,13 @@ import java.util.stream.Collectors;
  * Coupon Controller.
  */
 @RestController
+@RequiredArgsConstructor
 @Data
 public class CouponController {
 
     private final transient AuthManager authManager;
-
+    private final RequestHelper requestHelper;
     private final CouponRepository repo;
-
-    @Autowired
-    public CouponController(AuthManager authManager, CouponRepository repo) {
-        this.authManager = authManager;
-        this.repo = repo;
-    }
 
     /**
      * Retrieves coupon using passed code.
@@ -92,14 +88,10 @@ public class CouponController {
             throw new NotRegionalManagerException();
         try {
             String netId = authManager.getNetId();
-            boolean isRegionalManager = authorRole("ROLE_REGIONAL_MANAGER");
-            if (isRegionalManager) {
-                coupon.setStoreId(0L);
-            } else {
-                long ownedStoreId = 1L; //TODO: request for getting storeId
-                coupon.setStoreId(ownedStoreId);
+            if (true) { //TODO: call endpoint from store to verify storeId
+                coupon.setStoreId(storeId);
+                repo.save(coupon);
             }
-            repo.save(coupon);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
