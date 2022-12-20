@@ -37,10 +37,10 @@ public class Coupon {
     @Convert(converter = DateConverter.class)
     private Date expiryDate;
 
-    @Column(name = "storeId")
-    private long storeId;
+    @Column(name = "storeId", nullable = false)
+    private Long storeId;
 
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     @Convert(converter = CouponTypeConverter.class)
     private CouponType type;
 
