@@ -1,6 +1,9 @@
 package nl.tudelft.sem.template.example;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import nl.tudelft.sem.checkout.domain.Order;
+import nl.tudelft.sem.template.commons.entity.CustomPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,10 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class OrderTest {
 
+    LocalDateTime ldt = LocalDateTime.of(LocalDate.of(2022, 5, 12), LocalTime.NOON);
+
     Order order = Order.builder()
         .storeId(1L)
         .customerId("Matt")
-        .pickupTime(LocalTime.NOON)
+        .pickupTime(ldt)
         .pizzaList(new ArrayList<>())
         .coupon("ABCD12")
         .build();
@@ -29,8 +34,8 @@ public class OrderTest {
         .coupon(null)
         .build();
 
-    Pizza pizza1 = new Pizza("Margherita", new ArrayList<>(), 11);
-    Pizza pizza2 = new Pizza("Hawaii", new ArrayList<>(), 10.5);
+    CustomPizza pizza1 = new CustomPizza("Margherita", 11, new ArrayList<>());
+    CustomPizza pizza2 = new CustomPizza("Hawaii", 10.5, new ArrayList<>());
 
     @Test
     public void constructorNotNull() {
@@ -68,7 +73,7 @@ public class OrderTest {
         Order order3 = Order.builder()
             .storeId(1L)
             .customerId("Matt")
-            .pickupTime(LocalTime.NOON)
+            .pickupTime(ldt)
             .pizzaList(List.of(pizza1, pizza2))
             .coupon("ABCD12")
             .build();
@@ -99,7 +104,7 @@ public class OrderTest {
         Order order3 = Order.builder()
             .storeId(1L)
             .customerId("Matt")
-            .pickupTime(LocalTime.NOON)
+            .pickupTime(ldt)
             .pizzaList(List.of(pizza1, pizza2))
             .coupon("ABCD12")
             .build();

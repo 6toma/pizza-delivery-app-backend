@@ -1,5 +1,8 @@
 package nl.tudelft.sem.template.cart.exampleinteractions;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -20,7 +23,7 @@ public class ExampleMicroservicesInteractions {
 
     @GetMapping("/addOrder")
     public String addOrder() {
-        OrderModel orderModel = new OrderModel(1, new ArrayList<>());
+        OrderModel orderModel = new OrderModel(1, "Matt", LocalDateTime.of(LocalDate.of(2022, 5, 12), LocalTime.NOON), new ArrayList<>(), "ABCD12");
         return requestsHelper.postRequest(8082, "/orders/add", orderModel, String.class);
     }
 
