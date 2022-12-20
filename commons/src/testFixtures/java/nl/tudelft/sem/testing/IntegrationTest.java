@@ -8,10 +8,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import lombok.SneakyThrows;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +37,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @AutoConfigureMockMvc
 @ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager"})
 @ComponentScan({"nl.tudelft.sem.testing.profiles"})
+@Execution(ExecutionMode.CONCURRENT)
 public class IntegrationTest {
 
     protected static final String TEST_USER = "test_user";
@@ -48,6 +52,20 @@ public class IntegrationTest {
     protected transient AuthManager mockAuthenticationManager;
 
     /**
+     * Converts object to Json in order simulate a <i>real</i> post request.
+     *
+     * @param obj object to convert to json
+     * @return a json representation of the object
+     */
+    public String asJsonString(final Object obj) {
+        try {
+            return mapper.writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Helper method to assert that the body of a response is equal to some textual value.
      *
      * @param expected The text value you expect it to be
@@ -58,6 +76,11 @@ public class IntegrationTest {
         String response = result.andReturn().getResponse().getContentAsString();
 
         assertThat(response).isEqualTo(expected);
+    }
+
+    @SneakyThrows
+    protected ResultActions doRequest(MockHttpServletRequestBuilder builder) {
+        return mockMvc.perform(authenticated(builder));
     }
 
     /**

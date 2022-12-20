@@ -19,6 +19,15 @@ public class AuthManager {
     }
 
     /**
+     * Interfaces with spring security to get the netid of the user in the current context as a real NetId object.
+     *
+     * @return The net id of the user
+     */
+    public NetId getNetIdObject() {
+        return new NetId(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    /**
      * Interfaces with spring security to get the role of the user in the current context.
      *
      * @return The authority string of the role
