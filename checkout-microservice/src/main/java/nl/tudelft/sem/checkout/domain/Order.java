@@ -33,9 +33,9 @@ public class Order {
     @Convert(converter = LocalTimeConverter.class)
     private LocalTime pickupTime;
 
-    @ElementCollection
+    @OneToMany
     @Column(name = "pizzas", nullable = false)
-    @Convert(converter = PizzaAttributeConverter.class)
+    //@Convert(converter = PizzaAttributeConverter.class)
     private List<Pizza> pizzaList;
 
     @Column(name = "coupon", nullable = false)
