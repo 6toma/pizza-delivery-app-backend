@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import nl.tudelft.sem.store.domain.Store;
-import nl.tudelft.sem.store.domain.StoreNotFoundException;
 import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.store.domain.StoreRepository;
 import nl.tudelft.sem.template.authentication.NetId;
@@ -66,7 +65,7 @@ public class StoreRestController {
     }
 
     /**
-     * Gets the <code>storeId</code> given a <code>storeName</code>.
+     * <b>POST</b> request to get the <code>storeId</code> given a <code>storeName</code>.
      *
      * @param storeName name of the store
      * @return the <code>storeId</code> if <code>storeName</code>is valid or <code>-1</code> if it is not.
@@ -82,11 +81,10 @@ public class StoreRestController {
     }
 
     /**
-     * Post request to notify store from checkout.
+     * <b>POST</b>request to notify store from checkout.
      *
      * @param storeId storeId to notify about an order
-     * @return a String that says the notification was successfully
-     * @throws StoreNotFoundException if the <code>storeId</code> is not in the database
+     * @return a String that says the notification was successfully or a bad request in case of invalid storeId
      */
     @PostMapping("/notify")
     public String notifyStore(@RequestBody long storeId) {

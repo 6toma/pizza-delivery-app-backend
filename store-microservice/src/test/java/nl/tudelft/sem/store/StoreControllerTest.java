@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 import nl.tudelft.sem.store.controller.StoreRestController;
 import nl.tudelft.sem.store.domain.Store;
-import nl.tudelft.sem.store.domain.StoreNotFoundException;
 import nl.tudelft.sem.store.domain.StoreRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

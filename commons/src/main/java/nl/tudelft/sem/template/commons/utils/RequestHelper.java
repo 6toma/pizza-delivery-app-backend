@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ public class RequestHelper {
     // TODO: Generate a new token (make it fast and easy for now)
     private final AuthManager authenticationManager;
 
+    // TODO : don't harcode
     private final String baseUrl = "http://localhost";
 
     /**
@@ -35,8 +37,8 @@ public class RequestHelper {
      * @param <T>           The type of the object that we are going to receive
      * @return a spring Response entity
      */
-    public <T> ResponseEntity<T> postRequest(int port, String path, Object toSend, Class<T> responseClass) {
-        return doRequest(RequestType.POST, port, path, toSend, responseClass);
+    public <T> T postRequest(int port, String path, Object toSend, Class<T> responseClass) {
+        return doRequest(HttpMethod.POST, port, path, toSend, responseClass);
     }
 
     /**
@@ -51,8 +53,8 @@ public class RequestHelper {
      * @param <T>           The type of the object that we are going to receive
      * @return a spring Response entity
      */
-    public <T> ResponseEntity<T> getRequest(int port, String path, Class<T> responseClass) {
-        return doRequest(RequestType.GET, port, path, null, responseClass);
+    public <T> T getRequest(int port, String path, Class<T> responseClass) {
+        return doRequest(HttpMethod.GET, port, path, null, responseClass);
     }
 
     /**
@@ -65,39 +67,28 @@ public class RequestHelper {
      *                      <code>String.class</code>. If the other microservice send <code>List</code> then it is
      *                      <code>List.class</code>
      * @param <T>           The type of the object that we are going to receive
-     * @return a spring Response entity
+     * @return the object received
      */
-    public <T> ResponseEntity<T> deleteRequest(int port, String path, Class<T> responseClass) {
-        return doRequest(RequestType.DELETE, port, path, null, responseClass);
+    public <T> T deleteRequest(int port, String path, Class<T> responseClass) {
+        return doRequest(HttpMethod.DELETE, port, path, null, responseClass);
     }
 
     // TODO a better solution to handle post request. Right now toSend is simply null if the request is GET or DELETE
-    private <T> ResponseEntity<T> doRequest(RequestType requestType, int port, String path, Object toSend,
-                                            Class<T> responseClass) {
+    private <T> ResponseEntity<T> doRequestWithResponse(HttpMethod httpMethod, int port, String path, Object toSend,
+                                                        Class<T> responseClass) {
         URI url = createUrl(port, path);
-        logger.info("Doing a POST on " + url);
-        RequestEntity.HeadersBuilder<?> request;
+        logger.info("Doing a " + httpMethod.toString() + " on " + url);
+
         try {
-            switch (requestType) {
-                case GET:
-                    request = RequestEntity.get(url).accept(MediaType.APPLICATION_JSON);
-                    break;
-                case POST:
-                    request = RequestEntity.post(url).contentType(MediaType.APPLICATION_JSON);
-                    break;
-                case DELETE:
-                    request = RequestEntity.delete(url).accept(MediaType.APPLICATION_JSON);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Method not supported");
-            }
+            RequestEntity.HeadersBuilder<?> request =
+                RequestEntity.method(httpMethod, url).accept(MediaType.APPLICATION_JSON);
             var requestWithToken = request.header("Authorization", "Bearer " + authenticationManager.getJwtToken());
             if (toSend != null) {
                 // add to post request the object
                 var postRequest = ((RequestEntity.BodyBuilder) requestWithToken).body(toSend);
                 return new RestTemplate().exchange(postRequest, responseClass);
             }
-            return new RestTemplate().exchange((RequestEntity<?>) requestWithToken, responseClass);
+            return new RestTemplate().exchange(request.build(), responseClass);
         } catch (ResourceAccessException connectException) {
             logger.error("The other microservice can't be reached. Check if port is ok or the path is ok.");
             throw new IllegalArgumentException("The url " + url +
@@ -105,12 +96,14 @@ public class RequestHelper {
         }
     }
 
+    private <T> T doRequest(HttpMethod httpMethod, int port, String path, Object toSend,
+                            Class<T> responseClass) {
+        var responseEntity = doRequestWithResponse(httpMethod, port, path, toSend, responseClass);
+        return responseEntity.getBody();
+    }
+
     private URI createUrl(int port, String path) {
         String url = String.format("%s:%d%s", baseUrl, port, path);
         return URI.create(url);
-    }
-
-    enum RequestType {
-        POST, GET, DELETE
     }
 }
