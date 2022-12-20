@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain;
+package nl.tudelft.sem.template.coupon.domain;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,13 +20,10 @@ public class Date {
      * @param month month of year
      * @param year year
      */
-    public Date(int day, int month, int year) {
+    public Date(int day, int month, int year) throws ParseException {
         SimpleDateFormat testDate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-        try {
-            testDate.parse(day + "/" + month + "/" + year);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        testDate.setLenient(false);
+        testDate.parse(day + "/" + month + "/" + year);
         this.day = day;
         this.month = month;
         this.year = year;
