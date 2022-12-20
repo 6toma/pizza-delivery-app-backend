@@ -1,16 +1,12 @@
 package nl.tudelft.sem.template.example;
 
-import nl.tudelft.sem.checkout.domain.Order;
-import nl.tudelft.sem.template.commons.entity.DefaultPizza;
-import nl.tudelft.sem.template.commons.entity.Pizza;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import nl.tudelft.sem.checkout.domain.Order;
+import nl.tudelft.sem.template.commons.entity.CustomPizza;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class OrderTest {
 
@@ -30,8 +26,8 @@ public class OrderTest {
         .coupon(null)
         .build();
 
-    Pizza pizza1 = new DefaultPizza("Margherita", new ArrayList<>(), 11);
-    Pizza pizza2 = new DefaultPizza("Hawaii", new ArrayList<>(), 10.5);
+    CustomPizza pizza1 = new CustomPizza("Margherita", 11, new ArrayList<>());
+    CustomPizza pizza2 = new CustomPizza("Hawaii", 10.5, new ArrayList<>());
 
     @Test
     public void constructorNotNull() {
