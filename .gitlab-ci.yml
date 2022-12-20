@@ -4,4 +4,6 @@ include:
   - customer-microservice/.gitlab-ci.yml
   - checkout-microservice/.gitlab-ci.yml
   - coupon-microservice/.gitlab-ci.yml
+  - coupon-microservice/.gitlab-ci.yml
   - store-microservice/.gitlab-ci.yml
+  - cart-microservice/.gitlab-ci.yml

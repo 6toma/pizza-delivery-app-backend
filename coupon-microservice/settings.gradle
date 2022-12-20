@@ -5,3 +5,5 @@ include 'authentication'
 project(':authentication').projectDir = new File('../authentication')
 include 'commons'
 project(':commons').projectDir = new File('../commons')
+include 'store-microservice'
+project(':store-microservice').projectDir = new File('../store-microservice')
