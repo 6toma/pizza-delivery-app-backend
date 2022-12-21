@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.commons.entity;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "default_pizza")
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "pizzaName")
