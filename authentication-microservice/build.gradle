@@ -6,3 +6,5 @@ apply plugin: 'info.solidsoft.pitest'
 dependencies {
     implementation(project(":authentication"))
 }
+
+setupJacoco("nl.tudelft.sem.template.authentication.*")

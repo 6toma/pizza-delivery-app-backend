@@ -9,3 +9,5 @@ dependencies {
     implementation(project(":commons"))
     testImplementation(testFixtures(project(":commons")))
 }
+
+setupJacoco("nl.tudelft.sem.template.cart.*")

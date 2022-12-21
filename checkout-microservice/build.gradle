@@ -9,6 +9,8 @@ dependencies {
 	implementation(project(":authentication"))
 }
 
+setupJacoco("nl.tudelft.sem.template.checkout.*")
+
 jar {
 	enabled = true
 }

@@ -55,30 +55,36 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    jacoco {
-        enabled = true
-        // TODO Change to package that we'll be using.
-        includes = ['nl.tudelft.sem.template.*']
-        excludes = []
-    }
 }
 
-jacocoTestCoverageVerification() {
-    dependsOn test
-    violationRules {
-        rule {
+ext.setupJacoco = { String packageMatcher ->
+    test {
+        jacoco {
             enabled = true
-            element = 'CLASS'
-            includes = ['nl.tudelft.sem.template.*']
+            // TODO Change to package that we'll be using.
+            includes = [packageMatcher]
+            excludes = []
+        }
+    }
 
-            limit {
-                counter = 'BRANCH'
-                value = 'COVEREDRATIO'
-                minimum = 0.1
+    jacocoTestCoverageVerification() {
+        dependsOn test
+        violationRules {
+            rule {
+                enabled = true
+                element = 'CLASS'
+                includes = [packageMatcher]
+
+                limit {
+                    counter = 'BRANCH'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.1
+                }
             }
         }
     }
 }
+
 
 checkstyle {
     toolVersion "8.37"

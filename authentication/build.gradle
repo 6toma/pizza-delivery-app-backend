@@ -3,6 +3,8 @@ plugins {
 }
 apply plugin: 'info.solidsoft.pitest'
 
+setupJacoco("nl.tudelft.sem.template.authentication.*")
+
 bootJar {
     enabled = false
 }

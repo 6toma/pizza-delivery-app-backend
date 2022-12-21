@@ -7,3 +7,5 @@ dependencies {
 	implementation(project(":authentication"))
 	testImplementation(testFixtures(project(":commons")))
 }
+
+setupJacoco("nl.tudelft.sem.template.coupon.*")
