@@ -47,13 +47,6 @@ public class Order {
     @Column(name = "coupon", nullable = false)
     private String coupon;
 
-    public Order(long storeId, String customerId, LocalDateTime pickupTime, List<CustomPizza> pizzaList, String coupon) {
-        this.storeId = storeId;
-        this.customerId = customerId;
-        this.pickupTime = pickupTime;
-        this.pizzaList = pizzaList;
-        this.coupon = coupon;
-    }
     public static OrderBuilder builder(){
         return new OrderBuilder();
     }
