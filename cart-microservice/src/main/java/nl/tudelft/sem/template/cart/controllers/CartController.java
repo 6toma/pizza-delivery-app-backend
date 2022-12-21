@@ -45,7 +45,11 @@ public class CartController {
 
     private Cart getCartFromNetId() {
         NetId netId = authManager.getNetIdObject();
-        return cartRepository.findByNetId(netId);
+        Optional<Cart> optionalCart = cartRepository.findById(netId);
+        if (optionalCart.isEmpty()) {
+            return null;
+        }
+        return optionalCart.get();
     }
 
     private CustomPizza getDefaultPizza(int defaultPizzaId) {
@@ -171,11 +175,12 @@ public class CartController {
      */
     @GetMapping("/getCart/{netId}")
     List<CartPizza> getCartFromNetId(@PathVariable("netId") NetId netId) {
-        Cart cart = cartRepository.findByNetId(netId);
-        if (cart == null) {
+        Optional<Cart> cartOptional = cartRepository.findById(netId);
+        if (cartOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This user doesn't have a cart");
         }
-        cartRepository.deleteByNetId(netId);
+        Cart cart = cartOptional.get();
+        cartRepository.deleteById(netId);
         return cart.getPizzasMap().entrySet().stream().map(entry -> new CartPizza(entry.getKey(), entry.getValue()))
             .collect(Collectors.toList());
     }

@@ -1,27 +1,22 @@
-package nl.tudelft.sem.template.cart.integration;
-
-import nl.tudelft.sem.template.cart.PizzaService;
-import nl.tudelft.sem.template.cart.ToppingService;
-import nl.tudelft.sem.template.cart.controllers.PizzaController;
-import nl.tudelft.sem.template.cart.controllers.ToppingController;
-import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
-import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
-import nl.tudelft.sem.template.commons.entity.DefaultPizza;
-import nl.tudelft.sem.template.commons.entity.Pizza;
-import nl.tudelft.sem.template.commons.entity.Topping;
-import nl.tudelft.sem.template.commons.models.PizzaModel;
-import nl.tudelft.sem.template.commons.models.ToppingModel;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
+package nl.tudelft.sem.template.cart.mockTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+
+import java.util.List;
+import nl.tudelft.sem.template.cart.PizzaService;
+import nl.tudelft.sem.template.cart.controllers.PizzaController;
+import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
+import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
+import nl.tudelft.sem.template.commons.entity.Topping;
+import nl.tudelft.sem.template.commons.models.PizzaModel;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.web.server.ResponseStatusException;
 
 public class PizzaContollerTest {
 

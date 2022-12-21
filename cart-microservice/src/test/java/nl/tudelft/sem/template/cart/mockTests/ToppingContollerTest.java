@@ -1,6 +1,11 @@
-package nl.tudelft.sem.template.cart.integration;
+package nl.tudelft.sem.template.cart.mockTests;
 
-import nl.tudelft.sem.template.cart.ToppingRepository;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+
+import java.util.List;
 import nl.tudelft.sem.template.cart.ToppingService;
 import nl.tudelft.sem.template.cart.controllers.ToppingController;
 import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
@@ -10,13 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 
 public class ToppingContollerTest {
 
