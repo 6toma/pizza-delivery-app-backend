@@ -3,11 +3,13 @@ package nl.tudelft.sem.template.commons.entity;
 import java.util.HashSet;
 import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
-import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,9 +18,10 @@ import lombok.ToString;
 /**
  *
  */
-@MappedSuperclass
 @NoArgsConstructor
 @ToString
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Pizza {
 
     @Id
