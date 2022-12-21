@@ -10,6 +10,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.commons.ToppingAttributeConverter;
 
@@ -24,9 +27,12 @@ public class Pizza {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false, unique = true)
+    @Getter
     private int id;
 
     @Column(name = "name", nullable = false, unique = true)
+    @NotNull(message = "Pizza name can't be null")
+    @Size(min = 5, max = 30, message = "Pizza name should be between 5 and 30 characters long")
     private String pizzaName;
 
     @ElementCollection
@@ -35,6 +41,7 @@ public class Pizza {
     private List<Topping> toppings;
 
     @Column(name = "price", nullable = false)
+    @Min(value = 5, message = "The pizza's price should be at least 5 euros")
     private double price;
 
     /**
@@ -100,5 +107,33 @@ public class Pizza {
             price += topping.getPrice();
         }
         return price;
+    }
+
+    /**
+     * Adds a topping to the pizza if it's not on it yet
+     * @param t The topping to add
+     * @return Whether the topping was added
+     */
+    public boolean addTopping(Topping t) {
+        if(toppings.contains(t)) {
+            return false;
+        }
+        toppings.add(t);
+        price += t.getPrice();
+        return true;
+    }
+
+    /**
+     * Removes a topping from the pizza if it's on there
+     * @param t The topping to remove
+     * @return Whether the topping was removed
+     */
+    public boolean removeTopping(Topping t) {
+        if(!toppings.contains(t)) {
+            return false;
+        }
+        toppings.remove(t);
+        price = price - t.getPrice();
+        return true;
     }
 }

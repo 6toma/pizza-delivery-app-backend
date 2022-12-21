@@ -8,7 +8,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,6 +26,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * </p>
  */
 @Component
+@RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -33,11 +34,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     public static final String AUTHORIZATION_AUTH_SCHEME = "Bearer";
 
     private final transient JwtTokenVerifier jwtTokenVerifier;
-
-    @Autowired
-    public JwtRequestFilter(JwtTokenVerifier jwtTokenVerifier) {
-        this.jwtTokenVerifier = jwtTokenVerifier;
-    }
 
     /**
      * This filter will verify and authenticate a JWT token if a valid authorization header is set.
