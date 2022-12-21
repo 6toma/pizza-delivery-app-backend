@@ -1,27 +1,25 @@
 package nl.tudelft.sem.template.cart.integration;
 
-import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
-import nl.tudelft.sem.template.cart.PizzaService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import nl.tudelft.sem.template.cart.ToppingRepository;
 import nl.tudelft.sem.template.cart.ToppingService;
-import nl.tudelft.sem.template.commons.entity.DefaultPizza;
-import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
-import nl.tudelft.sem.template.commons.models.PizzaModel;
 import nl.tudelft.sem.template.commons.models.ToppingModel;
 import nl.tudelft.sem.testing.IntegrationTest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+@Transactional
 public class ToppingControllerTest extends IntegrationTest {
 
     @Autowired
@@ -43,6 +41,12 @@ public class ToppingControllerTest extends IntegrationTest {
         toppingModel.setPrice(1);
         topping1 = new Topping("tomato", 1);
         topping2 = new Topping("tomato", 8);
+    }
+
+
+    @AfterEach
+    void deleteAll() {
+        toppingRepository.deleteAll();
     }
 
     @Test

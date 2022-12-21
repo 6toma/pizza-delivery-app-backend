@@ -1,6 +1,12 @@
 package nl.tudelft.sem.template.cart.integration;
 
-import nl.tudelft.sem.template.authentication.NetId;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Arrays;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
 import nl.tudelft.sem.template.cart.PizzaService;
 import nl.tudelft.sem.template.cart.ToppingRepository;
@@ -8,20 +14,16 @@ import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.models.PizzaModel;
-import nl.tudelft.sem.template.commons.models.PizzaToppingModel;
 import nl.tudelft.sem.testing.IntegrationTest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+@Transactional
 public class PizzaControllerTest extends IntegrationTest {
 
     @Autowired
@@ -40,15 +42,22 @@ public class PizzaControllerTest extends IntegrationTest {
     @BeforeEach
     void setup() {
         defaultRepository.deleteAll();
+        toppingRepository.deleteAll();
         var toppings1 = toppingRepository.saveAll(Arrays.asList(new Topping("test1", 10),
-                new Topping("test2", 13),
-                new Topping("test3", 15)));
+            new Topping("test2", 13),
+            new Topping("test3", 15)));
         pizzaModel = new PizzaModel();
         pizzaModel.setPizzaName("Hawaii");
         pizzaModel.setPrice(7);
         pizzaModel.setToppings(toppings1);
         pizza1 = new DefaultPizza("Hawaii", toppings1, 7);
         pizza2 = new DefaultPizza("Hawaii", toppings1, 8);
+    }
+
+    @AfterEach
+    void deleteAll() {
+        toppingRepository.deleteAll();
+        defaultRepository.deleteAll();
     }
 
     @Test

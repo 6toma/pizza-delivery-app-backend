@@ -46,8 +46,7 @@ public class CartControllerTest extends IntegrationTest {
 
     @BeforeEach
     void setup() {
-        defaultRepository.deleteAll();
-        customRepository.deleteAll();
+        deleteAll();
         var toppings1 = toppingRepository.saveAll(Arrays.asList(new Topping("test1", 10),
             new Topping("test2", 13),
             new Topping("test3", 15)));
@@ -59,6 +58,17 @@ public class CartControllerTest extends IntegrationTest {
             new Topping("test6", 13)));
 
         defaultPizza2 = defaultRepository.saveAndFlush(new DefaultPizza("Default Pizza 2", toppings2, 10));
+    }
+
+    void deleteAll() {
+        toppingRepository.deleteAll();
+        toppingRepository.flush();
+        customRepository.deleteAll();
+        customRepository.flush();
+        cartRepository.deleteAll();
+        cartRepository.flush();
+        defaultRepository.deleteAll();
+        defaultRepository.flush();
     }
 
 
