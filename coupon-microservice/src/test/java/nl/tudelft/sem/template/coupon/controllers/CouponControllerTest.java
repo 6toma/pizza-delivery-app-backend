@@ -97,7 +97,7 @@ class CouponControllerTest {
     @Test
     void getCouponsForStoreInvalid() {
         long storeId = 1L;
-        when(requestHelper.postRequest(8084, "/existsByStoreId", storeId, Boolean.class))
+        when(requestHelper.postRequest(8084, "/store/existsByStoreId", storeId, Boolean.class))
             .thenReturn(false);
         assertThrows(InvalidStoreIdException.class, () -> couponController.getCouponsForStore(storeId));
     }
@@ -105,7 +105,7 @@ class CouponControllerTest {
     @Test
     void getCouponsForStoreEmpty() {
         long storeId = 1L;
-        when(requestHelper.postRequest(8084, "/existsByStoreId", storeId, Boolean.class))
+        when(requestHelper.postRequest(8084, "/store/existsByStoreId", storeId, Boolean.class))
             .thenReturn(true);
         when(repo.findByStoreId(storeId)).thenReturn(new ArrayList<>());
         ResponseEntity<List<Coupon>> res = couponController.getCouponsForStore(storeId);
@@ -119,7 +119,7 @@ class CouponControllerTest {
         Coupon c2 = new Coupon();
         c2.setStoreId(storeId);
         c.setStoreId(storeId);
-        when(requestHelper.postRequest(8084, "/existsByStoreId", storeId, Boolean.class))
+        when(requestHelper.postRequest(8084, "/store/existsByStoreId", storeId, Boolean.class))
             .thenReturn(true);
         when(repo.findByStoreId(storeId)).thenReturn(List.of(c, c2));
         ResponseEntity<List<Coupon>> res = couponController.getCouponsForStore(storeId);
@@ -203,7 +203,7 @@ class CouponControllerTest {
     void addCouponWrongStoreId() {
         when(authManager.getNetId()).thenReturn("netId");
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), c.getStoreId());
-        when(requestHelper.postRequest(8084, "/checkStoreowner", sovm, Boolean.class))
+        when(requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class))
             .thenThrow(new InvalidStoreIdException());
         assertThrows(InvalidStoreIdException.class, () -> couponController.addCoupon(c));
     }
@@ -212,7 +212,7 @@ class CouponControllerTest {
     void addCouponWrongPair() {
         when(authManager.getNetId()).thenReturn("netId");
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), c.getStoreId());
-        when(requestHelper.postRequest(8084, "/checkStoreowner", sovm, Boolean.class))
+        when(requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class))
             .thenReturn(false);
         assertThrows(InvalidStoreIdException.class, () -> couponController.addCoupon(c));
     }
@@ -221,7 +221,7 @@ class CouponControllerTest {
     void addCouponNormal() {
         when(authManager.getNetId()).thenReturn("netId");
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), c.getStoreId());
-        when(requestHelper.postRequest(8084, "/checkStoreowner", sovm, Boolean.class))
+        when(requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class))
             .thenReturn(true);
         ResponseEntity<Coupon> res = couponController.addCoupon(c);
         verify(repo).save(c);
