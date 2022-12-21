@@ -2,8 +2,8 @@ package nl.tudelft.sem.customer.controllers;
 
 import nl.tudelft.sem.customer.domain.Customer;
 import nl.tudelft.sem.customer.domain.CustomerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +38,18 @@ public class CustomerController {
     }
 
     /**
+     * Endpoint to retrieve a Customer from the Customer Repository by their (unique) NetId.
+     *
+     * @param netId the neIid to search for.
+     * @return the Customer with the specified netId.
+     */
+    @GetMapping("/{netId}")
+    public Customer getCustomerByNetId(@PathVariable String netId) {
+        NetId customerNetId = new NetId(netId);
+        return customerService.getCustomerByNetId(customerNetId);
+    }
+
+    /**
      * Endpoint that gets all the customers from the Customer Repository.
      *
      * @return the List of all Customers.
@@ -68,10 +80,17 @@ public class CustomerController {
      * @return ok
      */
     @PostMapping("/{customerId}/coupons")
-    public ResponseEntity<String> addToUsedCoupons(@PathVariable int customerId, @RequestBody String couponCode) {
-        customerService.addToUsedCoupons(customerId, couponCode);
+    public ResponseEntity<String> addToUsedCoupons(@PathVariable String netId, @RequestBody String couponCode) {
+
+        // make netID object using netID path variable
+        NetId customerNetId = new NetId(netId);
+        // use that to find customerId
+
+        customerService.addToUsedCoupons(customerNetId, couponCode);
         return ResponseEntity.ok("Coupon used.");
     }
+
+    //TODO: make endpoint to remove from used coupons
 
     /**
      * Endpoint to set a customer's list of allergens.
@@ -83,6 +102,8 @@ public class CustomerController {
      */
     @PostMapping("/{customerId}/allergens")
     public ResponseEntity<String> updateAllergens(@PathVariable int customerId, @RequestBody List<String> newToppings) {
+        // use authmanager.getnetId or something to get netid of current customer
+        // then use that to find the customer in the DB to update allergens
         customerService.updateAllergens(customerId, newToppings);
         return ResponseEntity.ok("Allergens updated.");
     }

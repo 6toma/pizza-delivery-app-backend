@@ -12,22 +12,14 @@ import java.util.List;
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
     /**
-     * Saves a customer.
-     *
-     * @param customer the customer to save
-     * @return the saved customer
-     */
-    Customer save(Customer customer);
-
-    /**
-     * Find all customers.
-     */
-    List<Customer> findAll();
-
-    /**
      * Find customer by Id.
      */
     Customer findById(int customerId);
+
+    /**
+     * Find customer by NetId.
+     */
+    Customer findByNetId(NetId customerId);
 
 }
 

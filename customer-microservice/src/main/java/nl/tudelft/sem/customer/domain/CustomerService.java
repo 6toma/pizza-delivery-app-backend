@@ -30,6 +30,21 @@ public class CustomerService {
     }
 
     /**
+     * Retrieves a Customer from the Customer Repository by their (unique) NetId.
+     *
+     * @param netId the NetId to search for.
+     * @return the Customer with the specified NetId.
+     */
+    public Customer getCustomerByNetId(NetId netId) {
+        try {
+            return customerRepository.findByNetId(netId);
+        } catch (NoSuchElementException e) {
+            throw new CustomerNotFoundException(netId); //TODO: fix exception to not expect int id or make new exception
+        }
+    }
+
+
+    /**
      * Retrieves all the customers from the Customer Repository.
      *
      * @return the List of all Customers.
@@ -54,8 +69,12 @@ public class CustomerService {
      * @param couponCode the coupon code used by the customer,
      *                   i.e. the coupon to be added to the list of used coupons.
      */
-    public void addToUsedCoupons(int customerId, String couponCode) {
-        Customer customer = getCustomerById(customerId);
+    public void addToUsedCoupons(NetId netId, String couponCode) {
+        //use netID to find customer from database
+
+        Customer customer = customerRepository.findByNetId(netId);
+        //Customer customer = getCustomerById(customerId);
+
         if(customer == null) { return; }
 
         List<String> coupons = customer.getUsedCoupons();
@@ -71,8 +90,9 @@ public class CustomerService {
      * @param customerId the id of the Customer whose allergens should be updated.
      * @param newToppings the new list of toppings to be added to the existing List of Allergens.
      */
-    public void updateAllergens(int customerId, List<String> newToppings) {
-        Customer customer = getCustomerById(customerId);
+    public void updateAllergens(NetId netId, List<String> newToppings) {
+        Customer customer = customerRepository.findByNetId(netId);
+        //Customer customer = getCustomerById(customerId);
         if(customer == null) { return; }
 
         List<String> toppings = customer.getAllergens();

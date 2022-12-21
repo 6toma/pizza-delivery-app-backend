@@ -2,6 +2,7 @@ package nl.tudelft.sem.customer.domain;
 
 import java.util.List;
 import javax.persistence.*;
+//import authentication to use NetID class
 
 import lombok.Data;
 
@@ -13,6 +14,9 @@ public class Customer {
     @Id
     @Column(name = "customerId", unique = true)
     private int customerId;
+
+    @Column(name = "netId", unique = true);
+    private NetId netId;
 
     @Column(name = "usedCoupons")
     @ElementCollection
