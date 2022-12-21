@@ -69,7 +69,8 @@ public class PizzaService {
     public void removePizza(String pizzaName) throws Exception {
 
         if (!checkPizzaIsUnique(pizzaName)) {
-            pizzaRepository.deleteByPizzaName(pizzaName);
+            DefaultPizza p = pizzaRepository.findByPizzaName(pizzaName).get();
+            pizzaRepository.delete(p);
             return;
         }
         throw new PizzaNameNotFoundException(pizzaName);
@@ -81,9 +82,14 @@ public class PizzaService {
      * @param pizzaName the name of the pizza
      * @param toppings  the topppings on the pizza
      */
-    public void editPizza(String pizzaName, List<Topping> toppings, double price) {
+    public void editPizza(String pizzaName, List<Topping> toppings, double price) throws PizzaNameNotFoundException {
+        try {
+            removePizza(pizzaName);
+            addPizza(pizzaName, toppings, price);
+        } catch (Exception e) {
+            throw new PizzaNameNotFoundException(pizzaName);
+        }
 
-        pizzaRepository.save(new DefaultPizza(pizzaName, toppings, price));
     }
 
     /**
@@ -96,7 +102,7 @@ public class PizzaService {
         return !pizzaRepository.existsByPizzaName(pizzaName);
     }
 
-    public Optional<Pizza> getPizza(String pizzaName) {
+    public Optional<DefaultPizza> getPizza(String pizzaName) {
         return pizzaRepository.findByPizzaName(pizzaName);
     }
 
