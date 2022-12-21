@@ -34,6 +34,8 @@ class CouponServiceTest {
     private Clock clock;
     private Clock fixedClock;
 
+    private CouponService couponService;
+
     @SneakyThrows
     @BeforeEach
     void setup() {
@@ -49,26 +51,27 @@ class CouponServiceTest {
         fixedClock = Clock.fixed(LOCAL_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
         when(clock.instant()).thenReturn(fixedClock.instant());
         when(clock.getZone()).thenReturn(fixedClock.getZone());
+        couponService = new CouponService(fixedClock);
     }
 
     @Test
     void applyDiscount() {
         List<Double> prices = List.of(10.0, 50.0, 20.0, 15.0, 5.0);
         Double finalPrice = 90.0;
-        assertEquals(finalPrice, CouponService.applyDiscount(c1, prices));
+        assertEquals(finalPrice, couponService.applyDiscount(c1, prices));
     }
 
     @Test
     void applyDiscountInvalid() {
         List<Double> prices = List.of(10.0, 50.0, 20.0, 15.0, 5.0);
         c1.setType(CouponType.ONE_PLUS_ONE);
-        assertEquals(-1L, CouponService.applyDiscount(c1, prices));
+        assertEquals(-1L, couponService.applyDiscount(c1, prices));
     }
 
     @Test
     void applyOnePlusOneInvalid() {
         List<Double> prices = List.of(10.0, 50.0, 20.0, 15.0, 5.0);
-        assertEquals(-1, CouponService.applyOnePlusOne(c1, prices));
+        assertEquals(-1, couponService.applyOnePlusOne(c1, prices));
     }
 
     @Test
@@ -76,27 +79,27 @@ class CouponServiceTest {
         List<Double> prices = List.of(10.0, 50.0, 20.0, 15.0, 5.0);
         Double finalPrice = 95.0;
         c1.setType(CouponType.ONE_PLUS_ONE);
-        assertEquals(finalPrice, CouponService.applyOnePlusOne(c1, prices));
+        assertEquals(finalPrice, couponService.applyOnePlusOne(c1, prices));
     }
 
     @SneakyThrows
     @Test
     void isValid() {
         coupon.setExpiryDate(new Date(24, 05, 2023));
-        assertTrue(CouponService.isValid(fixedClock, coupon.getExpiryDate()));
+        assertTrue(couponService.isValid(coupon.getExpiryDate()));
     }
 
     @SneakyThrows
     @Test
     void isValidFalse() {
         coupon.setExpiryDate(new Date(24, 05, 2003));
-        assertFalse(CouponService.isValid(fixedClock, coupon.getExpiryDate()));
+        assertFalse(couponService.isValid(coupon.getExpiryDate()));
     }
 
     @ParameterizedTest
     @MethodSource("codeFormatCases")
     void validCodeFormat(String input, boolean expected) {
-        assertThat(CouponService.validCodeFormat(input)).isEqualTo(expected);
+        assertThat(couponService.validCodeFormat(input)).isEqualTo(expected);
     }
 
     static Stream<Arguments> codeFormatCases() {

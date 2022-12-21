@@ -1,23 +1,38 @@
 package nl.tudelft.sem.template.coupon.controllers;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.SneakyThrows;
 import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
-import nl.tudelft.sem.template.coupon.domain.*;
+import nl.tudelft.sem.template.coupon.domain.Coupon;
+import nl.tudelft.sem.template.coupon.domain.CouponRepository;
+import nl.tudelft.sem.template.coupon.domain.CouponType;
+import nl.tudelft.sem.template.coupon.domain.Date;
+import nl.tudelft.sem.template.coupon.domain.DiscountCouponIncompleteException;
+import nl.tudelft.sem.template.coupon.domain.IncompleteCouponException;
+import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
+import nl.tudelft.sem.template.coupon.domain.InvalidStoreIdException;
+import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
+import nl.tudelft.sem.template.coupon.services.CouponService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import java.util.Optional;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class CouponControllerTest {
 
@@ -25,7 +40,12 @@ class CouponControllerTest {
     private CouponRepository repo;
     private AuthManager authManager;
     private RequestHelper requestHelper;
+    private CouponService couponService;
     private Coupon c = new Coupon();
+
+    @Mock
+    private Clock clock;
+    private Clock fixedClock;
 
     @SneakyThrows
     @BeforeEach
@@ -33,7 +53,16 @@ class CouponControllerTest {
         repo = Mockito.mock(CouponRepository.class);
         authManager = Mockito.mock(AuthManager.class);
         requestHelper = Mockito.mock(RequestHelper.class);
-        couponController = new CouponController(authManager, requestHelper, repo);
+
+        MockitoAnnotations.initMocks(this);
+
+        LocalDate LOCAL_DATE = LocalDate.of(2022, 12, 13);
+        fixedClock = Clock.fixed(LOCAL_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
+
+        couponService = new CouponService(fixedClock);
+        couponController = new CouponController(authManager, requestHelper, repo, couponService);
         c.setCode("ABCD12");
         c.setExpiryDate(new Date(10, 10, 2024));
         c.setStoreId(2L);
@@ -232,7 +261,7 @@ class CouponControllerTest {
 
     @Test
     void selectCouponNormal() {
-        
+
     }
 
     @Test

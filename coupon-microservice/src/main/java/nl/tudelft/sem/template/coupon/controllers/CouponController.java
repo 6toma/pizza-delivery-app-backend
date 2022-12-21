@@ -36,6 +36,7 @@ public class CouponController {
     private final transient AuthManager authManager;
     private final RequestHelper requestHelper;
     private final CouponRepository repo;
+    private final CouponService couponService;
 
     /**
      * Retrieves coupon using passed code.
@@ -46,7 +47,7 @@ public class CouponController {
      */
     @GetMapping("/coupon")
     public ResponseEntity<Coupon> getCouponByCode(@RequestBody String code) {
-        if (!CouponService.validCodeFormat(code)) {
+        if (!couponService.validCodeFormat(code)) {
             throw new InvalidCouponCodeException(code);
         }
         if (!repo.existsById(code)) {
@@ -57,7 +58,7 @@ public class CouponController {
 
     @GetMapping("/getCouponsForStore")
     public ResponseEntity<List<Coupon>> getCouponsForStore(@RequestBody long storeId) {
-        if(!requestHelper.postRequest(8084, "/existsByStoreId", storeId, Boolean.class))
+        if(!requestHelper.postRequest(8084, "/store/existsByStoreId", storeId, Boolean.class))
             throw new InvalidStoreIdException();
         return ResponseEntity.ok(repo.findByStoreId(storeId));
     }
@@ -69,13 +70,13 @@ public class CouponController {
      * @return Coupon with given code if exists
      * @throws DiscountCouponIncompleteException if discount percentage is missing for a new discount coupon
      */
-    @RoleStoreOwnerOrRegionalManager
+    //@RoleStoreOwnerOrRegionalManager
     @PostMapping("/addCoupon")
     public ResponseEntity<Coupon> addCoupon(@RequestBody Coupon coupon) {
         if (coupon.getCode() == null) {
             throw new InvalidCouponCodeException("No coupon code provided!");
         }
-        if (!CouponService.validCodeFormat(coupon.getCode())) {
+        if (!couponService.validCodeFormat(coupon.getCode())) {
             throw new InvalidCouponCodeException(coupon.getCode());
         }
         if (coupon.getPercentage() == null && coupon.getType() == CouponType.DISCOUNT) {
@@ -89,7 +90,7 @@ public class CouponController {
         if (coupon.getType() == null || coupon.getExpiryDate() == null)
             throw new IncompleteCouponException();
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), coupon.getStoreId());
-        if(requestHelper.postRequest(8084, "/checkStoreowner", sovm, Boolean.class))
+        if(requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class))
             repo.save(coupon);
         else
             throw new InvalidStoreIdException();
@@ -114,11 +115,11 @@ public class CouponController {
                 continue;
             Coupon coupon = c.getBody();
             if (coupon.getType() == CouponType.DISCOUNT) {
-                pq.add(new CouponFinalPriceModel(code, CouponService.applyDiscount(coupon, prices)));
+                pq.add(new CouponFinalPriceModel(code, couponService.applyDiscount(coupon, prices)));
             } else {
                 if (prices.size() == 1)
                     continue;
-                pq.add(new CouponFinalPriceModel(code, CouponService.applyOnePlusOne(coupon, prices)));
+                pq.add(new CouponFinalPriceModel(code, couponService.applyOnePlusOne(coupon, prices)));
             }
         }
         if(pq.isEmpty())

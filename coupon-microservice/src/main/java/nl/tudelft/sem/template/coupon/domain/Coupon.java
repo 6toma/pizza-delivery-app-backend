@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 @Entity
 @Table(name = "coupons")
@@ -21,19 +22,11 @@ import org.springframework.context.annotation.Bean;
 @Setter
 public class Coupon {
 
-    @Bean
-    public Clock clock() {
-        return Clock.systemDefaultZone();
-    }
-
-    @Autowired
-    private Clock clock;
-
     @Id
     @Column(name = "code", nullable = false, unique = true)
     private String code;
 
-    @Column(name = "expireDate", nullable = false)
+    @Column(name = "expiryDate", nullable = false)
     @Convert(converter = DateConverter.class)
     private Date expiryDate;
 

@@ -5,23 +5,30 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import lombok.AllArgsConstructor;
 import nl.tudelft.sem.template.coupon.domain.Coupon;
 import nl.tudelft.sem.template.coupon.domain.CouponType;
 import nl.tudelft.sem.template.coupon.domain.Date;
+import org.springframework.stereotype.Component;
 
+@Component
+@AllArgsConstructor
 public class CouponService {
 
-    public static double applyDiscount(Coupon coupon, List<Double> prices) {
-        if(coupon.getType() != CouponType.DISCOUNT)
+    private Clock clock;
+
+    public double applyDiscount(Coupon coupon, List<Double> prices) {
+        if (coupon.getType() != CouponType.DISCOUNT) {
             return -1;
+        }
         return prices.stream().mapToDouble(Double::doubleValue).sum()
             * (100 - coupon.getPercentage()) / 100;
     }
 
-    public static double applyOnePlusOne(Coupon coupon, List<Double> prices) {
-        if(coupon.getType() != CouponType.ONE_PLUS_ONE)
+    public double applyOnePlusOne(Coupon coupon, List<Double> prices) {
+        if (coupon.getType() != CouponType.ONE_PLUS_ONE) {
             return -1;
+        }
         List<Double> copy = new ArrayList<>(prices);
         Collections.sort(copy);
         copy.remove(0);
@@ -29,12 +36,11 @@ public class CouponService {
     }
 
     /**
-     * Method isValid checks whether a coupon is eligible.
-     * A coupon is eligible if the expiry date has not yet been met.
+     * Method isValid checks whether a coupon is eligible. A coupon is eligible if the expiry date has not yet been met.
      *
      * @return boolean
      */
-    public static boolean isValid(Clock clock, Date expiryDate) {
+    public boolean isValid(Date expiryDate) {
         LocalDate currDate = LocalDate.now(clock);
         LocalDate ed = LocalDate.of(expiryDate.getYear(), expiryDate.getMonth(), expiryDate.getDay());
         return currDate.isBefore(ed);
@@ -46,7 +52,7 @@ public class CouponService {
      *
      * @return boolean
      */
-    public static boolean validCodeFormat(String code) {
+    public boolean validCodeFormat(String code) {
         return code.length() == 6 && code.substring(0, 4).chars().allMatch(Character::isLetter)
             && code.substring(4).chars().allMatch(Character::isDigit);
     }
