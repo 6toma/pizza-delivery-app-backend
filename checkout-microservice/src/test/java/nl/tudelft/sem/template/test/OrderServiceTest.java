@@ -37,11 +37,11 @@ public class OrderServiceTest {
         CustomPizza pizza2 = new CustomPizza("Hawaii", 10.5, new ArrayList<>());
 
         order = Order.builder()
-            .storeId(1L)
-            .customerId("Matt")
-            .pickupTime(ldt)
-            .pizzaList(List.of(pizza1, pizza2))
-            .coupon("ABCD12")
+            .withStoreId(1L)
+            .withCustomerId("Matt")
+            .withPickupTime(ldt)
+            .withPizzaList(List.of(pizza1, pizza2))
+            .withCoupon("ABCD12")
             .build();
     }
 

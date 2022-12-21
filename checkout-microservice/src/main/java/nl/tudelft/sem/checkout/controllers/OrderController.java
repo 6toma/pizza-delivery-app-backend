@@ -1,6 +1,5 @@
 package nl.tudelft.sem.checkout.controllers;
 
-import java.util.Collections;
 import nl.tudelft.sem.checkout.domain.Order;
 import nl.tudelft.sem.checkout.domain.OrderModel;
 import nl.tudelft.sem.checkout.domain.OrderService;
@@ -35,10 +34,10 @@ public class OrderController {
     @PostMapping("/add")
     public ResponseEntity<String> addOrder(@RequestBody OrderModel order) {
         Order newOrder = Order.builder()
-            .storeId(order.getStoreId())
-            .customerId(order.getCustomerId())
-            .pickupTime(order.getPickupTime())
-            .coupon(order.getCoupon())
+            .withStoreId(order.getStoreId())
+            .withCustomerId(order.getCustomerId())
+            .withPickupTime(order.getPickupTime())
+            .withCoupon(order.getCoupon())
             .build();
         orderService.addOrder(newOrder);
         return ResponseEntity.ok("Order added");
