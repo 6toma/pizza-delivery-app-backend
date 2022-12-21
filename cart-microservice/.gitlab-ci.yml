@@ -12,12 +12,12 @@ variables:
 build-cart-microservice:
   stage: build
   script:
-    gradle cart-microservice:assemble example-microservice:testClasses
+    gradle cart-microservice:assemble cart-microservice:testClasses
 
 checkStyle-cart-microservice:
   stage: staticAnalysis
   script:
-    gradle cart-microservice:checkstyleMain example-microservice:checkStyleTest
+    gradle cart-microservice:checkstyleMain cart-microservice:checkStyleTest
   allow_failure: true
 
 
