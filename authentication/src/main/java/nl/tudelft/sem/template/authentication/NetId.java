@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 public class NetId implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private String netIdValue;
 
     public NetId(String netId) {

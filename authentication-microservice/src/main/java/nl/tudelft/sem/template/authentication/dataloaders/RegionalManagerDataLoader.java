@@ -1,8 +1,8 @@
 package nl.tudelft.sem.template.authentication.dataloaders;
 
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
-import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.Password;
 import nl.tudelft.sem.template.authentication.domain.user.PasswordHashingService;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;

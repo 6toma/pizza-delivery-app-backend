@@ -50,7 +50,7 @@ public class PizzaController {
      * @throws Exception if the pizza name does not exist
      */
     @DeleteMapping("/remove")
-    public ResponseEntity removePizza(@RequestBody String pizzaName) throws Exception {
+    public ResponseEntity<String> removePizza(@RequestBody String pizzaName) throws Exception {
 
         try {
             pizzaService.removePizza(pizzaName);
@@ -69,7 +69,7 @@ public class PizzaController {
      * @throws Exception if the pizza name does not exist
      */
     @PutMapping("/edit")
-    public ResponseEntity editPizza(@RequestBody PizzaModel pizza) throws Exception {
+    public ResponseEntity<String> editPizza(@RequestBody PizzaModel pizza) throws Exception {
 
         try {
             pizzaService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());

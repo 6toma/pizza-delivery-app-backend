@@ -1,6 +1,9 @@
 package nl.tudelft.sem.template.coupon.controllers;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwnerOrRegionalManager;
 import nl.tudelft.sem.template.coupon.domain.Coupon;
@@ -8,7 +11,6 @@ import nl.tudelft.sem.template.coupon.domain.CouponRepository;
 import nl.tudelft.sem.template.coupon.domain.CouponType;
 import nl.tudelft.sem.template.coupon.domain.DiscountCouponIncompleteException;
 import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,15 +20,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Coupon Controller.
  */
 @RestController
+@RequiredArgsConstructor
 @Data
 public class CouponController {
 
@@ -34,15 +33,8 @@ public class CouponController {
 
     private final CouponRepository repo;
 
-    @Autowired
-    public CouponController(AuthManager authManager, CouponRepository repo) {
-        this.authManager = authManager;
-        this.repo = repo;
-    }
-
     /**
-     * Retrieves coupon using passed code.
-     * throws InvalidCouponException if the coupon code format is incorrect.
+     * Retrieves coupon using passed code. throws InvalidCouponException if the coupon code format is incorrect.
      *
      * @param code the coupon code provided
      * @return Coupon with given code if exists
@@ -58,6 +50,11 @@ public class CouponController {
         return ResponseEntity.ok(repo.findById(code).get());
     }
 
+    /**
+     * Returns a list of coupons linked to a store.
+     *
+     * @return The list of coupons
+     */
     @GetMapping("/getCouponsForStore")
     public ResponseEntity<List<Coupon>> getCouponsForStore() {
         return ResponseEntity.ok(repo.findByStoreId(getStoreId()));
@@ -101,18 +98,18 @@ public class CouponController {
         return ResponseEntity.ok().build();
     }
 
-    public String getRoles() {
+    private String getRoles() {
         return SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList())
-                .get(0);
+            .getContext()
+            .getAuthentication()
+            .getAuthorities()
+            .stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList())
+            .get(0);
     }
 
-    public boolean authorRole(String role) {
+    private boolean authorRole(String role) {
         return getRoles().equals(role);
     }
 

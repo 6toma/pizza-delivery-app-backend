@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.cart.controllers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.cart.PizzaRepository;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/cart")
+@RequiredArgsConstructor
 public class CartController {
 
     private static final Logger logger = LoggerFactory.getLogger(CartController.class);
@@ -27,11 +29,6 @@ public class CartController {
     // dependencies
     private final RequestHelper requestHelper;
     private final PizzaRepository pizzaRepository;
-
-    CartController(RequestHelper requestHelper, PizzaRepository pizzaRepository) {
-        this.requestHelper = requestHelper;
-        this.pizzaRepository = pizzaRepository;
-    }
 
     /**
      * Check if a given pizza is a custom pizza or a default one.
@@ -45,13 +42,13 @@ public class CartController {
 
     /**
      * Adds pizza to the cart. Checks if the pizza provided is properly validated with <i>@Validation</i> annotation
-     * <p>
-     * If the validation fails then we can get the error messages nicely in postman too. If the pizza is not custom, I think
-     * it makes sense to enforce the rule that the pizza name should be a default pizza.
+     *
+     * <p>If the validation fails then we can get the error messages nicely in postman too. If the pizza is not custom, I
+     * think it makes sense to enforce the rule that the pizza name should be a default pizza.
      *
      * @param pizza         pizza to add to cart
      * @param bindingResult spring binded this class so that we can check what were the validation errors
-     * @return
+     * @return Returns a message indicating that the pizza was added
      */
     @PostMapping("/addPizza")
     String addPizzaToCart(@RequestBody @Validated Pizza pizza, BindingResult bindingResult) {

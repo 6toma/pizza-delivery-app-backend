@@ -11,8 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import nl.tudelft.sem.template.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.NetId;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
 import nl.tudelft.sem.template.authentication.domain.user.Password;

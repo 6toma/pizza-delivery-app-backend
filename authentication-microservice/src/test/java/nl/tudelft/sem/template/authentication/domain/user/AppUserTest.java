@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.authentication.domain.user;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import nl.tudelft.sem.template.authentication.NetId;
 import org.junit.jupiter.api.Test;
 
 class AppUserTest {

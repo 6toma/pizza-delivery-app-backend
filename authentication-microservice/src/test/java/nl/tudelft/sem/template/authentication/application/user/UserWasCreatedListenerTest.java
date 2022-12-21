@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import nl.tudelft.sem.template.authentication.domain.user.NetId;
+import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.UserWasCreatedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

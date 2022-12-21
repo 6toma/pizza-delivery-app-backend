@@ -1,28 +1,32 @@
 package nl.tudelft.sem.template.coupon.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.*;
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.stream.Stream;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 class CouponTest {
 
-    private Coupon c1;
-    private final static LocalDate LOCAL_DATE = LocalDate.of(2022, 12, 13);
+    private static final LocalDate LOCAL_DATE = LocalDate.of(2022, 12, 13);
 
+    private Coupon c1;
     @InjectMocks
     private Coupon coupon;
-
     @Mock
     private Clock clock;
     private Clock fixedClock;
@@ -71,11 +75,11 @@ class CouponTest {
         c2.setType(CouponType.DISCOUNT);
         c2.setExpiryDate(new Date(10, 10, 2023));
         return Stream.of(
-                Arguments.of(c1, c1, true),
-                Arguments.of(c1, c2, true),
-                Arguments.of(c2, c3, false),
-                Arguments.of(c1, null, false),
-                Arguments.of(c1, new Date(10, 10, 2023), false)
+            Arguments.of(c1, c1, true),
+            Arguments.of(c1, c2, true),
+            Arguments.of(c2, c3, false),
+            Arguments.of(c1, null, false),
+            Arguments.of(c1, new Date(10, 10, 2023), false)
         );
     }
 
@@ -101,13 +105,13 @@ class CouponTest {
 
     static Stream<Arguments> codeFormatCases() {
         return Stream.of(
-                Arguments.of("ABCD12", true),
-                Arguments.of("Abdf67", true),
-                Arguments.of("6735AB", false),
-                Arguments.of("AB23", false),
-                Arguments.of("ABCD?2", false),
-                Arguments.of("", false),
-                Arguments.of(null, false)
+            Arguments.of("ABCD12", true),
+            Arguments.of("Abdf67", true),
+            Arguments.of("6735AB", false),
+            Arguments.of("AB23", false),
+            Arguments.of("ABCD?2", false),
+            Arguments.of("", false),
+            Arguments.of(null, false)
         );
     }
 

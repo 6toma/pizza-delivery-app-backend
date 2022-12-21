@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,7 @@ public class Pizza {
 
     @Column(name = "name", nullable = false, unique = true)
     @NotNull(message = "Pizza name can't be null")
+
     @Size(min = 5, max = 30, message = "Pizza name should be between 5 and 30 characters long")
     private String pizzaName;
 
@@ -110,12 +112,13 @@ public class Pizza {
     }
 
     /**
-     * Adds a topping to the pizza if it's not on it yet
+     * Adds a topping to the pizza if it's not on it yet.
+     *
      * @param t The topping to add
      * @return Whether the topping was added
      */
     public boolean addTopping(Topping t) {
-        if(toppings.contains(t)) {
+        if (toppings.contains(t)) {
             return false;
         }
         toppings.add(t);
@@ -124,12 +127,13 @@ public class Pizza {
     }
 
     /**
-     * Removes a topping from the pizza if it's on there
+     * Removes a topping from the pizza if it's on there.
+     *
      * @param t The topping to remove
      * @return Whether the topping was removed
      */
     public boolean removeTopping(Topping t) {
-        if(!toppings.contains(t)) {
+        if (!toppings.contains(t)) {
             return false;
         }
         toppings.remove(t);
