@@ -116,6 +116,8 @@ public class CouponController {
             if (coupon.getType() == CouponType.DISCOUNT) {
                 pq.add(new Tuple(code, CouponService.applyDiscount(coupon, prices)));
             } else {
+                if (prices.size() == 1)
+                    continue;
                 pq.add(new Tuple(code, CouponService.applyOnePlusOne(coupon, prices)));
             }
         }
