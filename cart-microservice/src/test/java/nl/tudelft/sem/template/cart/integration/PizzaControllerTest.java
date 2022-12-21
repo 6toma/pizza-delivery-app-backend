@@ -44,8 +44,8 @@ public class PizzaControllerTest extends IntegrationTest {
         defaultRepository.deleteAll();
         toppingRepository.deleteAll();
         var toppings1 = toppingRepository.saveAll(Arrays.asList(new Topping("test1", 10),
-            new Topping("test2", 13),
-            new Topping("test3", 15)));
+            new Topping("some test topping", 13),
+            new Topping("some other topping", 15)));
         pizzaModel = new PizzaModel();
         pizzaModel.setPizzaName("Hawaii");
         pizzaModel.setPrice(7);
@@ -58,6 +58,8 @@ public class PizzaControllerTest extends IntegrationTest {
     void deleteAll() {
         toppingRepository.deleteAll();
         defaultRepository.deleteAll();
+        defaultRepository.flush();
+        toppingRepository.flush();
     }
 
     @Test

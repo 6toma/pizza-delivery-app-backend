@@ -47,6 +47,7 @@ public class ToppingControllerTest extends IntegrationTest {
     @AfterEach
     void deleteAll() {
         toppingRepository.deleteAll();
+        toppingRepository.flush();
     }
 
     @Test
