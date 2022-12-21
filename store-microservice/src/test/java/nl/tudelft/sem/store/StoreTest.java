@@ -4,13 +4,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import nl.tudelft.sem.store.domain.Store;
-import nl.tudelft.sem.store.domain.StoreAddress;
 import org.junit.jupiter.api.Test;
 
 class StoreTest {
 
-    Store store1 = new Store(1, new StoreAddress("zipCode", "some street", 234));
-    Store store2 = new Store(1, new StoreAddress("zipCode", "other street", 234));
+    Store store1 = Store.builder().storeId(1).storeName("Store 1").build(); // same id
+    Store store2 = Store.builder().storeId(1).storeName("Store 2").build();
 
     @Test
     void testEquals() {
