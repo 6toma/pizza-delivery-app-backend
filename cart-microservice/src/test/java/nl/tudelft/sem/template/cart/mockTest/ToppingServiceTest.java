@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.cart;
+package nl.tudelft.sem.template.cart.mockTest;
 
 import nl.tudelft.sem.template.cart.ToppingRepository;
 import nl.tudelft.sem.template.cart.ToppingService;
@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -61,8 +62,12 @@ public class ToppingServiceTest {
     @Test
     public void removeToppingTest() throws Exception {
         when(tr.existsByName("pineapple")).thenReturn(true);
+        when(tr.findByName("pineapple")).thenReturn(Optional.ofNullable(t1));
+        doNothing().when(tr).delete(t1);
         ts.removeTopping("pineapple");
-        verify(tr, times(1)).deleteById("pineapple");
+        verify(tr, times(1)).existsByName("pineapple");
+        verify(tr, times(1)).findByName("pineapple");
+        verify(tr, times(1)).delete(t1);
     }
 
     @Test
@@ -71,11 +76,5 @@ public class ToppingServiceTest {
         assertThrows(ToppingNotFoundException.class, () -> {
             ts.removeTopping("pineapple");
         });
-    }
-
-    @Test
-    public void editToppingTest() throws Exception {
-        ts.editTopping("pineapple", 2);
-        verify(tr, times(1)).save(new Topping("pineapple", 2));
     }
 }

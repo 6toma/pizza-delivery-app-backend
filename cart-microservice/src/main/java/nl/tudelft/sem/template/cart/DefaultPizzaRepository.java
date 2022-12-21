@@ -22,5 +22,5 @@ public interface DefaultPizzaRepository extends JpaRepository<DefaultPizza, Inte
      */
     boolean existsByPizzaName(String pizzaName);
 
-    Optional<Pizza> findByPizzaName(String pizzaName);
+    Optional<DefaultPizza> findByPizzaName(String pizzaName);
 }

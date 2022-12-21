@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.cart.controllers;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
 import nl.tudelft.sem.template.cart.PizzaService;
+import nl.tudelft.sem.template.cart.exceptions.PizzaNameNotFoundException;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.models.PizzaModel;
 import nl.tudelft.sem.template.commons.entity.Pizza;
@@ -68,8 +69,14 @@ public class PizzaController {
      */
     @PutMapping("/edit")
     @RoleRegionalManager
-    public ResponseEntity<String> editPizza(@RequestBody PizzaModel pizza) {
-        pizzaService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
+    public ResponseEntity<String> editPizza(@RequestBody PizzaModel pizza) throws PizzaNameNotFoundException {
+
+        try {
+            pizzaService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+
         return ResponseEntity.ok("Pizza edited");
     }
 
