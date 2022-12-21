@@ -1,11 +1,8 @@
 package nl.tudelft.sem.template.commons.entity;
 
 import java.util.Map;
-import javax.persistence.ElementCollection;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.authentication.NetId;
@@ -18,7 +15,7 @@ public class Cart {
     @EmbeddedId
     private NetId netId;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name = "id")
     private Map<CustomPizza, Integer> pizzasMap;
 

@@ -5,7 +5,9 @@ import nl.tudelft.sem.checkout.domain.OrderModel;
 import nl.tudelft.sem.checkout.domain.OrderService;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
+import nl.tudelft.sem.template.commons.entity.Cart;
 import nl.tudelft.sem.template.commons.entity.Pizza;
+import nl.tudelft.sem.template.commons.models.CartPizza;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,15 +33,22 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+    public long getStoreId(String storeName) {
+        String storeIdLong = requestHelper.postRequest(8084, "/store/getStoreIdFromName", storeName, String.class);
+        long storeId = Long.parseLong(storeIdLong);
+        if (storeId == -1) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This is not a real store");
+        return storeId;
+    }
+
+    public List<CartPizza> getPizzas() {
+        return requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), List.class);
+    }
+
+
     @PostMapping("/add")
     public ResponseEntity<String> addOrder(@RequestBody OrderModel order) {
-        Order newOrder = Order.builder()
-            .withStoreId(order.getStoreId())
-            .withCustomerId(order.getCustomerId())
-            .withPickupTime(order.getPickupTime())
-            .withCoupon(order.getCoupon())
-            .build();
-        orderService.addOrder(newOrder);
+        long storeId = getStoreId(order.getStoreName());
+        List<CartPizza> pizzas = getPizzas();
         return ResponseEntity.ok("Order added");
     }
 
@@ -49,13 +58,13 @@ public class OrderController {
         String role = authManager.getRole();
         try {
             Order orderToBeRemoved = orderService.getOrderById(orderId);
-            if(role.equals("ROLE_STORE_OWNER"))
+            if (role.equals("ROLE_STORE_OWNER"))
                 return ResponseEntity.badRequest().body("Store owners can't cancel orders");
-            if(role.equals("ROLE_REGIONAL_MANGER") || orderService.getOrdersForCustomer(netId).contains(orderToBeRemoved)) {
+            if (role.equals("ROLE_REGIONAL_MANGER") || orderService.getOrdersForCustomer(netId).contains(orderToBeRemoved)) {
                 orderService.removeOrderById(orderId);
                 return ResponseEntity.ok("Order removed");
-            }
-            else return ResponseEntity.badRequest().body("Order does not belong to customer, so they cannot cancel it");
+            } else
+                return ResponseEntity.badRequest().body("Order does not belong to customer, so they cannot cancel it");
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -73,9 +82,9 @@ public class OrderController {
         String role = authManager.getRole();
         try {
             Order order = orderService.getOrderById(orderId);
-            if(role.equals("ROLE_REGIONAL_MANAGER") || role.equals("ROLE_STORE_OWNER") ||
-                (role.equals("ROLE_CUSTOMER") && orderService.getOrdersForCustomer(netId).contains(order)))
-              return order;
+            if (role.equals("ROLE_REGIONAL_MANAGER") || role.equals("ROLE_STORE_OWNER") ||
+                    (role.equals("ROLE_CUSTOMER") && orderService.getOrdersForCustomer(netId).contains(order)))
+                return order;
             else throw new Exception("Order does not belong to customer, so they cannot check it");
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -90,7 +99,7 @@ public class OrderController {
 
             // list is unsorted, faster to search for min, than to sort and get first value
             List<Double> priceList = new ArrayList<>();
-            for(Pizza pizza : order.getPizzaList())
+            for (Pizza pizza : order.getPizzaList())
                 priceList.add(pizza.getPrice());
 
             return priceList;
@@ -106,8 +115,8 @@ public class OrderController {
         String role = authManager.getRole();
         try {
             Order order = orderService.getOrderById(orderId);
-            if(role.equals("ROLE_REGIONAL_MANAGER") || role.equals("ROLE_STORE_OWNER") ||
-                (role.equals("ROLE_CUSTOMER") && orderService.getOrdersForCustomer(netId).contains(order)))
+            if (role.equals("ROLE_REGIONAL_MANAGER") || role.equals("ROLE_STORE_OWNER") ||
+                    (role.equals("ROLE_CUSTOMER") && orderService.getOrdersForCustomer(netId).contains(order)))
                 return order.calculatePriceWithoutDiscount();
             else throw new Exception("Order does not belong to customer, so they cannot check the price");
         } catch (Exception e) {

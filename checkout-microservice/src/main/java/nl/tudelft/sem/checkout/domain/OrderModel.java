@@ -12,9 +12,7 @@ import java.util.List;
  */
 @Data
 public class OrderModel {
-    private final int storeId;
-    private final String customerId;
+    private final String storeName;
     private final LocalDateTime pickupTime;
-    private final List<Pizza> pizzaList;
-    private final String coupon;
+    private final List<String> coupons;
 }

@@ -2,14 +2,8 @@ package nl.tudelft.sem.checkout.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,7 +34,7 @@ public class Order {
     @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime pickupTime;
 
-    @OneToMany
+    @ElementCollection
     @Column(name = "pizzas", nullable = false)
     private List<CustomPizza> pizzaList;
 

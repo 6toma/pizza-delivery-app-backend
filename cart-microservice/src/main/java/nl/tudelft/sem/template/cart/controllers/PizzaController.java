@@ -29,7 +29,7 @@ public class PizzaController {
      * @throws Exception if the pizza already exists
      */
     @PostMapping("/add")
-    @RoleRegionalManager
+//    @RoleRegionalManager
     public ResponseEntity<String> addPizza(@RequestBody PizzaModel pizza) throws Exception {
 
         try {

@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.example.config;
 
-import nl.tudelft.sem.template.example.authentication.JwtAuthenticationEntryPoint;
-import nl.tudelft.sem.template.example.authentication.JwtRequestFilter;
+import nl.tudelft.sem.template.authentication.JwtAuthenticationEntryPoint;
+import nl.tudelft.sem.template.authentication.JwtRequestFilter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
