@@ -5,9 +5,9 @@ import java.util.List;
 import lombok.SneakyThrows;
 import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.template.authentication.AuthManager;
+import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import nl.tudelft.sem.template.coupon.domain.*;
-import nl.tudelft.sem.template.coupon.services.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -202,19 +202,19 @@ class CouponControllerTest {
 
     @Test
     void selectCouponEmptyPriceList() {
-        ResponseEntity<Tuple> res = couponController.selectCoupon(new ArrayList<>(), List.of("ABDC12"));
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new ArrayList<>(), List.of("ABDC12"));
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
     void selectCouponEmptyCouponList() {
-        ResponseEntity<Tuple> res = couponController.selectCoupon(List.of(10.0), new ArrayList<>());
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(List.of(10.0), new ArrayList<>());
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
     void selectCouponInvalidCoupon() {
-        ResponseEntity<Tuple> res = couponController.selectCoupon(List.of(10.0), List.of("ABC76"));
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(List.of(10.0), List.of("ABC76"));
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
