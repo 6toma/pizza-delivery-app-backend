@@ -15,8 +15,8 @@ import nl.tudelft.sem.template.coupon.domain.IncompleteCouponException;
 import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
 import nl.tudelft.sem.template.coupon.domain.InvalidStoreIdException;
 import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
+import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.coupon.services.CouponService;
-import nl.tudelft.sem.template.coupon.services.Tuple;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -97,10 +97,10 @@ public class CouponController {
     }
 
     @PostMapping("/selectCoupon")
-    public ResponseEntity<Tuple> selectCoupon(@RequestBody List<Double> prices, @RequestBody List<String> codes) {
+    public ResponseEntity<CouponFinalPriceModel> selectCoupon(@RequestBody List<Double> prices, @RequestBody List<String> codes) {
         if (prices.isEmpty())
             return ResponseEntity.badRequest().build();
-        PriorityQueue<Tuple> pq = new PriorityQueue<>();
+        PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
         for (String code : codes) {
             ResponseEntity<Coupon> c;
             ResponseEntity<Boolean> used = null; //TODO: endpoint needs to be created in customer
@@ -114,11 +114,11 @@ public class CouponController {
                 continue;
             Coupon coupon = c.getBody();
             if (coupon.getType() == CouponType.DISCOUNT) {
-                pq.add(new Tuple(code, CouponService.applyDiscount(coupon, prices)));
+                pq.add(new CouponFinalPriceModel(code, CouponService.applyDiscount(coupon, prices)));
             } else {
                 if (prices.size() == 1)
                     continue;
-                pq.add(new Tuple(code, CouponService.applyOnePlusOne(coupon, prices)));
+                pq.add(new CouponFinalPriceModel(code, CouponService.applyOnePlusOne(coupon, prices)));
             }
         }
         if(pq.isEmpty())
