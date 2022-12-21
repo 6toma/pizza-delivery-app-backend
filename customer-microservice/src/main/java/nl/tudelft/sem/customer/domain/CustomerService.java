@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import nl.tudelft.sem.template.authentication.NetId;
 
 /**
  * Customer Service responsible for managing the Customer Repository.
@@ -39,7 +40,7 @@ public class CustomerService {
         try {
             return customerRepository.findByNetId(netId);
         } catch (NoSuchElementException e) {
-            throw new CustomerNotFoundException(netId); //TODO: fix exception to not expect int id or make new exception
+            throw new CustomerNotFoundException(netId);
         }
     }
 
@@ -70,11 +71,8 @@ public class CustomerService {
      *                   i.e. the coupon to be added to the list of used coupons.
      */
     public void addToUsedCoupons(NetId netId, String couponCode) {
-        //use netID to find customer from database
 
         Customer customer = customerRepository.findByNetId(netId);
-        //Customer customer = getCustomerById(customerId);
-
         if(customer == null) { return; }
 
         List<String> coupons = customer.getUsedCoupons();
@@ -87,12 +85,11 @@ public class CustomerService {
     /**
      * Adds the given list of allergens to the existing list of allergens of the Customer with the provided id.
      *
-     * @param customerId the id of the Customer whose allergens should be updated.
+     * @param netId the id of the Customer whose allergens should be updated.
      * @param newToppings the new list of toppings to be added to the existing List of Allergens.
      */
     public void updateAllergens(NetId netId, List<String> newToppings) {
         Customer customer = customerRepository.findByNetId(netId);
-        //Customer customer = getCustomerById(customerId);
         if(customer == null) { return; }
 
         List<String> toppings = customer.getAllergens();

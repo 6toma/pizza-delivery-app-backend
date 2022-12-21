@@ -1,7 +1,10 @@
 package nl.tudelft.sem.customer.controllers;
 
+import lombok.Data;
 import nl.tudelft.sem.customer.domain.Customer;
 import nl.tudelft.sem.customer.domain.CustomerService;
+import nl.tudelft.sem.template.authentication.AuthManager;
+import nl.tudelft.sem.template.authentication.NetId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,20 +14,21 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-
 import java.util.List;
 
 @RestController
+@Data
 @RequestMapping("/customers")
 public class CustomerController {
 
+    private final transient AuthManager authManager;
     private final transient CustomerService customerService;
 
     @Autowired
-    public CustomerController(CustomerService customerService) {
+    public CustomerController(AuthManager authManager, CustomerService customerService) {
+        this.authManager = authManager;
         this.customerService = customerService;
     }
-
 
     /**
      * Endpoint to retrieve a Customer from the Customer Repository by their unique id.
@@ -40,7 +44,7 @@ public class CustomerController {
     /**
      * Endpoint to retrieve a Customer from the Customer Repository by their (unique) NetId.
      *
-     * @param netId the neIid to search for.
+     * @param netId the netId to search for.
      * @return the Customer with the specified netId.
      */
     @GetMapping("/{netId}")
@@ -96,15 +100,15 @@ public class CustomerController {
      * Endpoint to set a customer's list of allergens.
      * The endpoint adds the given list of allergens to the existing list of allergens of the customer with the provided id.
      *
-     * @param customerId the id of the Customer whose allergens should be updated.
      * @param newToppings the new list of toppings to be added to the existing List of Allergens.
      * @return ok
      */
-    @PostMapping("/{customerId}/allergens")
-    public ResponseEntity<String> updateAllergens(@PathVariable int customerId, @RequestBody List<String> newToppings) {
-        // use authmanager.getnetId or something to get netid of current customer
+    @PostMapping("/allergens")
+    public ResponseEntity<String> updateAllergens(@RequestBody List<String> newToppings) {
+        // get netid of customer IN CURRENT CONTEXT
+        NetId netId = new NetId(authManager.getNetId());
         // then use that to find the customer in the DB to update allergens
-        customerService.updateAllergens(customerId, newToppings);
+        customerService.updateAllergens(netId, newToppings);
         return ResponseEntity.ok("Allergens updated.");
     }
 }

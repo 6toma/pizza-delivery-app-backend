@@ -2,8 +2,8 @@ package nl.tudelft.sem.customer.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import nl.tudelft.sem.template.authentication.NetId;
 
-import java.util.List;
 
 /**
  * The Customer Repository.
