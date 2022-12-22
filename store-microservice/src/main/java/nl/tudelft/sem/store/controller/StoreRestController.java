@@ -96,5 +96,10 @@ public class StoreRestController {
         store.preparePizza();
         return "Store " + storeId + " was notified of the order.";
     }
+
+    @PostMapping("/existsByStoreId")
+    public boolean existsByStoreId(@RequestBody long storeId) {
+        return storeRepository.existsById(storeId);
+    }
 }
 

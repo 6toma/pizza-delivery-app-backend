@@ -1,14 +1,14 @@
 package nl.tudelft.sem.template.authentication;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,6 +26,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * </p>
  */
 @Component
+@RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -33,14 +34,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     public static final String AUTHORIZATION_AUTH_SCHEME = "Bearer";
 
     private final transient JwtTokenVerifier jwtTokenVerifier;
-
-    private AuthManager authManager;
-
-    @Autowired
-    public JwtRequestFilter(JwtTokenVerifier jwtTokenVerifier, AuthManager authManager) {
-        this.jwtTokenVerifier = jwtTokenVerifier;
-        this.authManager = authManager;
-    }
 
     /**
      * This filter will verify and authenticate a JWT token if a valid authorization header is set.
@@ -81,7 +74,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         // After setting the Authentication in the context, we specify
                         // that the current user is authenticated. So it passes the
                         // Spring Security Configurations successfully.
-                        authManager.setToken(token);
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     }
 
