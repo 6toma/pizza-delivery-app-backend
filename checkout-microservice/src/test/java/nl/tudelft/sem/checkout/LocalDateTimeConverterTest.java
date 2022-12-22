@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.test;
+package nl.tudelft.sem.checkout;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

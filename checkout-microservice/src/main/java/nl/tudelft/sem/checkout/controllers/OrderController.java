@@ -1,11 +1,11 @@
 package nl.tudelft.sem.checkout.controllers;
 
+import java.time.LocalDateTime;
 import nl.tudelft.sem.checkout.domain.Order;
-import nl.tudelft.sem.checkout.domain.OrderModel;
 import nl.tudelft.sem.checkout.domain.OrderService;
+import nl.tudelft.sem.template.commons.entity.StoreTimeCoupons;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
-import nl.tudelft.sem.template.commons.entity.Cart;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.models.CartPizza;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
@@ -46,9 +46,25 @@ public class OrderController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<String> addOrder(@RequestBody OrderModel order) {
-        long storeId = getStoreId(order.getStoreName());
+    public ResponseEntity<String> addOrder(@RequestBody StoreTimeCoupons storeTimeCoupons) {
+        long storeId = getStoreId(storeTimeCoupons.getStoreName());
         List<CartPizza> pizzas = getPizzas();
+        LocalDateTime pickupTime = storeTimeCoupons.getPickupTime();
+        String customer = authManager.getNetId();
+
+        List<String> couponCodes = storeTimeCoupons.getCoupons();
+        List<Double> pizzaPrices = getPriceForEachPizza(pizzas);
+        // String finalCoupon = requestHelper.postRequest(8085, "/selectCoupon", OBJECT WITH PIZZAS AND COUPONS, String.class);
+        //TODO: Wait for coupon interactions so we can retrieve the final coupon used by the user
+//        Order order = Order.builder()
+//                .withStoreId(storeId)
+//                    .withCustomerId(customer)
+//                        .withPickupTime(pickupTime)
+//                            .withPizzaList(pizzas)
+//                                .withCoupon(finalCoupon)
+//                                    .build();
+        //TODO: Also wait for customer interaction so I can send used coupon
+        requestHelper.postRequest(8084, "store/notify", storeId, String.class); // notify store of new order
         return ResponseEntity.ok("Order added");
     }
 
@@ -57,6 +73,7 @@ public class OrderController {
         String netId = authManager.getNetId();
         String role = authManager.getRole();
         try {
+            //TODO: wait for customer interaction so I can remove a coupon that is not used anymore
             Order orderToBeRemoved = orderService.getOrderById(orderId);
             if (role.equals("ROLE_STORE_OWNER"))
                 return ResponseEntity.badRequest().body("Store owners can't cancel orders");
@@ -91,22 +108,15 @@ public class OrderController {
         }
     }
 
-    // This is strictly for interactions
-    @GetMapping("/pizza_prices/{id}")
-    public List<Double> getPriceForEachPizza(@PathVariable("id") long orderId) throws Exception {
-        try {
-            Order order = orderService.getOrderById(orderId);
+    public List<Double> getPriceForEachPizza(List<CartPizza> pizzas)  {
+        // list is unsorted, faster to search for min, than to sort and get first value
+        List<Double> priceList = new ArrayList<>(pizzas.size());
+        for (CartPizza pizza : pizzas)
+            for (int i = 0; i < pizza.getAmount(); i++)
+                priceList.add(pizza.getPizza().getPrice());
+        return priceList;
 
-            // list is unsorted, faster to search for min, than to sort and get first value
-            List<Double> priceList = new ArrayList<>();
-            for (Pizza pizza : order.getPizzaList())
-                priceList.add(pizza.getPrice());
 
-            return priceList;
-
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
     }
 
     @GetMapping("/price/{id}")

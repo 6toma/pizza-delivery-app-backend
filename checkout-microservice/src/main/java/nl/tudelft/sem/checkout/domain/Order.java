@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.template.commons.entity.CustomPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
+import nl.tudelft.sem.template.commons.models.CartPizza;
 
 @Entity
 @Table(name = "orders")
@@ -36,7 +37,7 @@ public class Order {
 
     @ElementCollection
     @Column(name = "pizzas", nullable = false)
-    private List<CustomPizza> pizzaList;
+    private List<CartPizza> pizzaList;
 
     @Column(name = "coupon", nullable = false)
     private String coupon;
@@ -47,8 +48,9 @@ public class Order {
 
     public double calculatePriceWithoutDiscount() {
         double price = 0;
-        for(Pizza pizza : pizzaList)
-            price += pizza.getPrice();
+        for(CartPizza pizza : pizzaList)
+            for(int i = 0; i < pizza.getAmount(); i++)
+                price += pizza.getPizza().getPrice();
         return price;
     }
 }

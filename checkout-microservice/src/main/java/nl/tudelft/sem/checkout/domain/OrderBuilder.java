@@ -3,12 +3,13 @@ package nl.tudelft.sem.checkout.domain;
 import java.time.LocalDateTime;
 import java.util.List;
 import nl.tudelft.sem.template.commons.entity.CustomPizza;
+import nl.tudelft.sem.template.commons.models.CartPizza;
 
 public class OrderBuilder {
     private long storeId;
     private String customerId;
     private LocalDateTime pickupTime;
-    private List<CustomPizza> pizzaList;
+    private List<CartPizza> pizzaList;
     private String coupon;
 
     public OrderBuilder withStoreId(long storeId) {
@@ -26,7 +27,7 @@ public class OrderBuilder {
         return this;
     }
 
-    public OrderBuilder withPizzaList(List<CustomPizza> pizzaList) {
+    public OrderBuilder withPizzaList(List<CartPizza> pizzaList) {
         this.pizzaList = pizzaList;
         return this;
     }
