@@ -2,8 +2,6 @@ rootProject.name = 'template'
 
 includeBuild 'build-logic'
 include 'authentication-microservice'
-include 'example-microservice'
-include 'new-microservice'
 include 'customer-microservice'
 include 'store-microservice'
 include 'coupon-microservice'

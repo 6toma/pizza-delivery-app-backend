@@ -71,12 +71,12 @@ public class StoreRestController {
      * @return the <code>storeId</code> if <code>storeName</code>is valid or <code>-1</code> if it is not.
      */
     @PostMapping("/getStoreIdFromName")
-    public long storeIdFromName(@RequestBody String storeName) {
+    public Long storeIdFromName(@RequestBody String storeName) {
         try {
             return storeRepository.getStoreIdFromStoreName(storeName);
         } catch (Exception e) {
             // in the case when the storeName is bad we return -1
-            return -1;
+            return -1l;
         }
     }
 
@@ -95,6 +95,11 @@ public class StoreRestController {
         Store store = optionalStore.get();
         store.preparePizza();
         return "Store " + storeId + " was notified of the order.";
+    }
+
+    @PostMapping("/existsByStoreId")
+    public boolean existsByStoreId(@RequestBody long storeId) {
+        return storeRepository.existsById(storeId);
     }
 }
 

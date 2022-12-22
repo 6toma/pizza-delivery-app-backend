@@ -21,4 +21,9 @@ class DateConverterTest {
         Date date = new Date(16, 12, 2022);
         assertEquals(date, dc.convertToEntityAttribute("16/12/2022"));
     }
+
+    @Test
+    void convertToEntityAttributeException() {
+        assertThrows(NumberFormatException.class, () -> dc.convertToEntityAttribute("Hello"));
+    }
 }
