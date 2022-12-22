@@ -1,16 +1,21 @@
 package nl.tudelft.sem.template.coupon.controllers;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 import nl.tudelft.sem.template.authentication.AuthManager;
-import nl.tudelft.sem.template.coupon.domain.*;
+import nl.tudelft.sem.template.coupon.domain.Coupon;
+import nl.tudelft.sem.template.coupon.domain.CouponRepository;
+import nl.tudelft.sem.template.coupon.domain.CouponType;
+import nl.tudelft.sem.template.coupon.domain.DiscountCouponIncompleteException;
+import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import java.util.Optional;
-import static org.mockito.Mockito.when;
 
 class CouponControllerTest {
 

@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import nl.tudelft.sem.template.cart.ToppingRepository;
 import nl.tudelft.sem.template.cart.ToppingService;
 import nl.tudelft.sem.template.commons.entity.Topping;
@@ -106,20 +107,20 @@ public class ToppingControllerTest extends IntegrationTest {
     }
 
     private ResultActions addToppingRequest(ToppingModel tm) throws Exception {
-        return mockMvc.perform(authenticated(post("/topping/add/"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(tm)));
+        return mockMvc.perform(authenticated(post("/topping/add/"), UserRole.REGIONAL_MANAGER)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(toJson(tm)));
     }
 
     private ResultActions removeToppingRequest(String toppingName) throws Exception {
-        return mockMvc.perform(authenticated(delete("/topping/remove/"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(toppingName));
+        return mockMvc.perform(authenticated(delete("/topping/remove/"), UserRole.REGIONAL_MANAGER)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(toppingName));
     }
 
     private ResultActions editToppingRequest(ToppingModel tm) throws Exception {
-        return mockMvc.perform(authenticated(put("/topping/edit/"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(tm)));
+        return mockMvc.perform(authenticated(put("/topping/edit/"), UserRole.REGIONAL_MANAGER)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(toJson(tm)));
     }
 }

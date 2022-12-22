@@ -1,9 +1,8 @@
 package nl.tudelft.sem.template.commons;
 
-import nl.tudelft.sem.template.commons.entity.Topping;
-
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+import nl.tudelft.sem.template.commons.entity.Topping;
 
 /**
  * Converter for the HashedPassword value object.

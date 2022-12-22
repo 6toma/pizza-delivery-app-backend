@@ -1,10 +1,9 @@
 package nl.tudelft.sem.template.commons.models;
 
+import java.util.List;
+import javax.validation.constraints.Min;
 import lombok.Data;
 import nl.tudelft.sem.template.commons.entity.Topping;
-
-import javax.validation.constraints.Min;
-import java.util.List;
 
 /**
  * Model representing an pizza.

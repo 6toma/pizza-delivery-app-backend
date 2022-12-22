@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -77,7 +78,7 @@ public class AppUser extends HasEvents {
      * @param password The new password of the user
      */
     public void changePassword(HashedPassword password) {
-        this.password = password;
+        this.password = Objects.requireNonNull(password);
         this.recordThat(new PasswordWasChangedEvent(this));
     }
 

@@ -1,5 +1,14 @@
 package nl.tudelft.sem.template.cart.mockTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
 import nl.tudelft.sem.template.cart.ToppingRepository;
 import nl.tudelft.sem.template.cart.ToppingService;
 import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
@@ -8,14 +17,6 @@ import nl.tudelft.sem.template.commons.entity.Topping;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
 
 public class ToppingServiceTest {
 

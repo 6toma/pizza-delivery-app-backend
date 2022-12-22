@@ -1,6 +1,5 @@
 include:
   - authentication-microservice/.gitlab-ci.yml
-  - example-microservice/.gitlab-ci.yml
   - customer-microservice/.gitlab-ci.yml
   - checkout-microservice/.gitlab-ci.yml
   - coupon-microservice/.gitlab-ci.yml

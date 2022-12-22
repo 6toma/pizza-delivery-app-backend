@@ -42,8 +42,7 @@ public class CartController {
     private final AuthManager authManager;
     private final ToppingRepository toppingRepository;
 
-
-    private Cart getCartFromNetId() {
+    private Cart getCartFromSessionNetId() {
         NetId netId = authManager.getNetIdObject();
         Optional<Cart> optionalCart = cartRepository.findById(netId);
         if (optionalCart.isEmpty()) {
@@ -83,7 +82,7 @@ public class CartController {
 
 
     private Cart getCart() {
-        Cart cart = getCartFromNetId();
+        Cart cart = getCartFromSessionNetId();
         if (cart == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You don't currently have a cart");
         }
@@ -94,7 +93,7 @@ public class CartController {
     @Transactional
     int addPizzaToCart(@PathVariable("id") int defaultPizzaId) {
         CustomPizza customPizza = getDefaultPizza(defaultPizzaId);
-        Cart cart = getCartFromNetId();
+        Cart cart = getCartFromSessionNetId();
         if (cart == null) {
             var id = authManager.getNetIdObject();
             cart = new Cart(id, new HashMap<>());

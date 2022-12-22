@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
+import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
 import nl.tudelft.sem.template.cart.PizzaService;
 import nl.tudelft.sem.template.cart.ToppingRepository;
@@ -118,19 +119,19 @@ public class PizzaControllerTest extends IntegrationTest {
     }
 
     private ResultActions addPizzaRequest(PizzaModel pm) throws Exception {
-        return mockMvc.perform(authenticated(post("/pizza/add/"))
+        return mockMvc.perform(authenticated(post("/pizza/add/"), UserRole.REGIONAL_MANAGER)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(pm)));
     }
 
     private ResultActions removePizzaRequest(String pizzaName) throws Exception {
-        return mockMvc.perform(authenticated(delete("/pizza/remove/"))
+        return mockMvc.perform(authenticated(delete("/pizza/remove/"), UserRole.REGIONAL_MANAGER)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(pizzaName));
     }
 
     private ResultActions editPizzaRequest(PizzaModel pm) throws Exception {
-        return mockMvc.perform(authenticated(put("/pizza/edit/"))
+        return mockMvc.perform(authenticated(put("/pizza/edit/"), UserRole.REGIONAL_MANAGER)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(pm)));
     }

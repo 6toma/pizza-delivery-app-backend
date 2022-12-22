@@ -1,15 +1,13 @@
 package nl.tudelft.sem.template.cart;
 
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameNotFoundException;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
-import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Menu service responsible for managing the pizza DB.

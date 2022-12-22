@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<ruleset name="Custom Rules"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        SEM01a Custom Rules
+    </description>
+
+    <!--
+       The default ruleset used is `category/java/errorprone.xml`, although for some weird reason
+        some pmd errors are not shown when you manually define pmd.xml, like the `LoggerIsNotStaticFinal` rule...
+        It seems to work, it still catches other errors and I wanted to disable `LoggerIsNotStaticFinal` anyway.
+      -->
+    <rule ref="category/java/errorprone.xml"/>
+</ruleset>
