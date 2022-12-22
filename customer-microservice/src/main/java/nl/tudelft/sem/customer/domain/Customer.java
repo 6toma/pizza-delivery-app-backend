@@ -36,10 +36,11 @@ public class Customer {
      * @param allergens - the list of allergens that this customer has set for themselves.
      * @param customerId - unique customer ID //should match user ID in some way 
      */
-    public Customer(List<String> usedCoupons, List<String> allergens, int customerId) {
+    public Customer(List<String> usedCoupons, List<String> allergens, int customerId, NetId netId) {
         this.usedCoupons = usedCoupons;
         this.allergens = allergens;
         this.customerId = customerId;
+        this.netId = netId;
     }
 
 }

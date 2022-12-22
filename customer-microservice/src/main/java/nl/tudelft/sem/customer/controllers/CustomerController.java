@@ -40,6 +40,7 @@ public class CustomerController {
     @GetMapping("/{customerId}")
     public Customer getCustomerById(@PathVariable int customerId) {
         return customerService.getCustomerById(customerId);
+
     }
 
     /**
