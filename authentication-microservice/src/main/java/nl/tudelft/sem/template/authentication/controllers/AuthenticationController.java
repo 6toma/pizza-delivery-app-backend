@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.authentication.controllers;
 
+import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
@@ -8,7 +9,7 @@ import nl.tudelft.sem.template.authentication.domain.user.RegistrationService;
 import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
 import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
 import nl.tudelft.sem.template.authentication.models.RegistrationRequestModel;
-import org.springframework.beans.factory.annotation.Autowired;
+import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,34 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@RequiredArgsConstructor
 public class AuthenticationController {
 
     private final transient AuthenticationManager authenticationManager;
-
     private final transient JwtTokenGenerator jwtTokenGenerator;
-
     private final transient JwtUserDetailsService jwtUserDetailsService;
-
     private final transient RegistrationService registrationService;
-
-    /**
-     * Instantiates a new UsersController.
-     *
-     * @param authenticationManager the authentication manager
-     * @param jwtTokenGenerator     the token generator
-     * @param jwtUserDetailsService the user service
-     * @param registrationService   the registration service
-     */
-    @Autowired
-    public AuthenticationController(AuthenticationManager authenticationManager,
-                                    JwtTokenGenerator jwtTokenGenerator,
-                                    JwtUserDetailsService jwtUserDetailsService,
-                                    RegistrationService registrationService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenGenerator = jwtTokenGenerator;
-        this.jwtUserDetailsService = jwtUserDetailsService;
-        this.registrationService = registrationService;
-    }
+    private final transient RequestHelper requestHelper;
 
     /**
      * Endpoint for authentication.
@@ -59,14 +40,13 @@ public class AuthenticationController {
      * @throws Exception if the user does not exist or the password is incorrect
      */
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponseModel> authenticate(@RequestBody AuthenticationRequestModel request)
-            throws Exception {
+    public ResponseEntity<AuthenticationResponseModel> authenticate(@RequestBody AuthenticationRequestModel request) {
 
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getNetId(),
-                            request.getPassword()));
+                new UsernamePasswordAuthenticationToken(
+                    request.getNetId(),
+                    request.getPassword()));
         } catch (DisabledException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "USER_DISABLED", e);
         } catch (BadCredentialsException e) {
@@ -92,7 +72,9 @@ public class AuthenticationController {
             NetId netId = new NetId(request.getNetId());
             Password password = new Password(request.getPassword());
             registrationService.registerUser(netId, password);
+            requestHelper.postRequest(8081, "/customers/", netId.toString(), String.class);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 

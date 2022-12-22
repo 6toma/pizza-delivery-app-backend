@@ -5,4 +5,5 @@ apply plugin: 'info.solidsoft.pitest'
 
 dependencies {
     implementation(project(":authentication"))
+    implementation(project(":commons"))
 }

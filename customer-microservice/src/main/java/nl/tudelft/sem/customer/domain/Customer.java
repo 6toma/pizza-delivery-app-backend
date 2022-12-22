@@ -3,9 +3,12 @@ package nl.tudelft.sem.customer.domain;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.ElementCollection;
+import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.authentication.NetId;
 
 import lombok.Data;
@@ -13,13 +16,15 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "customer")
+@NoArgsConstructor
 public class Customer {
 
     @Id
     @Column(name = "customerId", unique = true)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int customerId;
 
-    @Column(name = "netId", unique = true)
+    @Column(name = "netId", unique = true, nullable = false)
     private NetId netId;
 
     @Column(name = "usedCoupons")

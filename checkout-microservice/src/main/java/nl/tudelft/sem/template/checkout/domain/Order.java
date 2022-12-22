@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.*;
 
+import javax.validation.constraints.Min;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,6 +48,11 @@ public class Order {
 
     @Column(name = "coupon")
     private String coupon;
+
+    @Column(name="finalPrice", nullable = false)
+    @Min(0)
+    @Getter
+    private double finalPrice;
 
     public static OrderBuilder builder() {
         return new OrderBuilder();

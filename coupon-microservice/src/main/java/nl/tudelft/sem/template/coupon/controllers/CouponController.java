@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.template.authentication.AuthManager;
+import nl.tudelft.sem.template.authentication.annotations.role.MicroServiceInteraction;
+import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwnerOrRegionalManager;
+import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.models.PricesCodesModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
@@ -60,6 +63,7 @@ public class CouponController {
      *
      * @return The list of coupons
      */
+    @RoleStoreOwnerOrRegionalManager
     @GetMapping("/getCouponsForStore")
     public ResponseEntity<List<Coupon>> getCouponsForStore(@RequestBody long storeId) {
         if(!requestHelper.postRequest(8084, "/store/existsByStoreId", storeId, Boolean.class))
@@ -74,7 +78,7 @@ public class CouponController {
      * @return Coupon with given code if exists
      * @throws DiscountCouponIncompleteException if discount percentage is missing for a new discount coupon
      */
-    //@RoleStoreOwnerOrRegionalManager
+    @RoleStoreOwnerOrRegionalManager
     @PostMapping("/addCoupon")
     public ResponseEntity<Coupon> addCoupon(@RequestBody Coupon coupon) {
         if (coupon.getCode() == null) {
@@ -90,7 +94,7 @@ public class CouponController {
             throw new InvalidStoreIdException();
         }
 
-        if (coupon.getStoreId() == -1 && !authManager.getRoleAuthority().equals("ROLE_REGIONAL_MANAGER"))
+        if (coupon.getStoreId() == -1 && authManager.getRole() != UserRole.REGIONAL_MANAGER)
             throw new NotRegionalManagerException();
         if (coupon.getType() == null || coupon.getExpiryDate() == null)
             throw new IncompleteCouponException();
@@ -102,6 +106,7 @@ public class CouponController {
         return ResponseEntity.ok(coupon);
     }
 
+    @MicroServiceInteraction
     @PostMapping("/selectCoupon")
     public ResponseEntity<CouponFinalPriceModel> selectCoupon(@RequestBody PricesCodesModel pricesCodesModel) {
         List<Double> prices = pricesCodesModel.getPrices();
@@ -118,7 +123,7 @@ public class CouponController {
             } catch (InvalidCouponCodeException e) {
                 continue;
             }
-            if(c.getStatusCode().equals(HttpStatus.BAD_REQUEST) || used.getBody())
+            if(c.getStatusCode().equals(HttpStatus.BAD_REQUEST))
                 continue;
             Coupon coupon = c.getBody();
             if (coupon.getType() == CouponType.DISCOUNT) {

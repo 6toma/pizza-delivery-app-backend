@@ -50,9 +50,7 @@ public class OrderController {
     private List<Double> getPriceForEachPizza(List<CartPizza> pizzas) {
         List<Double> priceList = new ArrayList<>(pizzas.size());
         for (CartPizza pizza : pizzas) {
-            for (int i = 0; i < pizza.getAmount(); i++) {
-                priceList.add(pizza.getPizza().getPrice());
-            }
+            priceList.add(pizza.getPizza().calculatePrice() * pizza.getAmount());
         }
         return priceList;
     }
@@ -74,25 +72,23 @@ public class OrderController {
         List<CartPizza> pizzas = getPizzas();
         String customer = authManager.getNetId();
 
+        List<Double> pizzaPrices = getPriceForEachPizza(pizzas);
         List<String> couponCodes = storeTimeCoupons.getCoupons();
-        String finalCouponCode = null;
-        if (!couponCodes.isEmpty()) {
-            List<Double> pizzaPrices = getPriceForEachPizza(pizzas);
-            PricesCodesModel pcm = new PricesCodesModel(pizzaPrices, couponCodes);
-            CouponFinalPriceModel finalCoupon =
-                requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class); // get the best coupon
-            finalCouponCode = finalCoupon.getCode();
-        }
-        Order order = Order.builder()
+        var orderBuilder = Order.builder()
             .withStoreId(storeId)
             .withCustomerId(customer)
             .withPickupTime(pickupTime)
             .withPizzaList(pizzas)
-            .withCoupon(finalCouponCode)
-            .build();
-        order = orderService.addOrder(order);
-        if (finalCouponCode != null) {
-            requestHelper.postRequest(8081, "/customers/" + customer + "/coupons/add", finalCouponCode,
+            .withFinalPrice(pizzaPrices.stream().mapToDouble(x -> x).sum());
+        if (!couponCodes.isEmpty()) {
+            PricesCodesModel pcm = new PricesCodesModel(pizzaPrices, couponCodes);
+            CouponFinalPriceModel finalCoupon =
+                requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class); // get the best coupon
+            orderBuilder = orderBuilder.withCoupon(finalCoupon.getCode()).withFinalPrice(finalCoupon.getPrice());
+        }
+        var order = orderService.addOrder(orderBuilder.build());
+        if (order.getCoupon() != null) {
+            requestHelper.postRequest(8081, "/customers/" + customer + "/coupons/add", order.getCoupon(),
                 String.class); // add to customer's used coupons
         }
         requestHelper.postRequest(8089, "/store/notify", storeId, String.class); // notify store of new order

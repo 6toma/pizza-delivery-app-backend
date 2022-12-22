@@ -1,10 +1,13 @@
 package nl.tudelft.sem.customer.controllers;
 
+import java.util.Collections;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 import nl.tudelft.sem.customer.domain.Customer;
 import nl.tudelft.sem.customer.domain.CustomerService;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.annotations.role.MicroServiceInteraction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,21 +70,25 @@ public class CustomerController {
     /**
      * Endpoint to save a Customer to the Customer Repository.
      *
-     * @param customer the Customer object to save to the repo.
+     * @param netId the net id to save to the repo.
      * @return ok
      */
-    @PostMapping
-    public ResponseEntity<String> addCustomer(@RequestBody Customer customer) {
+    @MicroServiceInteraction
+    @PostMapping({"", "/"})
+    public ResponseEntity<String> addCustomer(@NotNull @RequestBody String netId) {
+        var customer = new Customer();
+        customer.setNetId(new NetId(netId));
+        customer.setAllergens(Collections.emptyList());
+        customer.setUsedCoupons(Collections.emptyList());
         customerService.addCustomer(customer);
         return ResponseEntity.ok("Customer added.");
     }
 
     /**
-     * Endpoint to add a coupon Code to the customer's list of used coupons.
-     * > Should be called after an order with a coupon is placed by a customer.
+     * Endpoint to add a coupon Code to the customer's list of used coupons. > Should be called after an order with a coupon
+     * is placed by a customer.
      *
-     * @param couponCode the coupon code used by the customer,
-     *                   i.e. the coupon to be added to the list of used coupons
+     * @param couponCode the coupon code used by the customer, i.e. the coupon to be added to the list of used coupons
      * @return ok
      */
     @PostMapping("/{netId}/coupons/add")
@@ -96,13 +103,13 @@ public class CustomerController {
     }
 
     /**
-     * Endpoint to remove a coupon Code to the customer's list of used coupons.
-     * > Should be called after an order with a coupon is cancelled.
+     * Endpoint to remove a coupon Code to the customer's list of used coupons. > Should be called after an order with a
+     * coupon is cancelled.
      *
-     * @param couponCode the coupon code used by the customer,
-     *                   i.e. the coupon to be added to the list of used coupons
+     * @param couponCode the coupon code used by the customer, i.e. the coupon to be added to the list of used coupons
      * @return ok
      */
+    @MicroServiceInteraction
     @PostMapping("/{netId}/coupons/remove")
     public ResponseEntity<String> removeFromUsedCoupons(@PathVariable String netId, @RequestBody String couponCode) {
 
@@ -113,11 +120,10 @@ public class CustomerController {
     }
 
 
-
     /**
      * Endpoint for checking if a specific coupon code has been used by a customer.
      *
-     * @param netId String netId of the customer for which to perform this check.
+     * @param netId      String netId of the customer for which to perform this check.
      * @param couponCode the coupon code to verify
      * @return true if the coupon has been used, false otherwise
      */
@@ -139,9 +145,10 @@ public class CustomerController {
         NetId netId = new NetId(authManager.getNetId());
         return customerService.checkUsedCoupons(netId, couponCodes);
     }
+
     /**
-     * Endpoint to set a customer's list of allergens.
-     * The endpoint adds the given list of allergens to the existing list of allergens of the customer with the provided id.
+     * Endpoint to set a customer's list of allergens. The endpoint adds the given list of allergens to the existing list of
+     * allergens of the customer with the provided id.
      *
      * @param newToppings the new list of toppings to be added to the existing List of Allergens.
      * @return ok
