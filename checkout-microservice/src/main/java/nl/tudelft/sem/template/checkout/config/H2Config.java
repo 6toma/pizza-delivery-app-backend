@@ -1,4 +1,4 @@
-package nl.tudelft.sem.checkout.config;
+package nl.tudelft.sem.template.checkout.config;
 
 import lombok.Getter;
 import org.springframework.context.annotation.Bean;
