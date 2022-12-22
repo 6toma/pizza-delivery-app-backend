@@ -6,6 +6,7 @@ apply plugin: 'info.solidsoft.pitest'
 dependencies {
     implementation(project(":authentication"))
     implementation(project(":commons"))
+    implementation("org.springframework.boot:spring-boot-starter-mail")
     testImplementation(testFixtures(project(":commons")))
 }
 
