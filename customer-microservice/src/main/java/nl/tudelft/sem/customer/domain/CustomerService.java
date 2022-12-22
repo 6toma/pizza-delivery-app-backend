@@ -26,7 +26,11 @@ public class CustomerService {
      * @return the Customer with the specified id.
      */
     public Customer getCustomerById(int customerId) {
-        return customerRepository.findById(customerId);
+        Optional<Customer> customer = customerRepository.findById(customerId);
+        if (!customer.isPresent()) {
+            throw new CustomerNotFoundException(customerId);
+        }
+        return customer.get();
     }
 
     /**

@@ -40,16 +40,9 @@ public class CustomerController {
      * @return the Customer with the specified id.
      */
     @GetMapping("/id/{customerId}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable int customerId) throws CustomerNotFoundException {
-        try {
-            Customer customer = customerService.getCustomerById(customerId);
-            return ResponseEntity.ok(customer);
-        } catch (NoSuchElementException e) {
-            throw new CustomerNotFoundException(customerId);
-        } catch (CustomerNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
-
+    public ResponseEntity<Customer> getCustomerById(@PathVariable int customerId){
+        Customer customer = customerService.getCustomerById(customerId);
+        return ResponseEntity.ok(customer);
     }
 
     /**
