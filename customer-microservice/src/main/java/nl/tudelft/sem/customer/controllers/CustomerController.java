@@ -2,6 +2,7 @@ package nl.tudelft.sem.customer.controllers;
 
 import lombok.Data;
 import nl.tudelft.sem.customer.domain.Customer;
+import nl.tudelft.sem.customer.domain.CustomerNotFoundException;
 import nl.tudelft.sem.customer.domain.CustomerService;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.NetId;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @Data
@@ -37,9 +39,16 @@ public class CustomerController {
      * @param customerId the id to search for.
      * @return the Customer with the specified id.
      */
-    @GetMapping("/{customerId}")
-    public Customer getCustomerById(@PathVariable int customerId) {
-        return customerService.getCustomerById(customerId);
+    @GetMapping("/id/{customerId}")
+    public ResponseEntity<Customer> getCustomerById(@PathVariable int customerId) throws CustomerNotFoundException {
+        try {
+            Customer customer = customerService.getCustomerById(customerId);
+            return ResponseEntity.ok(customer);
+        } catch (NoSuchElementException e) {
+            throw new CustomerNotFoundException(customerId);
+        } catch (CustomerNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
 
     }
 
@@ -49,10 +58,11 @@ public class CustomerController {
      * @param netId the netId to search for.
      * @return the Customer with the specified netId.
      */
-    @GetMapping("/{netId}")
-    public Customer getCustomerByNetId(@PathVariable String netId) {
+    @GetMapping("/netId/{netId}")
+    public ResponseEntity<Customer> getCustomerByNetId(@PathVariable String netId) {
         NetId customerNetId = new NetId(netId);
-        return customerService.getCustomerByNetId(customerNetId);
+        Customer customer = customerService.getCustomerByNetId(customerNetId);
+        return ResponseEntity.ok(customer);
     }
 
     /**

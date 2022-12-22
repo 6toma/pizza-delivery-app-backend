@@ -6,12 +6,15 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.ElementCollection;
+
+import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.authentication.NetId;
 
 import lombok.Data;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "customer")
 public class Customer {
 

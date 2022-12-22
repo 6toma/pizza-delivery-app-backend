@@ -9,6 +9,8 @@ import nl.tudelft.sem.template.authentication.NetId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,32 +40,28 @@ public class CustomerControllerTest {
 
         customer = new Customer(usedCoupons, allergens, customerId, netId);
     }
-
-    @Test
-    public void getCustomerByIdSuccessfully() throws Exception
-    {
-        int id = 123456;
-        Customer cus = customer;
-        cus.setCustomerId(id);
-        when(repo.existsById(id)).thenReturn(true);
-        when(repo.findById(id)).thenReturn(cus);
-        Customer res = customerController.getCustomerById(id);
-        assertThat(res).isEqualTo(customer);
-
-    }
-
+//
 //    @Test
-//    public void getCustomerByIdNotFound() throws Exception
+//    public void getCustomerByNetIdSuccessfully() throws Exception
 //    {
-//        int id = 123456;
+//        String netId = "example123";
 //        Customer cus = customer;
-//        cus.setCustomerId(id);
-//        when(repo.existsById(id)).thenReturn(true);
-//        when(repo.findById(id)).thenReturn(cus);
-//        Customer res = customerController.getCustomerById(id);
-//        assertThat(res).isEqualTo(customer);
+//        cus.setNetId(new NetId(netId));
+//        when(repo.existsByNetId(new NetId(netId))).thenReturn(true);
+//        when(repo.findByNetId(new NetId(netId))).thenReturn(cus);
+//        ResponseEntity<Customer> res = customerController.getCustomerByNetId(netId);
+//        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+//        assertThat(res.getBody()).isEqualTo(customer);
 //    }
-
+//
+//    @Test
+//    public void getCustomerByNetIdNotFound() throws Exception
+//    {
+//        String netId = "example123";
+//        when(repo.existsByNetId(new NetId(netId))).thenReturn(false);
+//        ResponseEntity<Customer> res = customerController.getCustomerByNetId(netId);
+//        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+//    }
 
 
 }
