@@ -1,9 +1,12 @@
 package nl.tudelft.sem.template.commons.entity;
 
+import java.util.List;
 import java.util.Map;
 import javax.persistence.ElementCollection;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 import lombok.Getter;
@@ -97,7 +100,8 @@ public class Cart {
         pizza.removeTopping(topping);
         pizzasMap.put(pizza, pizzasMap.get(pizza) + 1);
         return true;
-=========
+    }
+
     @ManyToMany
     private List<Pizza> pizzas;
 
@@ -108,6 +112,6 @@ public class Cart {
 
     public void addPizza(Pizza pizza) {
         pizzas.add(pizza);
->>>>>>>>> Temporary merge branch 2
+
     }
 }
