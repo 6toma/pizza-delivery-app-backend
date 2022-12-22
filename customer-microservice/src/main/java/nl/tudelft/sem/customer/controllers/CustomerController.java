@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -83,7 +84,7 @@ public class CustomerController {
      *                   i.e. the coupon to be added to the list of used coupons
      * @return ok
      */
-    @PostMapping("/{customerId}/coupons")
+    @PostMapping("/{netId}/coupons")
     public ResponseEntity<String> addToUsedCoupons(@PathVariable String netId, @RequestBody String couponCode) {
 
         // make netID object using netID path variable
@@ -94,8 +95,50 @@ public class CustomerController {
         return ResponseEntity.ok("Coupon used.");
     }
 
-    //TODO: make endpoint to remove from used coupons
+    /**
+     * Endpoint to remove a coupon Code to the customer's list of used coupons.
+     * > Should be called after an order with a coupon is cancelled.
+     *
+     * @param couponCode the coupon code used by the customer,
+     *                   i.e. the coupon to be added to the list of used coupons
+     * @return ok
+     */
+    @PostMapping("/{netId}/coupons")
+    public ResponseEntity<String> removeFromUsedCoupons(@PathVariable String netId, @RequestBody String couponCode) {
 
+        NetId customerNetId = new NetId(netId);
+
+        customerService.removeFromUsedCoupons(customerNetId, couponCode);
+        return ResponseEntity.ok("Coupon unused.");
+    }
+
+
+
+    /**
+     * Endpoint for checking if a specific coupon code has been used by a customer.
+     *
+     * @param netId String netId of the customer for which to perform this check.
+     * @param couponCode the coupon code to verify
+     * @return true if the coupon has been used, false otherwise
+     */
+    @GetMapping("/{netId}/coupons/{couponCode}")
+    public ResponseEntity<Boolean> hasUsedCoupon(@PathVariable String netId, @PathVariable String couponCode) {
+        NetId customerNetId = new NetId(netId);
+        boolean hasUsedCoupon = customerService.hasUsedCoupon(customerNetId, couponCode);
+        return ResponseEntity.ok(hasUsedCoupon);
+    }
+
+    /**
+     * Endpoint that takes a list of String coupon codes and returns which coupons have not yet been used
+     *
+     * @param couponCodes the list of coupon codes to evaluate
+     * @return a list of all the coupons that have not been used yet out of that list
+     */
+    @GetMapping("/checkUsedCoupons")
+    public List<String> checkUsedCoupons(@RequestParam("couponCodes") List<String> couponCodes) {
+        NetId netId = new NetId(authManager.getNetId());
+        return customerService.checkUsedCoupons(netId, couponCodes);
+    }
     /**
      * Endpoint to set a customer's list of allergens.
      * The endpoint adds the given list of allergens to the existing list of allergens of the customer with the provided id.

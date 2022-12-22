@@ -3,6 +3,7 @@ package nl.tudelft.sem.customer.domain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import nl.tudelft.sem.template.authentication.NetId;
@@ -72,7 +73,7 @@ public class CustomerService {
      */
     public void addToUsedCoupons(NetId netId, String couponCode) {
 
-        Customer customer = customerRepository.findByNetId(netId);
+        Customer customer = getCustomerByNetId(netId);
         if(customer == null) { return; }
 
         List<String> coupons = customer.getUsedCoupons();
@@ -81,6 +82,55 @@ public class CustomerService {
 
         customerRepository.save(customer);
     }
+    
+    /**
+     * Removes a coupon Code from the Customer's list of used coupons.
+     *
+     * @param couponCode the coupon code that should not anymore be used by the customer,
+     *                   i.e. the coupon to be removed from the list of used coupons.
+     */
+    public void removeFromUsedCoupons(NetId netId, String couponCode) {
+
+        Customer customer = getCustomerByNetId(netId);
+        if(customer == null) { return; }
+
+        List<String> coupons = customer.getUsedCoupons();
+        coupons.remove(couponCode);
+        customer.setUsedCoupons(coupons);
+
+        customerRepository.save(customer);
+    }
+
+    /**
+     * Checks if a specific coupon code has been used by a given customer.
+     *
+     * @param netId String netId of the customer for which to perform this check.
+     * @param couponCode the coupon code to verify
+     * @return true if the coupon has been used, false otherwise
+     */
+    public boolean hasUsedCoupon(NetId netId, String couponCode) {
+        Customer customer = getCustomerByNetId(netId);
+        return customer.getUsedCoupons().contains(couponCode);
+    }
+
+    /**
+     * Checks which coupons have not yet been used out of a list of coupons.
+     *
+     * @param couponCodes the list of coupon codes to evaluate
+     * @return a list of all the coupons that have not been used yet out of that list
+     */
+    public List<String> checkUsedCoupons(NetId netId, List<String> couponCodes) {
+        Customer customer = getCustomerByNetId(netId);
+        List<String> usedCoupons = customer.getUsedCoupons();
+        List<String> unusedCoupons = new ArrayList<>();
+        for (String couponCode : couponCodes) {
+            if (!usedCoupons.contains(couponCode)) {
+                unusedCoupons.add(couponCode);
+            }
+        }
+        return unusedCoupons;
+    }
+
 
     /**
      * Adds the given list of allergens to the existing list of allergens of the Customer with the provided id.
