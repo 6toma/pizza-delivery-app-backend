@@ -84,7 +84,7 @@ public class CustomerController {
      *                   i.e. the coupon to be added to the list of used coupons
      * @return ok
      */
-    @PostMapping("/{netId}/coupons")
+    @PostMapping("/{netId}/coupons/add")
     public ResponseEntity<String> addToUsedCoupons(@PathVariable String netId, @RequestBody String couponCode) {
 
         // make netID object using netID path variable
@@ -103,7 +103,7 @@ public class CustomerController {
      *                   i.e. the coupon to be added to the list of used coupons
      * @return ok
      */
-    @PostMapping("/{netId}/coupons")
+    @PostMapping("/{netId}/coupons/remove")
     public ResponseEntity<String> removeFromUsedCoupons(@PathVariable String netId, @RequestBody String couponCode) {
 
         NetId customerNetId = new NetId(netId);
