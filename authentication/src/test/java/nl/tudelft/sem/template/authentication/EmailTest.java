@@ -1,8 +1,10 @@
 package nl.tudelft.sem.template.authentication;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.util.List;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -27,5 +29,16 @@ public class EmailTest {
     @ParameterizedTest
     public void checkInvalidEmail(String email) {
         assertThatThrownBy(() -> new UserEmail(email)).isInstanceOf(EmailNotValidException.class);
+    }
+
+    @Test
+    public void testToString() {
+        String email = "someValidEmail@gmail.com";
+        assertThat(new UserEmail(email).toString()).isEqualTo(email);
+    }
+
+    @Test
+    public void veryStupidTestJustChecksEmptyConstructor() {
+        new UserEmail();
     }
 }

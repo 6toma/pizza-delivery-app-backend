@@ -37,6 +37,23 @@ public class AuthManagerTests {
     }
 
     @Test
+    public void getEmailObjectTest() {
+
+        String expected = "validEmail@gmail.com";
+        var authenticationToken = new UsernamePasswordAuthenticationToken(
+            expected,
+            null, List.of() // no credentials and no authorities
+        );
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        // Act
+        UserEmail actual = authManager.getEmailObject();
+
+        // Assert
+        assertThat(actual).isEqualTo(new UserEmail(expected));
+    }
+
+    @Test
     public void getRoleTest() {
         var role = UserRole.REGIONAL_MANAGER;
         var authenticationToken = new UsernamePasswordAuthenticationToken("user123", null,
