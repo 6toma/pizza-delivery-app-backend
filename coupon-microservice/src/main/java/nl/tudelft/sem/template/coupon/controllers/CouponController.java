@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwnerOrRegionalManager;
+import nl.tudelft.sem.template.commons.models.PricesCodesModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import nl.tudelft.sem.template.coupon.domain.Coupon;
 import nl.tudelft.sem.template.coupon.domain.CouponRepository;
@@ -98,7 +99,9 @@ public class CouponController {
     }
 
     @PostMapping("/selectCoupon")
-    public ResponseEntity<CouponFinalPriceModel> selectCoupon(@RequestBody List<Double> prices, @RequestBody List<String> codes) {
+    public ResponseEntity<CouponFinalPriceModel> selectCoupon(@RequestBody PricesCodesModel pricesCodesModel) {
+        List<Double> prices = pricesCodesModel.getPrices();
+        List<String> codes = pricesCodesModel.getCodes();
         if (prices.isEmpty())
             return ResponseEntity.badRequest().build();
         PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
