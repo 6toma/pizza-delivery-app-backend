@@ -44,8 +44,8 @@ public class OrderService {
      * Adds an order to the DB
      * @param order - the Order object to add
      */
-    public void addOrder(Order order) {
-        orderRepository.save(order);
+    public Order addOrder(Order order) {
+        return orderRepository.save(order);
     }
 //
 //    /**

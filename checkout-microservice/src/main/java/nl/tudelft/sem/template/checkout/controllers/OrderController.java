@@ -9,6 +9,8 @@ import nl.tudelft.sem.template.commons.entity.StoreTimeCoupons;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
 import nl.tudelft.sem.template.commons.models.CartPizza;
+import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
+import nl.tudelft.sem.template.commons.models.PricesCodesModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,6 +48,14 @@ public class OrderController {
         return Arrays.asList(pizzas);
     }
 
+    public List<Double> getPriceForEachPizza(List<CartPizza> pizzas)  {
+        List<Double> priceList = new ArrayList<>(pizzas.size());
+        for (CartPizza pizza : pizzas)
+            for (int i = 0; i < pizza.getAmount(); i++)
+                priceList.add(pizza.getPizza().getPrice());
+        return priceList;
+    }
+
 
     @PostMapping("/add")
     public ResponseEntity<String> addOrder(@RequestBody StoreTimeCoupons storeTimeCoupons) {
@@ -64,19 +74,20 @@ public class OrderController {
 
         List<String> couponCodes = storeTimeCoupons.getCoupons();
         List<Double> pizzaPrices = getPriceForEachPizza(pizzas);
-        // String finalCoupon = requestHelper.postRequest(8085, "/selectCoupon", OBJECT WITH PIZZAS AND COUPONS, String.class);
-        //TODO: Wait for coupon interactions so we can retrieve the final coupon used by the user
+        PricesCodesModel pcm = new PricesCodesModel(pizzaPrices, couponCodes);
+        CouponFinalPriceModel finalCoupon = requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class); // get the best coupon
+        String finalCouponCode = finalCoupon.getCode();
         Order order = Order.builder()
                 .withStoreId(storeId)
                     .withCustomerId(customer)
                         .withPickupTime(pickupTime)
                             .withPizzaList(pizzas)
-                                //.withCoupon(finalCoupon)
+                                .withCoupon(finalCouponCode)
                                     .build();
-        orderService.addOrder(order);
-        //TODO: Also wait for customer interaction so I can send used coupon
+        order = orderService.addOrder(order);
+        requestHelper.postRequest(8081, "/customers/" + customer + "/coupons/add", finalCouponCode, String.class); // add to customer's used coupons
         requestHelper.postRequest(8089, "/store/notify", storeId, String.class); // notify store of new order
-        return ResponseEntity.ok("Order added");
+        return ResponseEntity.ok("Order added with id " + order.getOrderId());
     }
 
     @PostMapping("/remove/{id}")
@@ -84,16 +95,16 @@ public class OrderController {
         String netId = authManager.getNetId();
         String role = authManager.getRole();
         try {
-            //TODO: wait for customer interaction so I can remove a coupon that is not used anymore
             Order orderToBeRemoved = orderService.getOrderById(orderId);
             if (role.equals("ROLE_STORE_OWNER"))
                 return ResponseEntity.badRequest().body("Store owners can't cancel orders");
             if (role.equals("ROLE_REGIONAL_MANGER") ||
                 (orderService.getOrdersForCustomer(netId).contains(orderToBeRemoved) && !orderToBeRemoved.getPickupTime().minusMinutes(30).isBefore(LocalDateTime.now()))) {
                 orderService.removeOrderById(orderId);
+                requestHelper.postRequest(8081, "/customers/" + netId + "/coupons/remove", orderToBeRemoved.getCoupon(), String.class); // remove from customer's used coupons
                 return ResponseEntity.ok("Order with id " + orderId + " successfully removed");
             } else
-                return ResponseEntity.badRequest().body("Order does not belong to customer, so they cannot cancel it");
+                return ResponseEntity.badRequest().body("Order does not belong to customer or there are less than 30 minutes until pickup time, so cancelling is not possible");
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -118,17 +129,6 @@ public class OrderController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-    }
-
-    public List<Double> getPriceForEachPizza(List<CartPizza> pizzas)  {
-        // list is unsorted, faster to search for min, than to sort and get first value
-        List<Double> priceList = new ArrayList<>(pizzas.size());
-        for (CartPizza pizza : pizzas)
-            for (int i = 0; i < pizza.getAmount(); i++)
-                priceList.add(pizza.getPizza().getPrice());
-        return priceList;
-
-
     }
 
     @GetMapping("/price/{id}")
