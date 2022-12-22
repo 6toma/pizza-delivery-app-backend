@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.authentication.config;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.JwtAuthenticationEntryPoint;
 import nl.tudelft.sem.template.authentication.JwtRequestFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

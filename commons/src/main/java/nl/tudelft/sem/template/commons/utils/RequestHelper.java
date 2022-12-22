@@ -99,7 +99,8 @@ public class RequestHelper {
             return new RestTemplate().exchange(request.build(), responseClass);
         } catch (ResourceAccessException connectException) {
             logger.error("The other microservice can't be reached. Check if port is ok or the path is ok.");
-            throw new IllegalArgumentException("The url " + url +
+            throw new IllegalArgumentException("The url " + url
+                +
                 " is not valid,copy url to postman to check. Maybe the other server is not running or the path is not good");
         }
     }

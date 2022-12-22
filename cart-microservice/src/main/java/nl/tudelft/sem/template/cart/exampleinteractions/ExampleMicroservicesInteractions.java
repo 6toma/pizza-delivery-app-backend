@@ -25,7 +25,7 @@ public class ExampleMicroservicesInteractions {
     }
 
     /**
-     * Get all orders
+     * Get all orders.
      */
     @GetMapping("/getAllOrders")
     public List<Order> requestAllOrders() {

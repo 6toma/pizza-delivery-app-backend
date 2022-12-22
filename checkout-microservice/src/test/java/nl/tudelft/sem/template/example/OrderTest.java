@@ -1,13 +1,9 @@
 package nl.tudelft.sem.template.example;
 
+import java.util.ArrayList;
 import nl.tudelft.sem.template.checkout.Order;
-import nl.tudelft.sem.template.commons.entity.Pizza;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class OrderTest {
 

@@ -40,8 +40,7 @@ public class CouponController {
     private final CouponService couponService;
 
     /**
-     * Retrieves coupon using passed code.
-     * throws InvalidCouponException if the coupon code format is incorrect.
+     * Retrieves coupon using passed code. throws InvalidCouponException if the coupon code format is incorrect.
      *
      * @param code the coupon code provided
      * @return Coupon with given code if exists
@@ -57,6 +56,11 @@ public class CouponController {
         return ResponseEntity.ok(repo.findById(code).get());
     }
 
+    /**
+     * Returns a list of coupons linked to a store.
+     *
+     * @return The list of coupons
+     */
     @GetMapping("/getCouponsForStore")
     public ResponseEntity<List<Coupon>> getCouponsForStore(@RequestBody long storeId) {
         if(!requestHelper.postRequest(8084, "/store/existsByStoreId", storeId, Boolean.class))
@@ -86,6 +90,7 @@ public class CouponController {
         if (coupon.getStoreId() == null) {
             throw new InvalidStoreIdException();
         }
+<<<<<<< coupon-microservice/src/main/java/nl/tudelft/sem/template/coupon/controllers/CouponController.java
         if (coupon.getStoreId() == -1 && !authManager.getRole().equals("ROLE_REGIONAL_MANAGER"))
             throw new NotRegionalManagerException();
         if (coupon.getType() == null || coupon.getExpiryDate() == null)
