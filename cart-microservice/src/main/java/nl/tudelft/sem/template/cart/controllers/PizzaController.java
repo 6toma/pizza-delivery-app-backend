@@ -40,12 +40,12 @@ public class PizzaController {
     public ResponseEntity<String> addPizza(@Validated @RequestBody PizzaModel pizza) throws ToppingNotFoundException {
         var toppings = toppingService.findAllByNames(pizza.getToppings());
         try {
-            pizzaService.addPizza(pizza.getPizzaName(), toppings, pizza.getPrice());
+            var newPizza = pizzaService.addPizza(pizza.getPizzaName(), toppings, pizza.getPrice());
+            return ResponseEntity.ok("Pizza added with id " + newPizza.getId());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 
-        return ResponseEntity.ok("Pizza added");
     }
 
     /**

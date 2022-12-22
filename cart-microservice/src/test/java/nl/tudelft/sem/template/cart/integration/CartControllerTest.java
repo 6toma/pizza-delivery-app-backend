@@ -47,15 +47,13 @@ public class CartControllerTest extends IntegrationTest {
     @BeforeEach
     void setup() {
         deleteAll();
-        var toppings1 = toppingRepository.saveAll(Arrays.asList(new Topping("test1", 10),
-            new Topping("test2", 13),
-            new Topping("test3", 15)));
+        var toppings1 = toppingRepository.saveAll(
+            Arrays.asList(new Topping("test1", 10), new Topping("test2", 13), new Topping("test3", 15)));
         cartRepository.deleteAll();
         defaultPizza1 = defaultRepository.saveAndFlush(new DefaultPizza("Default Pizza", toppings1, 10));
 
-        var toppings2 = toppingRepository.saveAll(Arrays.asList(new Topping("test4", 7),
-            new Topping("test5", 10),
-            new Topping("test6", 13)));
+        var toppings2 = toppingRepository.saveAll(
+            Arrays.asList(new Topping("test4", 7), new Topping("test5", 10), new Topping("test6", 13)));
 
         defaultPizza2 = defaultRepository.saveAndFlush(new DefaultPizza("Default Pizza 2", toppings2, 10));
     }
@@ -71,6 +69,20 @@ public class CartControllerTest extends IntegrationTest {
         defaultRepository.flush();
     }
 
+    @Test
+    void testGetCartSuccess() throws Exception {
+        var id = parseResponseInt(addPizzaRequest(defaultPizza1.getId()).andExpect(status().isOk()));
+        var result = getCartRequest().andExpect(status().isOk());
+        var pizzas = parseResponseJson(result, CartPizza[].class);
+        assertThat(pizzas.length).isOne();
+        assertThat(pizzas[0].getAmount()).isOne();
+        assertThat(pizzas[0].getPizza().getId()).isEqualTo(id);
+    }
+
+    @Test
+    void testGetCartDoesntExist() throws Exception {
+        getCartRequest().andExpect(status().isBadRequest());
+    }
 
     @Test
     void testAddToCartSuccess() throws Exception {
@@ -116,8 +128,7 @@ public class CartControllerTest extends IntegrationTest {
 
         incrementPizzaRequest(customPizza.getId()).andExpect(status().isOk());
         var cart = cartRepository.findAll().get(0);
-        assertThat(cart.getPizzasMap().get(customPizza))
-            .isEqualTo(2);
+        assertThat(cart.getPizzasMap().get(customPizza)).isEqualTo(2);
     }
 
     @Test
@@ -336,6 +347,10 @@ public class CartControllerTest extends IntegrationTest {
         assertThat(customPizza.getToppings()).hasSameElementsAs(defaultPizza.getToppings());
     }
 
+    private ResultActions getCartRequest() throws Exception {
+        return mockMvc.perform(authenticated(get("/cart/")));
+    }
+
     private ResultActions addPizzaRequest(int pizzaId) throws Exception {
         return mockMvc.perform(authenticated(post("/cart/addPizza/" + pizzaId)));
     }
@@ -360,18 +375,16 @@ public class CartControllerTest extends IntegrationTest {
         PizzaToppingModel ptm = new PizzaToppingModel();
         ptm.setToppingId(toppingId);
         ptm.setPizzaId(pizzaId);
-        return mockMvc.perform(authenticated(post("/cart/addTopping/"))
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(toJson(ptm)));
+        return mockMvc.perform(
+            authenticated(post("/cart/addTopping/")).contentType(MediaType.APPLICATION_JSON).content(toJson(ptm)));
     }
 
     private ResultActions removeToppingRequest(int pizzaId, int toppingId) throws Exception {
         PizzaToppingModel ptm = new PizzaToppingModel();
         ptm.setToppingId(toppingId);
         ptm.setPizzaId(pizzaId);
-        return mockMvc.perform(authenticated(post("/cart/removeTopping/"))
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(toJson(ptm)));
+        return mockMvc.perform(
+            authenticated(post("/cart/removeTopping/")).contentType(MediaType.APPLICATION_JSON).content(toJson(ptm)));
     }
 
 }

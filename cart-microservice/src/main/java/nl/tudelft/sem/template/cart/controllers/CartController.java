@@ -2,12 +2,14 @@ package nl.tudelft.sem.template.cart.controllers;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.annotations.role.RoleCustomer;
 import nl.tudelft.sem.template.cart.CartRepository;
 import nl.tudelft.sem.template.cart.CustomPizzaRepository;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
@@ -87,6 +89,12 @@ public class CartController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You don't currently have a cart");
         }
         return cart;
+    }
+
+    @GetMapping({"/", ""})
+    @RoleCustomer
+    List<CartPizza> getUserCart() {
+        return convertPizzaMap(getCart().getPizzasMap());
     }
 
     @PostMapping("/addPizza/{id}")
@@ -180,7 +188,11 @@ public class CartController {
         }
         Cart cart = cartOptional.get();
         cartRepository.deleteById(netId);
-        return cart.getPizzasMap().entrySet().stream().map(entry -> new CartPizza(entry.getKey(), entry.getValue()))
+        return convertPizzaMap(cart.getPizzasMap());
+    }
+
+    private List<CartPizza> convertPizzaMap(Map<CustomPizza, Integer> map) {
+        return map.entrySet().stream().map(entry -> new CartPizza(entry.getKey(), entry.getValue()))
             .collect(Collectors.toList());
     }
 }
