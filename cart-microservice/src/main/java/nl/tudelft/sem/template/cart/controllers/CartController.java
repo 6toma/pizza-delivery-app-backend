@@ -136,7 +136,6 @@ public class CartController {
         return ResponseEntity.ok().build();
     }
 
-
     @PostMapping("/addTopping")
     ResponseEntity<String> addToppingToPizza(@RequestBody PizzaToppingModel pizzaToppingModel) {
         var pizza = getCustomPizza(pizzaToppingModel.getPizzaId());

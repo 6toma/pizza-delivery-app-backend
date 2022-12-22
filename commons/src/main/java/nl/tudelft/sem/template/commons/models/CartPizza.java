@@ -13,4 +13,8 @@ public class CartPizza {
     private CustomPizza pizza;
     private int amount;
 
+    @Override
+    public String toString() {
+        return pizza.toString() + "-" + amount;
+    }
 }
