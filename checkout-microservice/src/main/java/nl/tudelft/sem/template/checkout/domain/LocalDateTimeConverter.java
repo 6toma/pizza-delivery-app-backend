@@ -1,37 +1,16 @@
 package nl.tudelft.sem.template.checkout.domain;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.AttributeConverter;
 
 public class LocalDateTimeConverter implements AttributeConverter<LocalDateTime, String> {
-
-    private Map<Month, String> monthToNumber = new HashMap<>();
-
-    public LocalDateTimeConverter() {
-        monthToNumber.put(Month.JANUARY, "01");
-        monthToNumber.put(Month.FEBRUARY, "02");
-        monthToNumber.put(Month.MARCH, "03");
-        monthToNumber.put(Month.APRIL, "04");
-        monthToNumber.put(Month.MAY, "05");
-        monthToNumber.put(Month.JUNE, "06");
-        monthToNumber.put(Month.JULY, "07");
-        monthToNumber.put(Month.AUGUST, "08");
-        monthToNumber.put(Month.SEPTEMBER, "09");
-        monthToNumber.put(Month.OCTOBER, "10");
-        monthToNumber.put(Month.NOVEMBER, "11");
-        monthToNumber.put(Month.DECEMBER, "12");
-    }
 
     @Override
     public String convertToDatabaseColumn(LocalDateTime attribute) {
         StringBuilder builder = new StringBuilder();
         builder.append(attribute.getYear())
             .append('-')
-            .append(monthToNumber.get(attribute.getMonth()))
+            .append(String.format("%02d", attribute.getMonth().getValue()))
             .append('-')
             .append(attribute.getDayOfMonth())
             .append(' ')

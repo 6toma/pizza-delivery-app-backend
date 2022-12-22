@@ -1,11 +1,12 @@
 package nl.tudelft.sem.template.coupon.controllers;
 
+import java.util.List;
 import java.util.PriorityQueue;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.template.authentication.AuthManager;
-import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwnerOrRegionalManager;
+import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.models.PricesCodesModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import nl.tudelft.sem.template.coupon.domain.Coupon;
@@ -16,7 +17,6 @@ import nl.tudelft.sem.template.coupon.domain.IncompleteCouponException;
 import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
 import nl.tudelft.sem.template.coupon.domain.InvalidStoreIdException;
 import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
-import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.coupon.services.CouponService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
 
 /**
  * Coupon Controller.
@@ -91,7 +90,7 @@ public class CouponController {
             throw new InvalidStoreIdException();
         }
 
-        if (coupon.getStoreId() == -1 && !authManager.getRole().equals("ROLE_REGIONAL_MANAGER"))
+        if (coupon.getStoreId() == -1 && !authManager.getRoleAuthority().equals("ROLE_REGIONAL_MANAGER"))
             throw new NotRegionalManagerException();
         if (coupon.getType() == null || coupon.getExpiryDate() == null)
             throw new IncompleteCouponException();

@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,7 +47,7 @@ public class PizzaContollerTest {
     public void addPizzaTest() throws Exception {
         Mockito.when(ps.addPizza("hawaii", List.of(t1), 6)).thenReturn(p1);
         Mockito.when(toppingService.findAllByNames(any())).thenReturn(List.of(t1));
-        assertEquals(pc.addPizza(pm).getBody(), "Pizza added");
+        assertThat(pc.addPizza(pm).getBody()).startsWith("Pizza added");
     }
 
     @Test

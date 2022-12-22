@@ -154,6 +154,8 @@ public class IntegrationTest {
                                                           UserRole role) {
         when(mockAuthenticationManager.getNetId()).thenReturn(netId);
         when(mockAuthenticationManager.getNetIdObject()).thenReturn(new NetId(netId));
+        when(mockAuthenticationManager.getRoleAuthority()).thenReturn(role.getJwtRoleName());
+        when(mockAuthenticationManager.getRole()).thenReturn(role);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(netId);
         when(mockJwtTokenVerifier.getRoleFromToken(anyString())).thenReturn(role.getJwtRoleName());

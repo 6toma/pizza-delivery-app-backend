@@ -195,7 +195,7 @@ class CouponControllerTest {
         Coupon coupon = new Coupon();
         coupon.setCode(code);
         coupon.setStoreId(-1L);
-        when(authManager.getRole())
+        when(authManager.getRoleAuthority())
             .thenReturn("ROLE_STORE_OWNER");
         assertThrows(NotRegionalManagerException.class, () -> couponController.addCoupon(coupon));
     }

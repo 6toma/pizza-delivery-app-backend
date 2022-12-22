@@ -42,7 +42,7 @@ public class AuthManagerTests {
         var authenticationToken = new UsernamePasswordAuthenticationToken("user123", null,
             List.of(new SimpleGrantedAuthority(role.getJwtRoleName())));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        assertThat(authManager.getRole()).isEqualTo(role.getJwtRoleName());
+        assertThat(authManager.getRoleAuthority()).isEqualTo(role.getJwtRoleName());
     }
 
     @Test
@@ -51,6 +51,6 @@ public class AuthManagerTests {
             "user123", null, List.of() // no credentials and no authorities
         );
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        assertThrows(IllegalArgumentException.class, () -> authManager.getRole());
+        assertThrows(IllegalArgumentException.class, () -> authManager.getRoleAuthority());
     }
 }

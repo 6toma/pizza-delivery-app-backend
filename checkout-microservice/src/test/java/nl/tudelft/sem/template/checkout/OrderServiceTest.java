@@ -68,7 +68,7 @@ public class OrderServiceTest {
     public void get_orders_for_customer_and_he_has_orders() {
         Order o1 = new Order();
         String netId = "Matt";
-        when(orderRepository.findOrdersForCustomer(netId)).thenReturn(List.of(order, o1));
+        when(orderRepository.findAllByCustomerId(netId)).thenReturn(List.of(order, o1));
 
         Assertions.assertThat(orderService.getOrdersForCustomer(netId)).containsExactly(order, o1);
     }
@@ -76,7 +76,7 @@ public class OrderServiceTest {
     @Test
     public void get_orders_for_customer_but_no_orders() {
         String netId = "Matt";
-        when(orderRepository.findOrdersForCustomer(netId)).thenReturn(new ArrayList<>());
+        when(orderRepository.findAllByCustomerId(netId)).thenReturn(new ArrayList<>());
 
         Assertions.assertThat(orderService.getOrdersForCustomer(netId)).isEmpty();
     }

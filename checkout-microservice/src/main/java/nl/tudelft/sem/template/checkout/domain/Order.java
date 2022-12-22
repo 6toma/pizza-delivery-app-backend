@@ -1,5 +1,9 @@
 package nl.tudelft.sem.template.checkout.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.*;
@@ -32,6 +36,8 @@ public class Order {
 
     @Column(name = "pickupTime", nullable = false)
     @Convert(converter = LocalDateTimeConverter.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime pickupTime;
 
     @ElementCollection
@@ -42,15 +48,17 @@ public class Order {
     @Column(name = "coupon")
     private String coupon;
 
-    public static OrderBuilder builder(){
+    public static OrderBuilder builder() {
         return new OrderBuilder();
     }
 
     public double calculatePriceWithoutDiscount() {
         double price = 0;
-        for(CartPizza pizza : pizzaList)
-            for(int i = 0; i < pizza.getAmount(); i++)
+        for (CartPizza pizza : pizzaList) {
+            for (int i = 0; i < pizza.getAmount(); i++) {
                 price += pizza.getPizza().getPrice();
+            }
+        }
         return price;
     }
 }
