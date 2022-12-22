@@ -1,9 +1,8 @@
 package nl.tudelft.sem.template.coupon.domain;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DateConverterTest {
 
