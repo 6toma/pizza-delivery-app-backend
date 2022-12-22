@@ -1,5 +1,7 @@
 package nl.tudelft.sem.template.commons;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.AttributeConverter;
@@ -9,23 +11,23 @@ import nl.tudelft.sem.template.commons.models.CartPizza;
 
 public class CartPizzaAttributeConverter implements AttributeConverter<CartPizza, String> {
 
+    private final ObjectMapper mapper = new ObjectMapper();
+
     @Override
     public String convertToDatabaseColumn(CartPizza attribute) {
-        return attribute.toString();
+        try {
+            return mapper.writeValueAsString(attribute);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public CartPizza convertToEntityAttribute(String dbData) {
-        String[] pizzaAndAmount = dbData.split("-");
-        String[] arr = pizzaAndAmount[0].split(";");
-        String pizzaName = arr[0];
-        List<Topping> list = new ArrayList<>(arr.length);
-        for(int i = 1; i < arr.length - 1; i++) {
-            String[] topping = arr[i].split(" ");
-            list.add(new Topping(topping[0], Double.parseDouble(topping[1])));
+        try {
+            return mapper.readValue(dbData, CartPizza.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
-        String price = arr[arr.length - 1];
-        CustomPizza pizza = new CustomPizza(pizzaName, Double.parseDouble(price), list);
-        return new CartPizza(pizza, Integer.parseInt(pizzaAndAmount[1]));
     }
 }

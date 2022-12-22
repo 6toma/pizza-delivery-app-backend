@@ -75,7 +75,7 @@ public class OrderController {
                                     .build();
         orderService.addOrder(order);
         //TODO: Also wait for customer interaction so I can send used coupon
-        requestHelper.postRequest(8089, "store/notify", storeId, String.class); // notify store of new order
+        requestHelper.postRequest(8089, "/store/notify", storeId, String.class); // notify store of new order
         return ResponseEntity.ok("Order added");
     }
 

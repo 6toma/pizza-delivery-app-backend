@@ -39,7 +39,7 @@ public class Order {
     @Convert(converter = CartPizzaAttributeConverter.class)
     private List<CartPizza> pizzaList;
 
-    @Column(name = "coupon", nullable = false)
+    @Column(name = "coupon")
     private String coupon;
 
     public static OrderBuilder builder(){
