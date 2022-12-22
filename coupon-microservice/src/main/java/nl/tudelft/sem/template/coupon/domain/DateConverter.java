@@ -1,8 +1,7 @@
 package nl.tudelft.sem.template.coupon.domain;
 
-import lombok.SneakyThrows;
-
 import javax.persistence.AttributeConverter;
+import lombok.SneakyThrows;
 
 public class DateConverter implements AttributeConverter<Date, String> {
 

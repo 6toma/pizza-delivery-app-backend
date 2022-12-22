@@ -1,15 +1,20 @@
 package nl.tudelft.sem.template.cart.controllers;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.cart.PizzaService;
-import nl.tudelft.sem.template.commons.models.PizzaModel;
 import nl.tudelft.sem.template.commons.entity.Pizza;
+import nl.tudelft.sem.template.commons.models.PizzaModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,7 +50,7 @@ public class PizzaController {
      * @throws Exception if the pizza name does not exist
      */
     @DeleteMapping("/remove")
-    public ResponseEntity removePizza(@RequestBody String pizzaName) throws Exception {
+    public ResponseEntity<String> removePizza(@RequestBody String pizzaName) throws Exception {
 
         try {
             pizzaService.removePizza(pizzaName);
@@ -64,7 +69,7 @@ public class PizzaController {
      * @throws Exception if the pizza name does not exist
      */
     @PutMapping("/edit")
-    public ResponseEntity editPizza(@RequestBody PizzaModel pizza) throws Exception {
+    public ResponseEntity<String> editPizza(@RequestBody PizzaModel pizza) throws Exception {
 
         try {
             pizzaService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());

@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Bean;
 public class Coupon {
 
     @Bean
-    public Clock clock() {
+    public Clock clockBean() {
         return Clock.systemDefaultZone();
     }
 
@@ -57,8 +57,8 @@ public class Coupon {
         }
         Coupon coupon = (Coupon) o;
         return storeId == coupon.storeId && Objects.equals(code, coupon.code)
-                && Objects.equals(expiryDate, coupon.expiryDate)
-                && Objects.equals(type, coupon.type);
+            && Objects.equals(expiryDate, coupon.expiryDate)
+            && Objects.equals(type, coupon.type);
     }
 
     @Override
@@ -68,18 +68,17 @@ public class Coupon {
 
     @Override
     public String toString() {
-        return "Coupon{" +
-                "code='" + code + '\'' +
-                ", expiryDate=" + expiryDate +
-                ", storeId=" + storeId +
-                ", type=" + type +
-                ", percentage=" + percentage +
-                '}';
+        return "Coupon{"
+            + "code='" + code + '\''
+            + ", expiryDate=" + expiryDate
+            + ", storeId=" + storeId
+            + ", type=" + type
+            + ", percentage=" + percentage
+            + '}';
     }
 
     /**
-     * Method isValid checks whether a coupon is eligible.
-     * A coupon is eligible if the expiry date has not yet been met.
+     * Method isValid checks whether a coupon is eligible. A coupon is eligible if the expiry date has not yet been met.
      *
      * @return boolean
      */
@@ -90,15 +89,15 @@ public class Coupon {
     }
 
     /**
-     * Checks if the code format is valid.
-     * A code is valid if it is composed by 4 letters followed by 2 digits.
+     * Checks if the code format is valid. A code is valid if it is composed by 4 letters followed by 2 digits.
      *
      * @return boolean
      */
     public static boolean validCodeFormat(String code) {
-        if(code == null)
+        if (code == null) {
             return false;
+        }
         return code.length() == 6 && code.substring(0, 4).chars().allMatch(Character::isLetter)
-                && code.substring(4).chars().allMatch(Character::isDigit);
+            && code.substring(4).chars().allMatch(Character::isDigit);
     }
 }

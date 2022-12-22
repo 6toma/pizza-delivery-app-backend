@@ -1,15 +1,22 @@
 package nl.tudelft.sem.template.checkout;
 
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.commons.PizzaAttributeConverter;
-import nl.tudelft.sem.template.commons.ToppingAttributeConverter;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 
-import javax.persistence.*;
-import java.util.List;
-
+/**
+ * Entity that stores information about a customer's order.
+ */
 @Entity
 @Table(name = "orders")
 @NoArgsConstructor
@@ -46,10 +53,16 @@ public class Order {
         return pizzaList;
     }
 
+    /**
+     * Calculates the total price of the order by summing the total prices of the pizza's.
+     *
+     * @return The total price of the order
+     */
     public int calculatePrice() {
         int price = 0;
-        for(Pizza pizza : pizzaList)
+        for (Pizza pizza : pizzaList) {
             price += pizza.calculatePrice();
+        }
         return price;
     }
 }

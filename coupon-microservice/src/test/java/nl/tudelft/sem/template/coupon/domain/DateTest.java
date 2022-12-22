@@ -1,11 +1,11 @@
 package nl.tudelft.sem.template.coupon.domain;
 
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.text.ParseException;
-
-import static org.junit.jupiter.api.Assertions.*;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.Test;
 
 class DateTest {
 
