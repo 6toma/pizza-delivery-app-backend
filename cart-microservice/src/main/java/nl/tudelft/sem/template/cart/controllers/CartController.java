@@ -176,13 +176,13 @@ public class CartController {
      * @return the cart
      */
     @GetMapping("/getCart/{netId}")
-    List<CartPizza> getCart(@PathVariable("netId") NetId netId) {
+    CartPizza[] getCart(@PathVariable("netId") NetId netId) {
         Cart cart = cartRepository.findByNetId(netId);
         if (cart == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This user doesn't have a cart");
         }
         cartRepository.deleteByNetId(netId);
-        return cart.getPizzasMap().entrySet().stream().map(entry -> new CartPizza(entry.getKey(), entry.getValue()))
-            .collect(Collectors.toList());
+        return (CartPizza[]) cart.getPizzasMap().entrySet().stream()
+            .map(entry -> new CartPizza(entry.getKey(), entry.getValue())).toArray();
     }
 }

@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import nl.tudelft.sem.template.commons.CartPizzaAttributeConverter;
 import nl.tudelft.sem.template.commons.models.CartPizza;
 
 @Entity
@@ -35,6 +36,7 @@ public class Order {
 
     @ElementCollection
     @Column(name = "pizzas", nullable = false)
+    @Convert(converter = CartPizzaAttributeConverter.class)
     private List<CartPizza> pizzaList;
 
     @Column(name = "coupon", nullable = false)

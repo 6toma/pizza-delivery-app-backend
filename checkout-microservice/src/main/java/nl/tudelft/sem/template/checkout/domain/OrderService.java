@@ -1,14 +1,17 @@
 package nl.tudelft.sem.template.checkout.domain;
 
 import java.util.Optional;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class OrderService {
+
 
     private final transient OrderRepository orderRepository;
 
