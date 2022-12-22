@@ -70,7 +70,7 @@ public class CustomerController {
      * @param customer the Customer object to save to the repo.
      * @return ok
      */
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<String> addCustomer(@RequestBody Customer customer) {
         customerService.addCustomer(customer);
         return ResponseEntity.ok("Customer added.");
