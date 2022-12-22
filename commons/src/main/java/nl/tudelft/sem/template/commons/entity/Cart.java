@@ -1,9 +1,12 @@
 package nl.tudelft.sem.template.commons.entity;
 
+import java.util.List;
 import java.util.Map;
 import javax.persistence.ElementCollection;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 import lombok.Getter;
@@ -18,7 +21,7 @@ public class Cart {
     @EmbeddedId
     private UserEmail userEmail;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name = "id")
     private Map<CustomPizza, Integer> pizzasMap;
 
@@ -69,5 +72,46 @@ public class Cart {
             return;
         }
         pizzasMap.remove(customPizza);
+    }
+
+    public boolean addTopping(CustomPizza pizza, Topping topping) {
+        if (pizzasMap.get(pizza) == null) {
+            return false;
+        }
+        if (pizzasMap.get(pizza) == 1) {
+            pizzasMap.remove(pizza);
+        } else {
+            pizzasMap.put(pizza, pizzasMap.get(pizza) - 1);
+        }
+        pizza.addTopping(topping);
+        pizzasMap.put(pizza, pizzasMap.get(pizza) + 1);
+        return true;
+    }
+
+    public boolean removeTopping(CustomPizza pizza, Topping topping) {
+        if (pizzasMap.get(pizza) == null) {
+            return false;
+        }
+        if (pizzasMap.get(pizza) == 1) {
+            pizzasMap.remove(pizza);
+        } else {
+            pizzasMap.put(pizza, pizzasMap.get(pizza) - 1);
+        }
+        pizza.removeTopping(topping);
+        pizzasMap.put(pizza, pizzasMap.get(pizza) + 1);
+        return true;
+    }
+
+    @ManyToMany
+    private List<Pizza> pizzas;
+
+    public Cart(UserEmail email, List<Pizza> pizzas) {
+        this.userEmail = email;
+        this.pizzas = pizzas;
+    }
+
+    public void addPizza(Pizza pizza) {
+        pizzas.add(pizza);
+
     }
 }

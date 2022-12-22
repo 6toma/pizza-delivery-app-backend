@@ -1,12 +1,11 @@
 package nl.tudelft.sem.template.cart;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.ToppingNotFoundException;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Menu service responsible for managing the Topping DB.
@@ -37,10 +36,10 @@ public class ToppingService {
     public Topping addTopping(String toppingName, double price) throws Exception {
 
         if (checkToppingIsUnique(toppingName)) {
-            Topping Topping = new Topping(toppingName, price);
-            tr.save(Topping);
+            Topping topping = new Topping(toppingName, price);
+            tr.save(topping);
 
-            return Topping;
+            return topping;
         }
         throw new ToppingAlreadyInUseException(toppingName);
     }
@@ -54,7 +53,8 @@ public class ToppingService {
     public void removeTopping(String toppingName) throws Exception {
 
         if (!checkToppingIsUnique(toppingName)) {
-            tr.deleteById(toppingName);
+            Topping t = tr.findByName(toppingName).get();
+            tr.delete(t);
             return;
         }
         throw new ToppingNotFoundException(toppingName);
@@ -66,9 +66,15 @@ public class ToppingService {
      * @param toppingName the name of the Topping
      * @param price is the price of the topping
      */
-    public void editTopping(String toppingName, double price) {
+    public void editTopping(String toppingName, double price) throws ToppingNotFoundException {
 
-        tr.save(new Topping(toppingName, price));
+        try {
+            removeTopping(toppingName);
+            addTopping(toppingName, price);
+        } catch (Exception e) {
+            throw new ToppingNotFoundException(toppingName);
+        }
+
     }
 
     /**

@@ -42,10 +42,13 @@ public class CartController {
     private final AuthManager authManager;
     private final ToppingRepository toppingRepository;
 
-
     private Cart getCartFromEmail() {
         UserEmail userEmail = authManager.getEmailObject();
-        return cartRepository.findByUserEmail(userEmail);
+        Optional<Cart> optionalCart = cartRepository.findById(userEmail);
+        if (optionalCart.isEmpty()) {
+            return null;
+        }
+        return optionalCart.get();
     }
 
     private CustomPizza getDefaultPizza(int defaultPizzaId) {
@@ -170,12 +173,13 @@ public class CartController {
      * @return the cart
      */
     @GetMapping("/getCart/{email}")
-    List<CartPizza> getCartFromEmail(@PathVariable("email") UserEmail userEmail) {
-        Cart cart = cartRepository.findByUserEmail(userEmail);
-        if (cart == null) {
+    List<CartPizza> getCartFromUserEmail(@PathVariable("email") UserEmail userEmail) {
+        Optional<Cart> cartOptional = cartRepository.findById(userEmail);
+        if (cartOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This user doesn't have a cart");
         }
-        cartRepository.deleteByUserEmail(userEmail);
+        Cart cart = cartOptional.get();
+        cartRepository.deleteById(userEmail);
         return cart.getPizzasMap().entrySet().stream().map(entry -> new CartPizza(entry.getKey(), entry.getValue()))
             .collect(Collectors.toList());
     }

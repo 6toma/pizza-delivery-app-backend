@@ -15,8 +15,6 @@ import nl.tudelft.sem.template.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.template.authentication.UserEmail;
 import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,7 +37,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @AutoConfigureMockMvc
 @ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager"})
 @ComponentScan({"nl.tudelft.sem.testing.profiles"})
-@Execution(ExecutionMode.CONCURRENT)
 public class IntegrationTest {
 
     protected static final String TEST_USER = "example@gmail.com";

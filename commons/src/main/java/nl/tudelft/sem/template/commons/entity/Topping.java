@@ -1,10 +1,14 @@
 package nl.tudelft.sem.template.commons.entity;
 
+import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "toppings")
@@ -17,10 +21,10 @@ public class Topping {
     @Getter
     private int id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column(name = "price", nullable = false, unique = false)
+    @Column(name = "price", nullable = false)
     private double price;
 
     public Topping(String name, double price) {

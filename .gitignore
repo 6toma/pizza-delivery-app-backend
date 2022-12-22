@@ -1,5 +1,9 @@
 ### Gradle ###
 
+*.classpath
+*.project
+bin/
+.metals/
 .idea/
 .gradle
 build/
@@ -29,3 +33,4 @@ gradle-app.setting
 *.rar
 
 *.db
+*.prefs

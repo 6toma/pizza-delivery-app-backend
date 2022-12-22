@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.JwtTokenVerifier;
+import nl.tudelft.sem.template.authentication.annotations.role.MicroServiceInteraction;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwner;
 import nl.tudelft.sem.template.authentication.config.TestServerConfig;
@@ -60,6 +61,11 @@ public class RoleAuthorizationTests {
         @GetMapping("/regional_manager")
         @RoleRegionalManager
         void regionalManagerEndpoint() {
+        }
+
+        @GetMapping("/microservice")
+        @MicroServiceInteraction
+        void microServiceEndpoint() {
         }
     }
 
@@ -135,6 +141,20 @@ public class RoleAuthorizationTests {
     @Test
     void testRegionalManagerAuthorized() throws Exception {
         testAccess("/role_authorization/regional_manager", UserRole.REGIONAL_MANAGER, status().isOk());
+    }
+
+    @Test
+    void testMicroServiceInteraction() throws Exception {
+        when(mockJwtTokenVerifier.getRoleFromToken(anyString())).thenReturn(MicroServiceInteraction.AUTHORITY);
+        mockMvc.perform(get("/role_authorization/microservice")
+                .header("Authorization", "Bearer MockToken"))
+            .andExpect(status().isOk());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = UserRole.class, names = {"CUSTOMER", "STORE_OWNER", "REGIONAL_MANAGER"})
+    void testMicroServiceInteractionUnauthorized(UserRole role) throws Exception {
+        testAccess("/role_authorization/microservice", role, status().isForbidden());
     }
 
     /**

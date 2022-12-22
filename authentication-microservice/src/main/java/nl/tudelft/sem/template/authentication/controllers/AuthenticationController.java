@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.authentication.controllers;
 
+import nl.tudelft.sem.template.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.UserEmail;
-import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
 import nl.tudelft.sem.template.authentication.domain.user.Password;
 import nl.tudelft.sem.template.authentication.domain.user.RegistrationService;
@@ -86,7 +86,7 @@ public class AuthenticationController {
      * @throws Exception if a user with this email already exists
      */
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody RegistrationRequestModel request) throws Exception {
+    public ResponseEntity<Void> register(@RequestBody RegistrationRequestModel request) throws Exception {
 
         try {
             UserEmail userEmail = new UserEmail(request.getEmail());

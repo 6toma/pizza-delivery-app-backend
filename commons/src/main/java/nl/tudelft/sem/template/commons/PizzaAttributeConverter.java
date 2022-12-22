@@ -1,13 +1,15 @@
 package nl.tudelft.sem.template.commons;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.AttributeConverter;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 
-import javax.persistence.AttributeConverter;
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * Attribute converter for the {@link Pizza} entity.
+ */
 public class PizzaAttributeConverter implements AttributeConverter<Pizza, String> {
 
     @Override
@@ -20,7 +22,7 @@ public class PizzaAttributeConverter implements AttributeConverter<Pizza, String
         String[] arr = dbData.split(";");
         String pizzaName = arr[0];
         List<Topping> list = new ArrayList<>(arr.length);
-        for(int i = 1; i < arr.length - 1; i++) {
+        for (int i = 1; i < arr.length - 1; i++) {
             String[] topping = arr[i].split(" ");
             list.add(new Topping(topping[0], Double.parseDouble(topping[1])));
         }
