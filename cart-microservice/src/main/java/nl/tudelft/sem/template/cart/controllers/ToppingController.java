@@ -3,7 +3,7 @@ package nl.tudelft.sem.template.cart.controllers;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
-import nl.tudelft.sem.template.cart.ToppingService;
+import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.cart.exceptions.ToppingNotFoundException;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.models.ToppingModel;
