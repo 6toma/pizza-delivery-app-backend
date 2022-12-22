@@ -50,7 +50,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void getAllOrdersTest1() {
+    public void get_all_orders_actual_orders_in_db() {
         Order o1 = new Order();
         when(orderRepository.findAll()).thenReturn(List.of(order, o1));
 
@@ -58,14 +58,14 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void getAllOrdersTest2() {
+    public void get_all_orders_no_orders_in_db() {
         when(orderRepository.findAll()).thenReturn(new ArrayList<>());
 
         Assertions.assertThat(orderService.getAllOrders()).isEmpty();
     }
 
     @Test
-    public void getOrdersForCustomerTest1() {
+    public void get_orders_for_customer_and_he_has_orders() {
         Order o1 = new Order();
         String netId = "Matt";
         when(orderRepository.findOrdersForCustomer(netId)).thenReturn(List.of(order, o1));
@@ -74,7 +74,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void getOrdersForCustomerTest2() {
+    public void get_orders_for_customer_but_no_orders() {
         String netId = "Matt";
         when(orderRepository.findOrdersForCustomer(netId)).thenReturn(new ArrayList<>());
 
@@ -82,7 +82,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void getOrderByIdTest1() throws Exception {
+    public void get_order_by_id_and_it_exists() throws Exception {
         long orderId = 1L;
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
 
@@ -90,7 +90,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void getOrderByIdTest2() throws Exception {
+    public void get_order_by_id_and_it_does_not_exist() throws Exception {
         long orderId = 1L;
         when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
 
@@ -100,13 +100,13 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void addOrderTest() {
+    public void add_order() {
         orderService.addOrder(order);
         verify(orderRepository, times(1)).save(order);
     }
 
     @Test
-    public void removeOrderTest1() throws Exception {
+    public void remove_order_which_exists() throws Exception {
         long orderId = 1;
         when(orderRepository.existsById(orderId)).thenReturn(true);
 
@@ -115,7 +115,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void removeOrderTest2() throws Exception {
+    public void remove_order_which_does_not_exist() throws Exception {
         long orderId = 1;
         when(orderRepository.existsById(orderId)).thenReturn(false);
 

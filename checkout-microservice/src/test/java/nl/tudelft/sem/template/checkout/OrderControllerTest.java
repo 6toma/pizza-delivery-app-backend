@@ -53,7 +53,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void getAllOrdersTest1() {
+    public void get_all_orders_actual_orders_in_db() {
         Order o1 = new Order();
         List<Order> orderList = List.of(o1, order);
         when(orderService.getAllOrders()).thenReturn(orderList);
@@ -62,14 +62,14 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void getAllOrdersTest2() {
+    public void get_all_orders_no_orders_in_db() {
         when(orderService.getAllOrders()).thenReturn(new ArrayList<>());
 
         Assertions.assertThat(orderController.getAllOrders()).isEmpty();
     }
 
     @Test
-    public void getOrderByIdTest1() throws Exception {
+    public void get_order_by_id_customer_owns_order_in_db() throws Exception {
         when(authManager.getNetId()).thenReturn("Matt");
         when(authManager.getRole()).thenReturn("ROLE_CUSTOMER");
         when(orderService.getOrdersForCustomer("Matt")).thenReturn(List.of(order));
@@ -81,7 +81,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void getOrderByIdTest2() throws Exception {
+    public void get_order_by_id_customer_owns_order_but_not_in_db() throws Exception {
         when(authManager.getNetId()).thenReturn("Matt");
         when(authManager.getRole()).thenReturn("ROLE_CUSTOMER");
         when(orderService.getOrdersForCustomer("Matt")).thenReturn(List.of(order));
@@ -95,7 +95,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void getOrderByIdTest3() throws Exception {
+    public void get_order_by_id_regional_manager() throws Exception {
         when(authManager.getRole()).thenReturn("ROLE_REGIONAL_MANAGER");
 
         long orderId = 1L;
@@ -105,7 +105,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void getOrderByIdTest4() throws Exception {
+    public void get_order_by_id_store_owner() throws Exception {
         when(authManager.getRole()).thenReturn("ROLE_STORE_OWNER");
 
         long orderId = 1L;
@@ -115,7 +115,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void getOrderByIdTest5() throws Exception {
+    public void get_order_by_id_customer_does_not_own_order() throws Exception {
         when(authManager.getNetId()).thenReturn("Matt");
         when(authManager.getRole()).thenReturn("ROLE_CUSTOMER");
         when(orderService.getOrdersForCustomer("Matt")).thenReturn(new ArrayList<>());
@@ -147,7 +147,7 @@ public class OrderControllerTest {
 //    }
 
     @Test
-    public void getOrderPriceTest1() throws Exception {
+    public void get_order_price_customer_owns_order_in_db() throws Exception {
         when(authManager.getNetId()).thenReturn("Matt");
         when(authManager.getRole()).thenReturn("ROLE_CUSTOMER");
         when(orderService.getOrdersForCustomer("Matt")).thenReturn(List.of(order));
@@ -159,7 +159,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void getOrderPriceTest2() throws Exception {
+    public void get_order_price_customer_owns_order_but_not_in_db() throws Exception {
         when(authManager.getNetId()).thenReturn("Matt");
         when(authManager.getRole()).thenReturn("ROLE_CUSTOMER");
         when(orderService.getOrdersForCustomer("Matt")).thenReturn(List.of(order));
@@ -173,7 +173,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void getOrderPriceTest3() throws Exception {
+    public void get_order_price_regional_manager() throws Exception {
         when(authManager.getRole()).thenReturn("ROLE_REGIONAL_MANAGER");
 
         long orderId = 1L;
@@ -183,7 +183,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void getOrderPriceTest4() throws Exception {
+    public void get_order_price_store_owner() throws Exception {
         when(authManager.getRole()).thenReturn("ROLE_STORE_OWNER");
 
         long orderId = 1L;
@@ -193,7 +193,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void getOrderPriceTest5() throws Exception {
+    public void get_order_price_customer_does_not_own_order() throws Exception {
         when(authManager.getNetId()).thenReturn("Matt");
         when(authManager.getRole()).thenReturn("ROLE_CUSTOMER");
         when(orderService.getOrdersForCustomer("Matt")).thenReturn(new ArrayList<>());
