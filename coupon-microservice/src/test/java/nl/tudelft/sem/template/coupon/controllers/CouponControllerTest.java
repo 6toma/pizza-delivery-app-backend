@@ -15,6 +15,7 @@ import lombok.SneakyThrows;
 import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
+import nl.tudelft.sem.template.commons.models.PricesCodesModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import nl.tudelft.sem.template.coupon.domain.Coupon;
 import nl.tudelft.sem.template.coupon.domain.CouponRepository;
@@ -231,19 +232,19 @@ class CouponControllerTest {
 
     @Test
     void selectCouponEmptyPriceList() {
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new ArrayList<>(), List.of("ABDC12"));
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(new ArrayList<>(), List.of("ABDC12")));
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
     void selectCouponEmptyCouponList() {
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(List.of(10.0), new ArrayList<>());
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(List.of(10.0), new ArrayList<>()));
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
     void selectCouponInvalidCoupon() {
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(List.of(10.0), List.of("ABC76"));
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(List.of(10.0), List.of("ABC76")));
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
