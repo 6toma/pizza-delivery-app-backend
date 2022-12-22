@@ -90,7 +90,7 @@ public class CouponController {
         if (coupon.getStoreId() == null) {
             throw new InvalidStoreIdException();
         }
-<<<<<<< coupon-microservice/src/main/java/nl/tudelft/sem/template/coupon/controllers/CouponController.java
+
         if (coupon.getStoreId() == -1 && !authManager.getRole().equals("ROLE_REGIONAL_MANAGER"))
             throw new NotRegionalManagerException();
         if (coupon.getType() == null || coupon.getExpiryDate() == null)
