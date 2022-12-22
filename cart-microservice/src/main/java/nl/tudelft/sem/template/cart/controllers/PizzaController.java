@@ -2,8 +2,9 @@ package nl.tudelft.sem.template.cart.controllers;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
 import nl.tudelft.sem.template.cart.PizzaService;
-import nl.tudelft.sem.template.commons.entity.Pizza;
+import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.models.PizzaModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,8 @@ public class PizzaController {
      * @throws Exception if the pizza already exists
      */
     @PostMapping("/add")
+    @RoleRegionalManager
     public ResponseEntity<String> addPizza(@RequestBody PizzaModel pizza) throws Exception {
-
         try {
             pizzaService.addPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
         } catch (Exception e) {
@@ -50,6 +51,7 @@ public class PizzaController {
      * @throws Exception if the pizza name does not exist
      */
     @DeleteMapping("/remove")
+    @RoleRegionalManager
     public ResponseEntity<String> removePizza(@RequestBody String pizzaName) throws Exception {
 
         try {
@@ -66,10 +68,10 @@ public class PizzaController {
      *
      * @param pizza the new pizza
      * @return ResponseEntity
-     * @throws Exception if the pizza name does not exist
      */
     @PutMapping("/edit")
-    public ResponseEntity<String> editPizza(@RequestBody PizzaModel pizza) throws Exception {
+    @RoleRegionalManager
+    public ResponseEntity<String> editPizza(@RequestBody PizzaModel pizza) {
 
         try {
             pizzaService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
@@ -86,7 +88,7 @@ public class PizzaController {
      * @return the list of pizzas
      */
     @GetMapping("/getAll")
-    public List<Pizza> getPizzas() {
+    public List<DefaultPizza> getPizzas() {
         return pizzaService.getAll();
     }
 
@@ -97,7 +99,7 @@ public class PizzaController {
      * @return the list of filtered pizzas
      */
     @PostMapping("/getAll")
-    public List<Pizza> getPizzas(@RequestBody List<String> allergens) {
+    public List<DefaultPizza> getPizzas(@RequestBody List<String> allergens) {
         return pizzaService.getAllByFilter(allergens);
     }
 }

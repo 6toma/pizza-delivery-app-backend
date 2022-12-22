@@ -53,7 +53,8 @@ public class ToppingService {
     public void removeTopping(String toppingName) throws Exception {
 
         if (!checkToppingIsUnique(toppingName)) {
-            tr.deleteById(toppingName);
+            Topping t = tr.findByName(toppingName).get();
+            tr.delete(t);
             return;
         }
         throw new ToppingNotFoundException(toppingName);
@@ -64,9 +65,8 @@ public class ToppingService {
      *
      * @param toppingName the name of the Topping
      * @param price is the price of the topping
-     * @throws Exception when no Topping is found with the input name
      */
-    public void editTopping(String toppingName, double price) throws Exception {
+    public void editTopping(String toppingName, double price) throws ToppingNotFoundException {
 
         try {
             removeTopping(toppingName);
@@ -74,6 +74,7 @@ public class ToppingService {
         } catch (Exception e) {
             throw new ToppingNotFoundException(toppingName);
         }
+
     }
 
     /**

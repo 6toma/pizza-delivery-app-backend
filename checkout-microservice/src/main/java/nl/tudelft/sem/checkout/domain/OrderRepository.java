@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.checkout;
+package nl.tudelft.sem.checkout.domain;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,10 +12,10 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     List<Order> findAll();
 
-    Optional<Order> findByOrderId(int orderId);
+    Optional<Order> findByOrderId(long orderId);
 
-    boolean existsByOrderId(int orderId);
+    boolean existsByOrderId(long orderId);
 
-    void deleteOrderByOrderId(int orderId);
+    void deleteOrderByOrderId(long orderId);
 
 }
