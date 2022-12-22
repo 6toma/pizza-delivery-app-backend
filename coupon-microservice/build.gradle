@@ -4,6 +4,12 @@ plugins {
 apply plugin: 'info.solidsoft.pitest'
 
 dependencies {
+	implementation(project(":store-microservice"))
 	implementation(project(":authentication"))
+	implementation(project(":commons"))
 	testImplementation(testFixtures(project(":commons")))
+}
+
+jar {
+	enabled = true
 }

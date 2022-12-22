@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 @Entity
 @Table(name = "coupons")
@@ -21,26 +22,18 @@ import org.springframework.context.annotation.Bean;
 @Setter
 public class Coupon {
 
-    @Bean
-    public Clock clockBean() {
-        return Clock.systemDefaultZone();
-    }
-
-    @Autowired
-    private Clock clock;
-
     @Id
     @Column(name = "code", nullable = false, unique = true)
     private String code;
 
-    @Column(name = "expireDate", nullable = false)
+    @Column(name = "expiryDate", nullable = false)
     @Convert(converter = DateConverter.class)
     private Date expiryDate;
 
-    @Column(name = "storeId")
-    private long storeId;
+    @Column(name = "storeId", nullable = false)
+    private Long storeId;
 
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     @Convert(converter = CouponTypeConverter.class)
     private CouponType type;
 
@@ -68,36 +61,14 @@ public class Coupon {
 
     @Override
     public String toString() {
-        return "Coupon{"
-            + "code='" + code + '\''
-            + ", expiryDate=" + expiryDate
-            + ", storeId=" + storeId
-            + ", type=" + type
-            + ", percentage=" + percentage
-            + '}';
+        return "Coupon{" +
+            "code='" + code + '\'' +
+            ", expiryDate=" + expiryDate +
+            ", storeId=" + storeId +
+            ", type=" + type +
+            ", percentage=" + percentage +
+            '}';
     }
 
-    /**
-     * Method isValid checks whether a coupon is eligible. A coupon is eligible if the expiry date has not yet been met.
-     *
-     * @return boolean
-     */
-    public boolean isValid() {
-        LocalDate currDate = LocalDate.now(clock);
-        LocalDate ed = LocalDate.of(expiryDate.getYear(), expiryDate.getMonth(), expiryDate.getDay());
-        return currDate.isBefore(ed);
-    }
 
-    /**
-     * Checks if the code format is valid. A code is valid if it is composed by 4 letters followed by 2 digits.
-     *
-     * @return boolean
-     */
-    public static boolean validCodeFormat(String code) {
-        if (code == null) {
-            return false;
-        }
-        return code.length() == 6 && code.substring(0, 4).chars().allMatch(Character::isLetter)
-            && code.substring(4).chars().allMatch(Character::isDigit);
-    }
 }

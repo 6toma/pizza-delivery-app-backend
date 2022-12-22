@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CouponRepository extends JpaRepository<Coupon, String> {
 
-    @Query(value = "SELECT s FROM Coupon s WHERE s.storeId = :storeId")
+    @Query(value = "SELECT s FROM Coupon s WHERE s.storeId = :storeId OR s.storeId = -1")
     List<Coupon> findByStoreId(@Param("storeId") long storeId);
 
 }

@@ -16,20 +16,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import java.util.stream.Stream;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CouponTest {
 
-    private static final LocalDate LOCAL_DATE = LocalDate.of(2022, 12, 13);
-
     private Coupon c1;
-    @InjectMocks
-    private Coupon coupon;
-    @Mock
-    private Clock clock;
-    private Clock fixedClock;
 
     @SneakyThrows
     @BeforeEach
@@ -40,12 +33,6 @@ class CouponTest {
         c1.setPercentage(10);
         c1.setType(CouponType.DISCOUNT);
         c1.setExpiryDate(new Date(10, 10, 2023));
-        MockitoAnnotations.openMocks(this);
-
-        //tell tests to return the specified LOCAL_DATE when calling LocalDate.now(clock)
-        fixedClock = Clock.fixed(LOCAL_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
-        when(clock.instant()).thenReturn(fixedClock.instant());
-        when(clock.getZone()).thenReturn(fixedClock.getZone());
     }
 
     @ParameterizedTest
@@ -80,38 +67,6 @@ class CouponTest {
             Arguments.of(c2, c3, false),
             Arguments.of(c1, null, false),
             Arguments.of(c1, new Date(10, 10, 2023), false)
-        );
-    }
-
-    @SneakyThrows
-    @Test
-    void isValid() {
-        coupon.setExpiryDate(new Date(24, 05, 2023));
-        assertTrue(coupon.isValid());
-    }
-
-    @SneakyThrows
-    @Test
-    void isValidFalse() {
-        coupon.setExpiryDate(new Date(24, 05, 2003));
-        assertFalse(coupon.isValid());
-    }
-
-    @ParameterizedTest
-    @MethodSource("codeFormatCases")
-    void validCodeFormat(String input, boolean expected) {
-        assertThat(Coupon.validCodeFormat(input)).isEqualTo(expected);
-    }
-
-    static Stream<Arguments> codeFormatCases() {
-        return Stream.of(
-            Arguments.of("ABCD12", true),
-            Arguments.of("Abdf67", true),
-            Arguments.of("6735AB", false),
-            Arguments.of("AB23", false),
-            Arguments.of("ABCD?2", false),
-            Arguments.of("", false),
-            Arguments.of(null, false)
         );
     }
 
