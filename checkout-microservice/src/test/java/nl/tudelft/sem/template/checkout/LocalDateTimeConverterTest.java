@@ -1,10 +1,9 @@
-package nl.tudelft.sem.checkout;
+package nl.tudelft.sem.template.checkout;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import nl.tudelft.sem.checkout.domain.LocalDateTimeConverter;
-import org.apache.tomcat.jni.Local;
+import nl.tudelft.sem.template.checkout.domain.LocalDateTimeConverter;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

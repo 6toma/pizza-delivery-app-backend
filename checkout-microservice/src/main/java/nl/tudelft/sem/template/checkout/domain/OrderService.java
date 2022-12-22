@@ -1,4 +1,4 @@
-package nl.tudelft.sem.checkout.domain;
+package nl.tudelft.sem.template.checkout.domain;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,7 @@
-package nl.tudelft.sem.checkout.domain;
+package nl.tudelft.sem.template.checkout.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import nl.tudelft.sem.template.commons.entity.CustomPizza;
 import nl.tudelft.sem.template.commons.models.CartPizza;
 
 public class OrderBuilder {

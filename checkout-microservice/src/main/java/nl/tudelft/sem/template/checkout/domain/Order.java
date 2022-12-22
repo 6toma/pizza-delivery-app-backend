@@ -1,4 +1,4 @@
-package nl.tudelft.sem.checkout.domain;
+package nl.tudelft.sem.template.checkout.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,8 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nl.tudelft.sem.template.commons.entity.CustomPizza;
-import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.models.CartPizza;
 
 @Entity

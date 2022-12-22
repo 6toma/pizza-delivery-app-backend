@@ -1,11 +1,11 @@
-package nl.tudelft.sem.checkout;
+package nl.tudelft.sem.template.checkout;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import nl.tudelft.sem.checkout.domain.Order;
+import nl.tudelft.sem.template.checkout.domain.Order;
 import nl.tudelft.sem.template.commons.entity.CustomPizza;
 import nl.tudelft.sem.template.commons.models.CartPizza;
 import org.assertj.core.api.Assertions;

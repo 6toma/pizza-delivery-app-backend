@@ -1,4 +1,4 @@
-package nl.tudelft.sem.checkout;
+package nl.tudelft.sem.template.checkout;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -10,10 +10,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.checkout.domain.Order;
-import nl.tudelft.sem.checkout.domain.OrderNotFoundException;
-import nl.tudelft.sem.checkout.domain.OrderRepository;
-import nl.tudelft.sem.checkout.domain.OrderService;
+import nl.tudelft.sem.template.checkout.domain.Order;
+import nl.tudelft.sem.template.checkout.domain.OrderNotFoundException;
+import nl.tudelft.sem.template.checkout.domain.OrderRepository;
+import nl.tudelft.sem.template.checkout.domain.OrderService;
 import nl.tudelft.sem.template.commons.entity.CustomPizza;
 import nl.tudelft.sem.template.commons.models.CartPizza;
 import org.assertj.core.api.Assertions;

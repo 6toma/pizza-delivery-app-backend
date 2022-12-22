@@ -1,12 +1,10 @@
-package nl.tudelft.sem.checkout.domain;
+package nl.tudelft.sem.template.checkout.domain;
 
-import nl.tudelft.sem.checkout.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {

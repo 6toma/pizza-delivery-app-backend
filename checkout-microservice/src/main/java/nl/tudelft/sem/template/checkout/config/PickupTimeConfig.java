@@ -1,4 +1,4 @@
-package nl.tudelft.sem.checkout.config;
+package nl.tudelft.sem.template.checkout.config;
 
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;

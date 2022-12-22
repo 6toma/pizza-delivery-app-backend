@@ -1,12 +1,11 @@
-package nl.tudelft.sem.checkout.controllers;
+package nl.tudelft.sem.template.checkout.controllers;
 
 import java.time.LocalDateTime;
-import nl.tudelft.sem.checkout.domain.Order;
-import nl.tudelft.sem.checkout.domain.OrderService;
+import nl.tudelft.sem.template.checkout.domain.Order;
+import nl.tudelft.sem.template.checkout.domain.OrderService;
 import nl.tudelft.sem.template.commons.entity.StoreTimeCoupons;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
-import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.models.CartPizza;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package nl.tudelft.sem.checkout;
+package nl.tudelft.sem.template.checkout;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
