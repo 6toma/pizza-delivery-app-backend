@@ -1,7 +1,11 @@
 package nl.tudelft.sem.template.authentication.controllers;
 
 import nl.tudelft.sem.template.authentication.NetId;
+<<<<<<<<< Temporary merge branch 1
+import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
+=========
 import nl.tudelft.sem.template.authentication.JwtTokenGenerator;
+import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
 import nl.tudelft.sem.template.authentication.domain.user.Password;
 import nl.tudelft.sem.template.authentication.domain.user.RegistrationService;

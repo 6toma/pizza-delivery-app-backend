@@ -1,9 +1,7 @@
 package nl.tudelft.sem.template.authentication.config;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.domain.user.PasswordHashingService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -20,11 +18,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * The type Web security config.
  */
 @Configuration
+@RequiredArgsConstructor
 @Order(1)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Getter
-    @Setter(onMethod = @__({@Autowired})) // add autowired annotation on setter
-    private transient UserDetailsService userDetailsService;
+
+    private final UserDetailsService userDetailsService;
 
     /**
      * Password encoder password encoder.

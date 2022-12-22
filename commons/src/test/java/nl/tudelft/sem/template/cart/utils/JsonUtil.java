@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.example.utils;
+package nl.tudelft.sem.template.cart.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

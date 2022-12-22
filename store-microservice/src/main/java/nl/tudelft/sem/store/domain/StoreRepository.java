@@ -11,9 +11,9 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     boolean existsByStoreName(String storeName);
 
-    @Query(value = "SELECT store_id FROM store WHERE store_name = :storeName"
-        , nativeQuery = true)
-    Long getStoreIdFromStoreName(String storeName);
+    @Query(value = "SELECT store_id FROM store WHERE store_name = :storeName",
+        nativeQuery = true)
+    long getStoreIdFromStoreName(String storeName);
 
     boolean existsByStoreIdAndStoreOwnerNetId(long storeId, NetId storeOwnerId);
 }

@@ -1,9 +1,7 @@
 package nl.tudelft.sem.template.cart;
 
 import java.util.Optional;
-
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
-import nl.tudelft.sem.template.commons.entity.Pizza;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -22,5 +20,5 @@ public interface DefaultPizzaRepository extends JpaRepository<DefaultPizza, Inte
      */
     boolean existsByPizzaName(String pizzaName);
 
-    Optional<Pizza> findByPizzaName(String pizzaName);
+    Optional<DefaultPizza> findByPizzaName(String pizzaName);
 }

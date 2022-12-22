@@ -2,19 +2,15 @@ package nl.tudelft.sem.template.commons.entity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 
@@ -35,7 +31,7 @@ public class CustomPizza extends Pizza {
         this.pizzaName = pizzaName;
     }
 
-    public static CustomPizza CustomPizzaCreator(DefaultPizza pizza) {
+    public static CustomPizza customPizzaCreator(DefaultPizza pizza) {
         return new CustomPizza(pizza.getPizzaName(), pizza.getPrice(), new ArrayList<>(pizza.getToppings()));
     }
 
@@ -47,14 +43,15 @@ public class CustomPizza extends Pizza {
         if (other instanceof CustomPizza) {
             CustomPizza that = (CustomPizza) other;
             // this.getToppings().get(0).equals(that.getToppings().get(0))
-            return that.getPizzaName().equals(this.getPizzaName()) && this.getPrice() == that.getPrice() &&
-                new HashSet<>(this.getToppings()).equals(new HashSet<>(that.getToppings()));
+            return that.getPizzaName().equals(this.getPizzaName()) && this.getPrice() == that.getPrice()
+                && new HashSet<>(this.getToppings()).equals(new HashSet<>(that.getToppings()));
         }
         return false;
     }
+
     @Override
-    public int hashCode(){
-        return Objects.hash(this.getPizzaName(),this.getPrice(),this.getToppings());
+    public int hashCode() {
+        return Objects.hash(this.getPizzaName(), this.getPrice(), this.getToppings());
     }
 
 }

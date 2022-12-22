@@ -1,10 +1,9 @@
 package nl.tudelft.sem.template.cart;
 
+import java.util.Optional;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 /**
  * A repository for toppings.

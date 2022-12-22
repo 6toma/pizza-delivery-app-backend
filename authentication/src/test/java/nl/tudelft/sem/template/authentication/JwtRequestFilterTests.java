@@ -44,6 +44,8 @@ public class JwtRequestFilterTests {
         mockJwtTokenVerifier = Mockito.mock(JwtTokenVerifier.class);
         jwtRequestFilter = new JwtRequestFilter(mockJwtTokenVerifier);
 
+        jwtRequestFilter = new JwtRequestFilter(mockJwtTokenVerifier);
+
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 

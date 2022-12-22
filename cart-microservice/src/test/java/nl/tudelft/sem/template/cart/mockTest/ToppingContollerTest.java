@@ -1,9 +1,10 @@
-package nl.tudelft.sem.template.cart.integration;
+package nl.tudelft.sem.template.cart.mockTest;
 
 import nl.tudelft.sem.template.cart.ToppingRepository;
 import nl.tudelft.sem.template.cart.ToppingService;
 import nl.tudelft.sem.template.cart.controllers.ToppingController;
 import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
+import nl.tudelft.sem.template.cart.exceptions.ToppingNotFoundException;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.models.ToppingModel;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +47,7 @@ public class ToppingContollerTest {
     }
 
     @Test
-    public void editToppingTest() {
+    public void editToppingTest() throws ToppingNotFoundException {
         doNothing().when(ts).editTopping("pineapple", 1.5);
         assertEquals(tc.editTopping(tm).getBody(), "Topping edited");
     }

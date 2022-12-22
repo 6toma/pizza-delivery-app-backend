@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.cart.integration;
+package nl.tudelft.sem.template.cart.mockTest;
 
 import nl.tudelft.sem.template.cart.PizzaService;
 import nl.tudelft.sem.template.cart.ToppingService;
