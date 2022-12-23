@@ -74,11 +74,8 @@ public class CustomerService {
     public void addToUsedCoupons(NetId netId, String couponCode) {
 
         Customer customer = getCustomerByNetId(netId);
-        if (customer == null) {
-            return;
-        }
 
-        List<String> coupons = customer.getUsedCoupons();
+        List<String> coupons = new ArrayList<>(customer.getUsedCoupons());
         coupons.add(couponCode);
         customer.setUsedCoupons(coupons);
 
@@ -98,7 +95,7 @@ public class CustomerService {
             return;
         }
 
-        List<String> coupons = customer.getUsedCoupons();
+        List<String> coupons = new ArrayList<>(customer.getUsedCoupons());
         coupons.remove(couponCode);
         customer.setUsedCoupons(coupons);
 
@@ -146,10 +143,7 @@ public class CustomerService {
      * @param newToppings the new list of toppings to be added to the existing List of Allergens.
      */
     public void updateAllergens(NetId netId, List<String> newToppings) {
-        Customer customer = customerRepository.findByNetId(netId);
-        if (customer == null) {
-            return;
-        }
+        Customer customer = getCustomerByNetId(netId);
 
         customer.setAllergens(newToppings);
 

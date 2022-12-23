@@ -1,13 +1,13 @@
-package nl.tudelft.sem.store;
+package nl.tudelft.sem.template.store;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import nl.tudelft.sem.store.controller.StoreRestController;
-import nl.tudelft.sem.store.domain.Store;
-import nl.tudelft.sem.store.domain.StoreRepository;
+import nl.tudelft.sem.template.store.controller.StoreRestController;
+import nl.tudelft.sem.template.store.domain.Store;
+import nl.tudelft.sem.template.store.domain.StoreRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

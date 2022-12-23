@@ -41,8 +41,9 @@ public class CustomerController {
      * @return the Customer with the specified id.
      */
     @GetMapping("/id/{customerId}")
-    public Customer getCustomerById(@PathVariable int customerId) {
-        return customerService.getCustomerById(customerId);
+    public ResponseEntity<Customer> getCustomerById(@PathVariable int customerId){
+        Customer customer = customerService.getCustomerById(customerId);
+        return ResponseEntity.ok(customer);
     }
 
     /**
@@ -52,7 +53,7 @@ public class CustomerController {
      * @return the Customer with the specified netId.
      */
     @GetMapping("/netId/{netId}")
-    public Customer getCustomerByNetId(@PathVariable String netId) {
+    public ResponseEntity<Customer> getCustomerByNetId(@PathVariable String netId) {
         NetId customerNetId = new NetId(netId);
         Customer customer = customerService.getCustomerByNetId(customerNetId);
         return ResponseEntity.ok(customer);
@@ -77,13 +78,12 @@ public class CustomerController {
     @MicroServiceInteraction
     @PostMapping("/add")
     public ResponseEntity<String> addCustomer(@NotNull @RequestBody String netId) {
-        if (customerService.getCustomerByNetId(new NetId(netId)) != null) {
-            return ResponseEntity.ok("Customer added.");
-        }
+
         var customer = new Customer();
         customer.setNetId(new NetId(netId));
         customer.setAllergens(Collections.emptyList());
         customer.setUsedCoupons(Collections.emptyList());
+
         customerService.addCustomer(customer);
         return ResponseEntity.ok("Customer added.");
     }
@@ -146,8 +146,9 @@ public class CustomerController {
      */
     @PostMapping("/checkUsedCoupons/{netId}")
     @MicroServiceInteraction
-    public List<String> checkUsedCoupons(@PathVariable("netId") String netId, @RequestBody List<String> couponCodes) {
-        return customerService.checkUsedCoupons(new NetId(netId), couponCodes);
+    public ResponseEntity<List<String>> checkUsedCoupons(@PathVariable String netId, @RequestBody List<String> couponCodes) {
+        NetId customerNetId = new NetId(netId);
+        return ResponseEntity.ok(customerService.checkUsedCoupons(customerNetId, couponCodes));
     }
 
     /**

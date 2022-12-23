@@ -1,11 +1,11 @@
-package nl.tudelft.sem.store;
+package nl.tudelft.sem.template.store;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
-import nl.tudelft.sem.store.domain.Store;
-import nl.tudelft.sem.store.domain.StoreAddress;
-import nl.tudelft.sem.store.domain.StoreRepository;
 import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.store.domain.Store;
+import nl.tudelft.sem.template.store.domain.StoreAddress;
+import nl.tudelft.sem.template.store.domain.StoreRepository;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
