@@ -91,6 +91,9 @@ public class CustomerService {
     public void removeFromUsedCoupons(NetId netId, String couponCode) {
 
         Customer customer = getCustomerByNetId(netId);
+        if (customer == null) {
+            return;
+        }
 
         List<String> coupons = new ArrayList<>(customer.getUsedCoupons());
         coupons.remove(couponCode);
