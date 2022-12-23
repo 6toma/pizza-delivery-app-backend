@@ -1,15 +1,22 @@
 package nl.tudelft.sem.template.store;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Optional;
+import javax.mail.MessagingException;
+import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.store.controller.StoreRestController;
 import nl.tudelft.sem.template.store.domain.Store;
 import nl.tudelft.sem.template.store.domain.StoreRepository;
+import nl.tudelft.sem.template.store.services.EmailNotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,11 +25,13 @@ public class StoreControllerTest {
     private StoreRestController storeRestController;
 
     private StoreRepository storeRepository;
+    private EmailNotificationService emailNotificationService;
 
     @BeforeEach
     void beforeEach() {
         storeRepository = Mockito.mock(StoreRepository.class);
-        storeRestController = new StoreRestController(storeRepository);
+        emailNotificationService = Mockito.mock(EmailNotificationService.class);
+        storeRestController = new StoreRestController(storeRepository, emailNotificationService);
     }
 
     @Test
@@ -39,17 +48,18 @@ public class StoreControllerTest {
     }
 
     @Test
-    void test_prepare_pizza_called() {
+    void test_prepare_pizza_called() throws MessagingException, IOException {
 
         long storeId = 1;
         Store store = Mockito.mock(Store.class);
         when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
+        when(store.getStoreOwnerNetId()).thenReturn(new NetId("test@user.com"));
 
         // notify store on the mocked store
         notifyStoreOnId(storeId);
 
         // assert that the mocked store prepares pizza
-        verify(store).preparePizza();
+        verify(emailNotificationService, times(1)).notifyOrder(any());
 
     }
 }

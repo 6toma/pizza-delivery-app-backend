@@ -1,13 +1,10 @@
 package nl.tudelft.sem.template.coupon.controllers;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.PriorityQueue;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
-import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.authentication.annotations.role.MicroServiceInteraction;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwnerOrRegionalManager;
 import nl.tudelft.sem.template.authentication.domain.user.UserRole;
@@ -124,6 +121,9 @@ public class CouponController {
         PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
         List<String> unusedCodes = requestHelper
             .postRequest(8081, "/customers/checkUsedCoupons/" + pricesCodesModel.getNetId(), codes, List.class);
+        if(unusedCodes == null || unusedCodes.isEmpty()) {
+            return ResponseEntity.ok(new CouponFinalPriceModel("", prices.stream().mapToDouble(Double::doubleValue).sum()));
+        }
         for (String code : unusedCodes) {
             ResponseEntity<Coupon> c;
             try {
