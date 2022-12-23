@@ -86,9 +86,10 @@ public class CustomerControllerTest {
     @Test
     public void testAddCustomer() {
         String netId = "example123";
+
         ResponseEntity<String> response = customerController.addCustomer(netId);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Mockito.verify(repo).save(customer);
+        Mockito.verify(repo).save(new Customer(new NetId(netId)));
     }
 
     @Test

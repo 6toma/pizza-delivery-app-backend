@@ -78,9 +78,7 @@ public class CustomerController {
     @MicroServiceInteraction
     @PostMapping("/add")
     public ResponseEntity<String> addCustomer(@NotNull @RequestBody String netId) {
-        if (customerService.getCustomerByNetId(new NetId(netId)) != null) {
-            return ResponseEntity.ok("Customer added.");
-        }
+
         var customer = new Customer();
         customer.setNetId(new NetId(netId));
         customer.setAllergens(Collections.emptyList());
