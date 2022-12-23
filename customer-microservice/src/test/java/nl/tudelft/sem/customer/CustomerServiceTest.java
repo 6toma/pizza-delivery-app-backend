@@ -37,7 +37,11 @@ public class CustomerServiceTest {
         int customerId = 123456;
         NetId netId = new NetId("example123");
 
-        customer = new Customer(usedCoupons, allergens, customerId, netId);
+        customer = new Customer(netId);
+            customer.setCustomerId(customerId);
+            customer.setAllergens(allergens);
+            customer.setUsedCoupons(usedCoupons);
+
         when(repo.findByNetId(new NetId("example123"))).thenReturn(java.util.Optional.ofNullable(customer));
         customerService = new CustomerService(repo);
     }
