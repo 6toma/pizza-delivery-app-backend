@@ -1,11 +1,19 @@
-package nl.tudelft.sem.template.cart.mockTest;
+package nl.tudelft.sem.template.cart.mocktest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+
+import java.util.List;
 import nl.tudelft.sem.template.authentication.AuthManager;
-import nl.tudelft.sem.template.cart.exceptions.PizzaNameNotFoundException;
-import nl.tudelft.sem.template.cart.services.PizzaService;
 import nl.tudelft.sem.template.cart.controllers.PizzaController;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
-import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
+import nl.tudelft.sem.template.cart.exceptions.PizzaNameNotFoundException;
+import nl.tudelft.sem.template.cart.services.PizzaService;
 import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
@@ -15,16 +23,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyDouble;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 
 public class PizzaContollerTest {
 

@@ -32,13 +32,13 @@ public class CustomerServiceTest {
         repo = Mockito.mock(CustomerRepository.class);
         authManager = Mockito.mock(AuthManager.class);
 
-        List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
         List<String> allergens = Arrays.asList("peanut", "gluten");
         int customerId = 123456;
         NetId netId = new NetId("example123@test.com");
         customer = new Customer(netId);
         customer.setCustomerId(customerId);
         customer.setAllergens(allergens);
+        List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
         customer.setUsedCoupons(usedCoupons);
         when(repo.findByNetId(new NetId("example123@test.com"))).thenReturn(java.util.Optional.ofNullable(customer));
         customerService = new CustomerService(repo);

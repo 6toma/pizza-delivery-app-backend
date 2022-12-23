@@ -1,7 +1,9 @@
 package nl.tudelft.sem.template.coupon.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.time.Clock;
@@ -24,8 +26,9 @@ import org.mockito.MockitoAnnotations;
 
 class CouponServiceTest {
 
+    private static final LocalDate LOCAL_DATE = LocalDate.of(2022, 12, 13);
+
     private Coupon c1;
-    private final static LocalDate LOCAL_DATE = LocalDate.of(2022, 12, 13);
 
     @InjectMocks
     private Coupon coupon;

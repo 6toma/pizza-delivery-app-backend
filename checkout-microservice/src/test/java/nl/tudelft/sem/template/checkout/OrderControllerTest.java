@@ -1,16 +1,13 @@
 package nl.tudelft.sem.template.checkout;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import nl.tudelft.sem.template.authentication.AuthManager;
@@ -25,7 +22,6 @@ import nl.tudelft.sem.template.commons.models.CartPizza;
 import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.models.PricesCodesModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
-import org.assertj.core.api.Assert;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +45,7 @@ public class OrderControllerTest {
     private CartPizza pizza2;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         orderService = Mockito.mock(OrderService.class);
         authManager = Mockito.mock(AuthManager.class);
         requestHelper = Mockito.mock(RequestHelper.class);
@@ -63,13 +59,8 @@ public class OrderControllerTest {
         pizza1 = new CartPizza(cpizza1, 1);
         pizza2 = new CartPizza(cpizza2, 2);
 
-        order = Order.builder()
-            .withStoreId(1L)
-            .withCustomerId(CUSTOMER_ID)
-            .withPickupTime(ldt)
-            .withPizzaList(List.of(pizza1, pizza2))
-            .withCoupon("ABCD12")
-            .build();
+        order = Order.builder().withStoreId(1L).withCustomerId(CUSTOMER_ID).withPickupTime(ldt)
+            .withPizzaList(List.of(pizza1, pizza2)).withCoupon("ABCD12").build();
     }
 
     @Test
@@ -147,26 +138,9 @@ public class OrderControllerTest {
 
         Assertions.assertThatThrownBy(() -> {
             orderController.getOrderById(orderId);
-        }).isInstanceOf(ResponseStatusException.class).hasMessage("400 BAD_REQUEST \"Order does not belong to customer, so they cannot check it\"");
+        }).isInstanceOf(ResponseStatusException.class)
+        .hasMessage("400 BAD_REQUEST \"Order does not belong to customer, so they cannot check it\"");
     }
-
-//    @Test
-//    public void getPriceForEachPizzaTest1() throws Exception {
-//        long orderId = 1L;
-//        when(orderService.getOrderById(orderId)).thenReturn(order);
-//
-//        Assertions.assertThat(orderController.getPriceForEachPizza(orderId)).contains(Double.valueOf(11), 10.5);
-//    }
-//
-//    @Test
-//    public void getPriceForEachPizzaTest2() throws Exception {
-//        long orderId = 1L;
-//        when(orderService.getOrderById(orderId)).thenThrow(new OrderNotFoundException(orderId));
-//
-//        Assertions.assertThatThrownBy(() -> {
-//            orderController.getPriceForEachPizza(orderId);
-//        }).isInstanceOf(ResponseStatusException.class).hasMessage("400 BAD_REQUEST \"1\"");
-//    }
 
     @Test
     public void get_order_price_customer_owns_order_in_db() throws Exception {
@@ -225,15 +199,15 @@ public class OrderControllerTest {
 
         Assertions.assertThatThrownBy(() -> {
             orderController.getOrderPrice(orderId);
-        }).isInstanceOf(ResponseStatusException.class).hasMessage("400 BAD_REQUEST \"Order does not belong to customer, so they cannot check the price\"");
+        }).isInstanceOf(ResponseStatusException.class)
+        .hasMessage("400 BAD_REQUEST \"Order does not belong to customer, so they cannot check the price\"");
     }
 
     @Test
     public void add_order_store_not_found() {
         String storeName = "Store does not exist";
         StoreTimeCoupons stc = new StoreTimeCoupons(storeName, ldt, new ArrayList<>());
-        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", storeName, String.class))
-            .thenReturn("-1");
+        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", storeName, String.class)).thenReturn("-1");
 
         ResponseEntity<String> response = orderController.addOrder(stc);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -246,24 +220,22 @@ public class OrderControllerTest {
     public void add_order_bad_pickup_time() {
         String storeName = "Delft Dehoven";
         StoreTimeCoupons stc = new StoreTimeCoupons(storeName, LocalDateTime.now(), new ArrayList<>());
-        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", storeName, String.class))
-            .thenReturn("1");
+        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", storeName, String.class)).thenReturn("1");
 
         ResponseEntity<String> response = orderController.addOrder(stc);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        Assertions.assertThat(response.getBody()).isEqualTo("Pickup time should be at least 30 minutes from order placement");
+        Assertions.assertThat(response.getBody())
+            .isEqualTo("Pickup time should be at least 30 minutes from order placement");
 
         verify(orderService, never()).addOrder(any());
     }
 
     @Test
     public void add_order_empty_cart() {
-        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", "Delft Dehoven", String.class))
-            .thenReturn("1");
-        when(authManager.getNetId())
-            .thenReturn("Matt");
-        when(requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class))
-            .thenReturn(new CartPizza[0]);
+        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", "Delft Dehoven", String.class)).thenReturn("1");
+        when(authManager.getNetId()).thenReturn("Matt");
+        when(requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class)).thenReturn(
+            new CartPizza[0]);
 
         StoreTimeCoupons stc = new StoreTimeCoupons("Delft Dehoven", LocalDateTime.now().plusHours(1), new ArrayList<>());
         ResponseEntity<String> response = orderController.addOrder(stc);
@@ -276,31 +248,22 @@ public class OrderControllerTest {
 
     @Test
     public void add_order_proper_cart_no_coupon() {
-        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", "Delft Dehoven", String.class))
-            .thenReturn("1");
-        when(authManager.getNetId())
-            .thenReturn("Matt");
-        when(requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class))
-            .thenReturn(new CartPizza[] {pizza1, pizza2});
+        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", "Delft Dehoven", String.class)).thenReturn("1");
+        when(authManager.getNetId()).thenReturn("Matt");
+        when(requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class)).thenReturn(
+            new CartPizza[] {pizza1, pizza2});
 
 
         PricesCodesModel pcm = new PricesCodesModel("Matt", 1, List.of(11.0, 10.5, 10.5), new ArrayList<>());
-        when(requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class))
-            .thenReturn(new CouponFinalPriceModel("", 32.0));
+        when(requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class)).thenReturn(
+            new CouponFinalPriceModel("", 32.0));
 
         LocalDateTime pickupTime = LocalDateTime.now().plusHours(1);
         StoreTimeCoupons stc = new StoreTimeCoupons("Delft Dehoven", pickupTime, new ArrayList<>());
 
-        Order order1 = Order.builder()
-            .withStoreId(1)
-            .withCustomerId("Matt")
-            .withPickupTime(pickupTime)
-            .withPizzaList(List.of(pizza1, pizza2))
-            .withCoupon(null)
-            .withFinalPrice(32.0)
-            .build();
-        when(orderService.addOrder(order1))
-            .thenReturn(order1);
+        Order order1 = Order.builder().withStoreId(1).withCustomerId("Matt").withPickupTime(pickupTime)
+            .withPizzaList(List.of(pizza1, pizza2)).withCoupon(null).withFinalPrice(32.0).build();
+        when(orderService.addOrder(order1)).thenReturn(order1);
 
         ResponseEntity<String> response = orderController.addOrder(stc);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -313,30 +276,21 @@ public class OrderControllerTest {
 
     @Test
     public void add_order_proper_cart_with_1_coupon_used_or_does_not_work() {
-        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", "Delft Dehoven", String.class))
-            .thenReturn("1");
-        when(authManager.getNetId())
-            .thenReturn("Matt");
-        when(requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class))
-            .thenReturn(new CartPizza[] {pizza1, pizza2});
+        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", "Delft Dehoven", String.class)).thenReturn("1");
+        when(authManager.getNetId()).thenReturn("Matt");
+        when(requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class)).thenReturn(
+            new CartPizza[] {pizza1, pizza2});
 
         LocalDateTime pickupTime = LocalDateTime.now().plusHours(1);
         StoreTimeCoupons stc = new StoreTimeCoupons("Delft Dehoven", pickupTime, List.of("ABCD12"));
 
         PricesCodesModel pcm = new PricesCodesModel("Matt", 1, List.of(11.0, 10.5, 10.5), List.of("ABCD12"));
-        when(requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class))
-            .thenReturn(new CouponFinalPriceModel("", 32.0));
+        when(requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class)).thenReturn(
+            new CouponFinalPriceModel("", 32.0));
 
-        Order order1 = Order.builder()
-            .withStoreId(1)
-            .withCustomerId("Matt")
-            .withPickupTime(pickupTime)
-            .withPizzaList(List.of(pizza1, pizza2))
-            .withCoupon(null)
-            .withFinalPrice(32.0)
-            .build();
-        when(orderService.addOrder(order1))
-            .thenReturn(order1);
+        Order order1 = Order.builder().withStoreId(1).withCustomerId("Matt").withPickupTime(pickupTime)
+            .withPizzaList(List.of(pizza1, pizza2)).withCoupon(null).withFinalPrice(32.0).build();
+        when(orderService.addOrder(order1)).thenReturn(order1);
 
         ResponseEntity<String> response = orderController.addOrder(stc);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -349,30 +303,21 @@ public class OrderControllerTest {
 
     @Test
     public void add_order_proper_cart_with_2_coupons_and_works() {
-        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", "Delft Dehoven", String.class))
-            .thenReturn("1");
-        when(authManager.getNetId())
-            .thenReturn("Matt");
-        when(requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class))
-            .thenReturn(new CartPizza[] {pizza1, pizza2});
+        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", "Delft Dehoven", String.class)).thenReturn("1");
+        when(authManager.getNetId()).thenReturn("Matt");
+        when(requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class)).thenReturn(
+            new CartPizza[] {pizza1, pizza2});
 
         LocalDateTime pickupTime = LocalDateTime.now().plusHours(1);
         StoreTimeCoupons stc = new StoreTimeCoupons("Delft Dehoven", pickupTime, List.of("ABCD12", "MATT10"));
 
         PricesCodesModel pcm = new PricesCodesModel("Matt", 1, List.of(11.0, 10.5, 10.5), List.of("ABCD12", "MATT10"));
-        when(requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class))
-            .thenReturn(new CouponFinalPriceModel("MATT10", 28.8));
+        when(requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class)).thenReturn(
+            new CouponFinalPriceModel("MATT10", 28.8));
 
-        Order order1 = Order.builder()
-            .withStoreId(1)
-            .withCustomerId("Matt")
-            .withPickupTime(pickupTime)
-            .withPizzaList(List.of(pizza1, pizza2))
-            .withCoupon("MATT10")
-            .withFinalPrice(28.8)
-            .build();
-        when(orderService.addOrder(order1))
-            .thenReturn(order1);
+        Order order1 = Order.builder().withStoreId(1).withCustomerId("Matt").withPickupTime(pickupTime)
+            .withPizzaList(List.of(pizza1, pizza2)).withCoupon("MATT10").withFinalPrice(28.8).build();
+        when(orderService.addOrder(order1)).thenReturn(order1);
 
         ResponseEntity<String> response = orderController.addOrder(stc);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -384,7 +329,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void remove_order_order_does_not_exist() throws Exception{
+    public void remove_order_order_does_not_exist() throws Exception {
         when(authManager.getNetId()).thenReturn("Matt");
         when(authManager.getRoleAuthority()).thenReturn("ROLE_CUSTOMER");
 
@@ -399,7 +344,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void remove_order_store_owner() throws Exception{
+    public void remove_order_store_owner() throws Exception {
         when(authManager.getNetId()).thenReturn("Matt");
         when(authManager.getRoleAuthority()).thenReturn("ROLE_STORE_OWNER");
 
@@ -414,7 +359,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void remove_order_regional_manager_no_coupon() throws Exception{
+    public void remove_order_regional_manager_no_coupon() throws Exception {
         when(authManager.getRoleAuthority()).thenReturn("ROLE_REGIONAL_MANAGER");
 
         long orderId = 1;
@@ -431,7 +376,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void remove_order_customer_does_not_own_it_1() throws Exception{
+    public void remove_order_customer_does_not_own_it_1() throws Exception {
         when(authManager.getRoleAuthority()).thenReturn("ROLE_CUSTOMER");
         when(authManager.getNetId()).thenReturn("Matt");
 
@@ -441,13 +386,14 @@ public class OrderControllerTest {
 
         ResponseEntity<String> response = orderController.removeOrderById(orderId);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        Assertions.assertThat(response.getBody()).isEqualTo("Order does not belong to customer or there are less than 30 minutes until pickup time, so cancelling is not possible");
+        Assertions.assertThat(response.getBody()).isEqualTo("Order does not belong to customer or there are "
+            + "less than 30 minutes until pickup time, so cancelling is not possible");
 
         verify(orderService, never()).removeOrderById(orderId);
     }
 
     @Test
-    public void remove_order_customer_does_not_own_it_2() throws Exception{
+    public void remove_order_customer_does_not_own_it_2() throws Exception {
         when(authManager.getRoleAuthority()).thenReturn("ROLE_CUSTOMER");
         when(authManager.getNetId()).thenReturn("Andy");
 
@@ -457,13 +403,15 @@ public class OrderControllerTest {
 
         ResponseEntity<String> response = orderController.removeOrderById(orderId);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        Assertions.assertThat(response.getBody()).isEqualTo("Order does not belong to customer or there are less than 30 minutes until pickup time, so cancelling is not possible");
+        Assertions.assertThat(response.getBody()).isEqualTo(
+            "Order does not belong to customer or there are less than 30 minutes until pickup time, "
+                + "so cancelling is not possible");
 
         verify(orderService, never()).removeOrderById(orderId);
     }
 
     @Test
-    public void remove_order_customer_owns_it_but_too_late_to_cancel() throws Exception{
+    public void remove_order_customer_owns_it_but_too_late_to_cancel() throws Exception {
         when(authManager.getRoleAuthority()).thenReturn("ROLE_CUSTOMER");
         when(authManager.getNetId()).thenReturn("Matt");
 
@@ -474,13 +422,15 @@ public class OrderControllerTest {
 
         ResponseEntity<String> response = orderController.removeOrderById(orderId);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        Assertions.assertThat(response.getBody()).isEqualTo("Order does not belong to customer or there are less than 30 minutes until pickup time, so cancelling is not possible");
+        Assertions.assertThat(response.getBody()).isEqualTo(
+            "Order does not belong to customer or there are less than 30 minutes until pickup time, "
+                + "so cancelling is not possible");
 
         verify(orderService, never()).removeOrderById(orderId);
     }
 
     @Test
-    public void remove_order_customer_owns_it_has_coupon_and_cancel() throws Exception{
+    public void remove_order_customer_owns_it_has_coupon_and_cancel() throws Exception {
         when(authManager.getRoleAuthority()).thenReturn("ROLE_CUSTOMER");
         when(authManager.getNetId()).thenReturn("Matt");
 

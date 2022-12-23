@@ -1,22 +1,21 @@
-package nl.tudelft.sem.template.cart.mockTest;
+package nl.tudelft.sem.template.cart.mocktest;
 
-import nl.tudelft.sem.template.cart.services.ToppingService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+
+import java.util.List;
 import nl.tudelft.sem.template.cart.controllers.ToppingController;
 import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.ToppingNotFoundException;
+import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.models.ToppingModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 
 public class ToppingContollerTest {
 
@@ -54,7 +53,7 @@ public class ToppingContollerTest {
     @Test
     public void addToppingTestException() throws Exception {
         Mockito.when(ts.addTopping("pineapple", 1.5)).thenThrow(new ToppingAlreadyInUseException("pineapple"));
-        assertThrows(ResponseStatusException.class, () ->  {
+        assertThrows(ResponseStatusException.class, () -> {
             tc.addTopping(tm);
         });
     }
@@ -62,7 +61,7 @@ public class ToppingContollerTest {
     @Test
     public void removeToppingTestException() throws Exception {
         doThrow(new ToppingAlreadyInUseException("pineapple")).when(ts).removeTopping("pineapple");
-        assertThrows(ResponseStatusException.class, () ->  {
+        assertThrows(ResponseStatusException.class, () -> {
             tc.removeTopping("pineapple");
         });
     }

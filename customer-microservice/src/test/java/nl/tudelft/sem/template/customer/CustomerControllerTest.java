@@ -28,21 +28,21 @@ public class CustomerControllerTest {
     private transient CustomerRepository repo;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         repo = Mockito.mock(CustomerRepository.class);
         authManager = Mockito.mock(AuthManager.class);
         customerService = new CustomerService(repo);
         customerController = new CustomerController(authManager, customerService);
 
-        List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
         List<String> allergens = Arrays.asList("peanut", "gluten");
         int customerId = 123456;
         NetId netId = new NetId("example123@test.com");
 
         customer = new Customer(netId);
-            customer.setCustomerId(customerId);
-            customer.setAllergens(allergens);
-            customer.setUsedCoupons(usedCoupons);
+        customer.setCustomerId(customerId);
+        customer.setAllergens(allergens);
+        List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
+        customer.setUsedCoupons(usedCoupons);
     }
 
     @Test
@@ -65,11 +65,11 @@ public class CustomerControllerTest {
     @Test
     public void testGetCustomers() {
 
-        List<String> usedCoupons = Arrays.asList("coupon1");
         List<String> allergens = Arrays.asList("fish", "stupidity");
         int customerId = 56789;
         NetId netId = new NetId("hello1997@gmail.com");
 
+        List<String> usedCoupons = Arrays.asList("coupon1");
         Customer customer2 = new Customer(netId);
         customer2.setCustomerId(customerId);
         customer2.setAllergens(allergens);

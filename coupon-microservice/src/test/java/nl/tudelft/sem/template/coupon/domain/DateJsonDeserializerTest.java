@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.coupon.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -25,13 +25,13 @@ class DateJsonDeserializerTest {
     @Test
     void deserializeParseException() {
         when(jsonParser.getText()).thenReturn("a/10/2025");
-        assertThrows(RuntimeException.class, () -> dateJsonDeserializer.deserialize(jsonParser,null));
+        assertThrows(RuntimeException.class, () -> dateJsonDeserializer.deserialize(jsonParser, null));
     }
 
     @SneakyThrows
     @Test
     void deserializeInvalidDate() {
         when(jsonParser.getText()).thenReturn("31/02/2025");
-        assertThrows(RuntimeException.class, () -> dateJsonDeserializer.deserialize(jsonParser,null));
+        assertThrows(RuntimeException.class, () -> dateJsonDeserializer.deserialize(jsonParser, null));
     }
 }
