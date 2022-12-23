@@ -75,6 +75,13 @@ public class Cart {
         pizzasMap.remove(customPizza);
     }
 
+    /**
+     * Adds a topping to a pizza
+     *
+     * @param pizza   the pizza to add a topping to
+     * @param topping the topping to be removed
+     * @return boolean, true if it was added successfully, else false
+     */
     public boolean addTopping(CustomPizza pizza, Topping topping) {
         if (pizzasMap.get(pizza) == null) {
             return false;
@@ -89,6 +96,13 @@ public class Cart {
         return true;
     }
 
+    /**
+     * Removes a topping from this pizza.
+     *
+     * @param pizza   the object to remove a topping from
+     * @param topping the topping that will be removed from the pizza
+     * @return boolean, true if it was removed successful, else false
+     */
     public boolean removeTopping(CustomPizza pizza, Topping topping) {
         if (pizzasMap.get(pizza) == null) {
             return false;
@@ -106,13 +120,7 @@ public class Cart {
     @ManyToMany
     private List<Pizza> pizzas;
 
-    public Cart(NetId netId, List<Pizza> pizzas) {
-        this.netId = netId;
-        this.pizzas = pizzas;
-    }
-
     public void addPizza(Pizza pizza) {
         pizzas.add(pizza);
-
     }
 }
