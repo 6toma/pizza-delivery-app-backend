@@ -21,12 +21,12 @@ public class LocalDateTimeConverterTest {
     public void convertToColumnTest() {
         LocalDateTime ldt = LocalDateTime.of(LocalDate.of(2022, 5, 12), LocalTime.NOON);
 
-        Assertions.assertThat(ldtConverter.convertToDatabaseColumn(ldt)).isEqualTo("2022-05-12 12:00");
+        Assertions.assertThat(ldtConverter.convertToDatabaseColumn(ldt)).isEqualTo("2022-05-12T12:00:00");
     }
 
     @Test
     public void convertToLdtTest() {
-        String ldtString = "2022-05-12 12:00";
+        String ldtString = "2022-05-12T12:00:00";
         LocalDateTime ldt = LocalDateTime.of(LocalDate.of(2022, 5, 12), LocalTime.NOON);
 
         Assertions.assertThat(ldtConverter.convertToEntityAttribute(ldtString)).isEqualTo(ldt);

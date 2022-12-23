@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.cart.mockTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -11,9 +12,10 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
-import nl.tudelft.sem.template.cart.PizzaService;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameNotFoundException;
+import nl.tudelft.sem.template.cart.services.PizzaService;
+import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
@@ -27,9 +29,11 @@ public class PizzaServiceTest {
     private final DefaultPizza p1 = new DefaultPizza("hawaii", List.of(t1), 6);
     private PizzaService ps;
     private DefaultPizzaRepository pr;
+    private ToppingService toppingService;
 
     @BeforeEach
     void beforeEach() {
+        toppingService = Mockito.mock(ToppingService.class);
         pr = Mockito.mock(DefaultPizzaRepository.class);
         ps = new PizzaService(pr);
     }
@@ -49,6 +53,7 @@ public class PizzaServiceTest {
     @Test
     public void addPizzaTest() throws Exception {
         when(pr.existsByPizzaName("pineapple")).thenReturn(false);
+        when(pr.save(any())).thenReturn(p1);
         Pizza res = ps.addPizza("hawaii", List.of(t1), 6);
         assertEquals(p1, res);
         verify(pr, times(1)).save(p1);

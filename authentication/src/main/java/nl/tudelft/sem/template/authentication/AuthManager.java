@@ -1,5 +1,7 @@
 package nl.tudelft.sem.template.authentication;
 
+import java.util.Arrays;
+import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -32,12 +34,22 @@ public class AuthManager {
      *
      * @return the role of the user a String
      */
-    public String getRole() {
-        var firstAuthority =
-            SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().findFirst();
+    public String getRoleAuthority() {
+        var firstAuthority = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().findFirst();
         if (firstAuthority.isEmpty()) {
             throw new IllegalArgumentException("No role has been set in the UserDetails");
         }
         return firstAuthority.get().getAuthority();
+    }
+
+    /**
+     * Gets the role of the user as an actual {@link UserRole} instance.
+     *
+     * @return The user role
+     */
+    public UserRole getRole() {
+        var roleAuthority = getRoleAuthority();
+        return Arrays.stream(UserRole.values()).filter(role -> role.getJwtRoleName().equals(roleAuthority)).findFirst()
+            .orElse(null);
     }
 }
