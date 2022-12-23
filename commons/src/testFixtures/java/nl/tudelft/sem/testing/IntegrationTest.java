@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -11,10 +12,9 @@ import java.io.UnsupportedEncodingException;
 import lombok.SneakyThrows;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.JwtTokenVerifier;
+import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,7 +37,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @AutoConfigureMockMvc
 @ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager"})
 @ComponentScan({"nl.tudelft.sem.testing.profiles"})
-@Execution(ExecutionMode.CONCURRENT)
 public class IntegrationTest {
 
     protected static final String TEST_USER = "test_user";
@@ -73,9 +72,11 @@ public class IntegrationTest {
      * @throws UnsupportedEncodingException Thrown if body can't be encoded as a string
      */
     protected void assertResponseEqualsText(String expected, ResultActions result) throws UnsupportedEncodingException {
-        String response = result.andReturn().getResponse().getContentAsString();
+        assertThat(parseResponseText(result)).isEqualTo(expected);
+    }
 
-        assertThat(response).isEqualTo(expected);
+    protected String toJson(Object object) throws JsonProcessingException {
+        return mapper.writeValueAsString(object);
     }
 
     @SneakyThrows
@@ -97,6 +98,15 @@ public class IntegrationTest {
         try (var inputStream = new ByteArrayInputStream(result.andReturn().getResponse().getContentAsByteArray())) {
             return mapper.readValue(inputStream, cls);
         }
+    }
+
+    protected int parseResponseInt(ResultActions result) throws UnsupportedEncodingException {
+        return Integer.parseInt(
+            parseResponseText(result));
+    }
+
+    protected String parseResponseText(ResultActions result) throws UnsupportedEncodingException {
+        return result.andReturn().getResponse().getContentAsString();
     }
 
     /**
@@ -143,6 +153,7 @@ public class IntegrationTest {
     protected MockHttpServletRequestBuilder authenticated(MockHttpServletRequestBuilder builder, String netId,
                                                           UserRole role) {
         when(mockAuthenticationManager.getNetId()).thenReturn(netId);
+        when(mockAuthenticationManager.getNetIdObject()).thenReturn(new NetId(netId));
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(netId);
         when(mockJwtTokenVerifier.getRoleFromToken(anyString())).thenReturn(role.getJwtRoleName());
