@@ -62,9 +62,8 @@ public class EmailNotificationService {
         var helper = new MimeMessageHelper(message, false);
         helper.setFrom(senderEmailAddress);
         helper.setTo(emailAddress);
-        helper.setText(readOrderNotificationTemplate(), true);
-        helper.setSubject("An order has been placed");
-
+        helper.setText(readOrderNotificationTemplateCancelOrder(), true);
+        helper.setSubject("An order was placed");
         mailSender.send(message);
     }
 

@@ -101,8 +101,10 @@ public class OrderController {
     public ResponseEntity<String> removeOrderById(@PathVariable("id") long orderId) {
         String netId = authManager.getNetId();
         String role = authManager.getRoleAuthority();
+
         try {
             Order orderToBeRemoved = orderService.getOrderById(orderId);
+            long storeId = orderToBeRemoved.getStoreId();
             if (role.equals("ROLE_STORE_OWNER")) {
                 return ResponseEntity.badRequest().body("Store owners can't cancel orders");
             }
@@ -112,6 +114,9 @@ public class OrderController {
                 orderService.removeOrderById(orderId);
                 requestHelper.postRequest(8081, "/customers/" + netId + "/coupons/remove", orderToBeRemoved.getCoupon(),
                     String.class); // remove from customer's used coupons
+
+                requestHelper.postRequest(8084, "/store/notifyRemoveOrder", storeId,
+                    String.class); // notify store of remove order
                 return ResponseEntity.ok("Order with id " + orderId + " successfully removed");
             } else {
                 return ResponseEntity.badRequest().body(
