@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.cart.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -7,9 +8,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
-import nl.tudelft.sem.template.cart.PizzaService;
+import nl.tudelft.sem.template.cart.services.PizzaService;
 import nl.tudelft.sem.template.cart.ToppingRepository;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
@@ -50,7 +52,7 @@ public class PizzaControllerTest extends IntegrationTest {
         pizzaModel = new PizzaModel();
         pizzaModel.setPizzaName("Hawaii");
         pizzaModel.setPrice(7);
-        pizzaModel.setToppings(toppings1);
+        pizzaModel.setToppings(toppings1.stream().map(Topping::getName).collect(Collectors.toList()));
         pizza1 = new DefaultPizza("Hawaii", toppings1, 7);
         pizza2 = new DefaultPizza("Hawaii", toppings1, 8);
     }
@@ -70,6 +72,22 @@ public class PizzaControllerTest extends IntegrationTest {
         assertEquals(1, defaultRepository.count());
         var pizza = defaultRepository.findAll().stream().findFirst().get();
         assertEquals(pizza, pizza1);
+    }
+
+    @Test
+    void testAddPizzaToppingNotFound() throws Exception {
+        pizzaModel.getToppings().add("topping_not_found");
+        var result = addPizzaRequest(pizzaModel);
+        result.andExpect(status().isBadRequest());
+        assertThat(defaultRepository.count()).isZero();
+    }
+
+    @Test
+    void testNegativePrice() throws Exception {
+        pizzaModel.setPrice(-10);
+        var result = addPizzaRequest(pizzaModel);
+        result.andExpect(status().isBadRequest());
+        assertThat(defaultRepository.count()).isZero();
     }
 
     @Test
@@ -120,19 +138,19 @@ public class PizzaControllerTest extends IntegrationTest {
 
     private ResultActions addPizzaRequest(PizzaModel pm) throws Exception {
         return mockMvc.perform(authenticated(post("/pizza/add/"), UserRole.REGIONAL_MANAGER)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(pm)));
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(toJson(pm)));
     }
 
     private ResultActions removePizzaRequest(String pizzaName) throws Exception {
         return mockMvc.perform(authenticated(delete("/pizza/remove/"), UserRole.REGIONAL_MANAGER)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(pizzaName));
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(pizzaName));
     }
 
     private ResultActions editPizzaRequest(PizzaModel pm) throws Exception {
         return mockMvc.perform(authenticated(put("/pizza/edit/"), UserRole.REGIONAL_MANAGER)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(pm)));
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(toJson(pm)));
     }
 }

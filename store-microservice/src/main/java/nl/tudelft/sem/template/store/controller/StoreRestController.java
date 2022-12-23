@@ -76,7 +76,7 @@ public class StoreRestController {
             return storeRepository.getStoreIdFromStoreName(storeName);
         } catch (Exception e) {
             // in the case when the storeName is bad we return -1
-            return -1l;
+            return -1L;
         }
     }
 

@@ -1,19 +1,18 @@
 package nl.tudelft.sem.template.coupon.domain;
 
-import java.time.Clock;
-import java.time.LocalDate;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 @Entity
 @Table(name = "coupons")
@@ -28,6 +27,8 @@ public class Coupon {
 
     @Column(name = "expiryDate", nullable = false)
     @Convert(converter = DateConverter.class)
+    @JsonDeserialize(using = DateJsonDeserializer.class)
+    @JsonSerialize(using = DateJsonSerializer.class)
     private Date expiryDate;
 
     @Column(name = "storeId", nullable = false)
@@ -38,6 +39,8 @@ public class Coupon {
     private CouponType type;
 
     @Column(name = "discountPercentage")
+    @Min(0)
+    @Max(100)
     private Integer percentage;
 
     @Override

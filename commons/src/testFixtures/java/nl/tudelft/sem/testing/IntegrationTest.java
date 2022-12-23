@@ -14,6 +14,7 @@ import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.UserRole;
+import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -35,7 +36,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
-@ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager"})
+@ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager", "mockRequestHelper"})
 @ComponentScan({"nl.tudelft.sem.testing.profiles"})
 public class IntegrationTest {
 
@@ -49,6 +50,8 @@ public class IntegrationTest {
     protected transient JwtTokenVerifier mockJwtTokenVerifier;
     @Autowired
     protected transient AuthManager mockAuthenticationManager;
+    @Autowired
+    protected transient RequestHelper requestHelper;
 
     /**
      * Converts object to Json in order simulate a <i>real</i> post request.
@@ -100,11 +103,6 @@ public class IntegrationTest {
         }
     }
 
-    protected int parseResponseInt(ResultActions result) throws UnsupportedEncodingException {
-        return Integer.parseInt(
-            parseResponseText(result));
-    }
-
     protected String parseResponseText(ResultActions result) throws UnsupportedEncodingException {
         return result.andReturn().getResponse().getContentAsString();
     }
@@ -154,6 +152,8 @@ public class IntegrationTest {
                                                           UserRole role) {
         when(mockAuthenticationManager.getNetId()).thenReturn(netId);
         when(mockAuthenticationManager.getNetIdObject()).thenReturn(new NetId(netId));
+        when(mockAuthenticationManager.getRoleAuthority()).thenReturn(role.getJwtRoleName());
+        when(mockAuthenticationManager.getRole()).thenReturn(role);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(netId);
         when(mockJwtTokenVerifier.getRoleFromToken(anyString())).thenReturn(role.getJwtRoleName());
