@@ -63,7 +63,7 @@ public class EmailNotificationService {
         helper.setFrom(senderEmailAddress);
         helper.setTo(emailAddress);
         helper.setText(readOrderNotificationTemplateCancelOrder(), true);
-        helper.setSubject("An order was placed");
+        helper.setSubject("An order was cancelled");
         mailSender.send(message);
     }
 
