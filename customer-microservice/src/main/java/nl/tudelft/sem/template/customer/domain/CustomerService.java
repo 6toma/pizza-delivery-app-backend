@@ -1,4 +1,4 @@
-package nl.tudelft.sem.customer.domain;
+package nl.tudelft.sem.template.customer.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,7 +40,7 @@ public class CustomerService {
      */
     public Customer getCustomerByNetId(NetId netId) {
         Optional<Customer> customer = customerRepository.findByNetId(netId);
-        if (!customer.isPresent()) {
+        if (customer.isEmpty()) {
             throw new CustomerNotFoundException(netId);
         }
         return customer.get();

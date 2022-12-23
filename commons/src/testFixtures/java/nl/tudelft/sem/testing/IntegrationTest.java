@@ -13,6 +13,7 @@ import lombok.SneakyThrows;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.annotations.role.MicroServiceInteraction;
 import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -150,14 +151,22 @@ public class IntegrationTest {
      */
     protected MockHttpServletRequestBuilder authenticated(MockHttpServletRequestBuilder builder, String netId,
                                                           UserRole role) {
-        when(mockAuthenticationManager.getNetId()).thenReturn(netId);
-        when(mockAuthenticationManager.getNetIdObject()).thenReturn(new NetId(netId));
-        when(mockAuthenticationManager.getRoleAuthority()).thenReturn(role.getJwtRoleName());
         when(mockAuthenticationManager.getRole()).thenReturn(role);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(netId);
-        when(mockJwtTokenVerifier.getRoleFromToken(anyString())).thenReturn(role.getJwtRoleName());
-        return builder.header("Authorization", "Bearer SomeRandomToken");
+        return authenticated(builder, netId, role.getJwtRoleName());
     }
 
+    protected MockHttpServletRequestBuilder microservice(MockHttpServletRequestBuilder builder) {
+        return authenticated(builder, "email@gmail.com", MicroServiceInteraction.AUTHORITY);
+    }
+
+    protected MockHttpServletRequestBuilder authenticated(MockHttpServletRequestBuilder builder, String netId,
+                                                          String role) {
+        when(mockAuthenticationManager.getNetId()).thenReturn(netId);
+        when(mockAuthenticationManager.getNetIdObject()).thenReturn(new NetId(netId));
+        when(mockAuthenticationManager.getRoleAuthority()).thenReturn(role);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(netId);
+        when(mockJwtTokenVerifier.getRoleFromToken(anyString())).thenReturn(role);
+        return builder.header("Authorization", "Bearer SomeRandomToken");
+    }
 }

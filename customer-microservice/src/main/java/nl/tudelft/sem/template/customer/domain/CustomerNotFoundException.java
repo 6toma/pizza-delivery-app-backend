@@ -1,4 +1,4 @@
-package nl.tudelft.sem.customer.domain;
+package nl.tudelft.sem.template.customer.domain;
 
 import nl.tudelft.sem.template.authentication.NetId;
 

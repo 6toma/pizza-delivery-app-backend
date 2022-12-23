@@ -1,10 +1,10 @@
-package nl.tudelft.sem.customer;
+package nl.tudelft.sem.template.customer;
 
-import nl.tudelft.sem.customer.controllers.CustomerController;
-import nl.tudelft.sem.customer.domain.Customer;
-import nl.tudelft.sem.customer.domain.CustomerNotFoundException;
-import nl.tudelft.sem.customer.domain.CustomerRepository;
-import nl.tudelft.sem.customer.domain.CustomerService;
+import nl.tudelft.sem.template.customer.controllers.CustomerController;
+import nl.tudelft.sem.template.customer.domain.Customer;
+import nl.tudelft.sem.template.customer.domain.CustomerNotFoundException;
+import nl.tudelft.sem.template.customer.domain.CustomerRepository;
+import nl.tudelft.sem.template.customer.domain.CustomerService;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.NetId;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 public class CustomerControllerTest {
@@ -55,10 +56,10 @@ public class CustomerControllerTest {
         assertThat(response.getBody()).isEqualTo(customer);
     }
 
-
     @Test
     public void testGetCustomerByNetId() {
         when(repo.findByNetId(new NetId("example123"))).thenReturn(Optional.of(customer));
+
         ResponseEntity<Customer> response = customerController.getCustomerByNetId("example123");
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(customer);
