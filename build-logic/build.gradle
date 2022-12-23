@@ -1,0 +1,13 @@
+plugins {
+    id 'groovy-gradle-plugin'
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api('info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.2')
+    api('org.springframework.boot:spring-boot-gradle-plugin:2.3.5.RELEASE')
+}

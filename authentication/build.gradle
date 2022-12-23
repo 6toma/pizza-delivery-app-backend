@@ -1,0 +1,4 @@
+plugins {
+    id 'library'
+}
+apply plugin: 'info.solidsoft.pitest'

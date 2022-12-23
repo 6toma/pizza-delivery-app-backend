@@ -1,0 +1,12 @@
+rootProject.name = 'template'
+
+includeBuild 'build-logic'
+include 'authentication-microservice'
+include 'customer-microservice'
+include 'store-microservice'
+include 'coupon-microservice'
+include 'cart-microservice'
+include 'commons'
+include 'checkout-microservice'
+include 'authentication'
+include 'store-microservice'
