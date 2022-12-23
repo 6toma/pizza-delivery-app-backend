@@ -131,7 +131,7 @@ public class CouponController {
             }
         }
         if(pq.isEmpty())
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.ok(new CouponFinalPriceModel("", prices.stream().mapToDouble(Double::doubleValue).sum()));
         return ResponseEntity.ok(pq.peek());
     }
 
