@@ -110,7 +110,7 @@ public class CouponController {
         }
     }
 
-    @MicroServiceInteraction
+//    @MicroServiceInteraction
     @PostMapping("/selectCoupon")
     public ResponseEntity<CouponFinalPriceModel> selectCoupon(@RequestBody PricesCodesModel pricesCodesModel) {
         List<Double> prices = pricesCodesModel.getPrices();

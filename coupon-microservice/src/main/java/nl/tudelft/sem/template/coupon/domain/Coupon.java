@@ -10,8 +10,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
@@ -42,6 +44,21 @@ public class Coupon {
     @Min(0)
     @Max(100)
     private Integer percentage;
+
+    public Coupon(String code, Date expiryDate, Long storeId, CouponType type) {
+        this.code = code;
+        this.expiryDate = expiryDate;
+        this.storeId = storeId;
+        this.type = type;
+    }
+
+    public Coupon(String code, Date expiryDate, Long storeId, CouponType type, Integer percentage) {
+        this.code = code;
+        this.expiryDate = expiryDate;
+        this.storeId = storeId;
+        this.type = type;
+        this.percentage = percentage;
+    }
 
     @Override
     public boolean equals(Object o) {
