@@ -81,6 +81,7 @@ checkstyle {
     ignoreFailures = false
     maxErrors = 0
     maxWarnings = 0
+    sourceSets = [sourceSets.main]
 }
 
 pmd {

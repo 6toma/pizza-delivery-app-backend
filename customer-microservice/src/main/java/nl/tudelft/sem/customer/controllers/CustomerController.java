@@ -157,4 +157,5 @@ public class CustomerController {
         customerService.updateAllergens(netId, newToppings);
         return ResponseEntity.ok("Allergens updated.");
     }
+
 }

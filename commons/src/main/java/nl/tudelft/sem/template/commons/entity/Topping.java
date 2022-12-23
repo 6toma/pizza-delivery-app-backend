@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -17,12 +18,13 @@ public class Topping {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false, unique = true)
+    @Getter
     private int id;
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column(name = "price", nullable = false, unique = false)
+    @Column(name = "price", nullable = false)
     private double price;
 
     public Topping(String name, double price) {
@@ -51,11 +53,11 @@ public class Topping {
             return false;
         }
         Topping t = (Topping) o;
-        return id == (t.id);
+        return name.equals(t.name) && price == t.price;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(name, price);
     }
 }
