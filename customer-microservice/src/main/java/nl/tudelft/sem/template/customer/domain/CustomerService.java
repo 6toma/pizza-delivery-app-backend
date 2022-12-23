@@ -1,4 +1,4 @@
-package nl.tudelft.sem.customer.domain;
+package nl.tudelft.sem.template.customer.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

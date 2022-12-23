@@ -1,10 +1,9 @@
-package nl.tudelft.sem.customer;
+package nl.tudelft.sem.template.customer;
 
-import nl.tudelft.sem.customer.controllers.CustomerController;
-import nl.tudelft.sem.customer.domain.Customer;
-import nl.tudelft.sem.customer.domain.CustomerNotFoundException;
-import nl.tudelft.sem.customer.domain.CustomerRepository;
-import nl.tudelft.sem.customer.domain.CustomerService;
+import nl.tudelft.sem.template.customer.domain.Customer;
+import nl.tudelft.sem.template.customer.domain.CustomerNotFoundException;
+import nl.tudelft.sem.template.customer.domain.CustomerRepository;
+import nl.tudelft.sem.template.customer.domain.CustomerService;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.NetId;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +13,6 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

@@ -1,6 +1,6 @@
-package nl.tudelft.sem.customer;
+package nl.tudelft.sem.template.customer;
 
-import nl.tudelft.sem.customer.domain.Customer;
+import nl.tudelft.sem.template.customer.domain.Customer;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

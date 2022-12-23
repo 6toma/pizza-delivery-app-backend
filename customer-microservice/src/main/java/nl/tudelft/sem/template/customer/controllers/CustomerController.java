@@ -1,10 +1,10 @@
-package nl.tudelft.sem.customer.controllers;
+package nl.tudelft.sem.template.customer.controllers;
 
 import java.util.Collections;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
-import nl.tudelft.sem.customer.domain.Customer;
-import nl.tudelft.sem.customer.domain.CustomerService;
+import nl.tudelft.sem.template.customer.domain.Customer;
+import nl.tudelft.sem.template.customer.domain.CustomerService;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.authentication.annotations.role.MicroServiceInteraction;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;

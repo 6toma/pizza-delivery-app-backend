@@ -1,4 +1,4 @@
-package nl.tudelft.sem.customer.config;
+package nl.tudelft.sem.template.customer.config;
 
 import lombok.Getter;
 import org.springframework.context.annotation.Bean;
