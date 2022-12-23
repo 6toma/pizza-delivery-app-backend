@@ -41,7 +41,10 @@ public class CustomerControllerTest {
         int customerId = 123456;
         NetId netId = new NetId("example123");
 
-        customer = new Customer(usedCoupons, allergens, customerId, netId);
+        customer = new Customer(netId);
+            customer.setCustomerId(customerId);
+            customer.setAllergens(allergens);
+            customer.setUsedCoupons(usedCoupons);
     }
 
     @Test
@@ -69,7 +72,10 @@ public class CustomerControllerTest {
         int customerId = 56789;
         NetId netId = new NetId("hello1997");
 
-        Customer customer2 = new Customer(usedCoupons, allergens, customerId, netId);
+        Customer customer2 = new Customer(netId);
+        customer2.setCustomerId(customerId);
+        customer2.setAllergens(allergens);
+        customer2.setUsedCoupons(usedCoupons);
 
         List<Customer> res = Arrays.asList(customer, customer2);
         when(repo.findAll()).thenReturn(Arrays.asList(customer, customer2));
@@ -79,9 +85,11 @@ public class CustomerControllerTest {
 
     @Test
     public void testAddCustomer() {
-        ResponseEntity<String> response = customerController.addCustomer(customer);
+        String netId = "example123";
+
+        ResponseEntity<String> response = customerController.addCustomer(netId);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Mockito.verify(repo).save(customer);
+        Mockito.verify(repo).save(new Customer(new NetId(netId)));
     }
 
     @Test
