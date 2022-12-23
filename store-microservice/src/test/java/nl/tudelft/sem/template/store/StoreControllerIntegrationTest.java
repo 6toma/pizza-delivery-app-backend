@@ -1,4 +1,4 @@
-package nl.tudelft.sem.store;
+package nl.tudelft.sem.template.store;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
@@ -11,8 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
-import nl.tudelft.sem.store.domain.Store;
-import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
+import nl.tudelft.sem.template.store.domain.Store;
+import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.testing.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -38,6 +38,26 @@ public class StoreControllerIntegrationTest extends IntegrationTest {
             doRequest(post("/store/getStoreByName").content(store.getStoreName()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
+        }
+    }
+
+    @Test
+    public void test_exists_by_store_id() throws Exception {
+        for (Store store : defaultStoreList) {
+            doRequest(post("/store/existsByStoreId").contentType(MediaType.APPLICATION_JSON)
+                .content(String.valueOf(store.getStoreId())))
+                .andExpect(status().isOk())
+                .andExpect(content().string("true"));
+        }
+    }
+
+    @Test
+    public void does_not_exist_by_store_id() throws Exception {
+        for (long storeId : List.of(-1, -2, 100, 1000)) {
+            doRequest(post("/store/existsByStoreId").contentType(MediaType.APPLICATION_JSON)
+                .content(String.valueOf(storeId)))
+                .andExpect(status().isOk())
+                .andExpect(content().string("false"));
         }
     }
 

@@ -1,12 +1,12 @@
-package nl.tudelft.sem.store.controller;
+package nl.tudelft.sem.template.store.controller;
 
 import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
-import nl.tudelft.sem.store.domain.Store;
-import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
-import nl.tudelft.sem.store.domain.StoreRepository;
 import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.store.domain.Store;
+import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
+import nl.tudelft.sem.template.store.domain.StoreRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

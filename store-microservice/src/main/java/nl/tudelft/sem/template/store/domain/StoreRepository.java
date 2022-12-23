@@ -1,4 +1,4 @@
-package nl.tudelft.sem.store.domain;
+package nl.tudelft.sem.template.store.domain;
 
 import java.util.List;
 import nl.tudelft.sem.template.authentication.NetId;

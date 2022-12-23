@@ -8,8 +8,9 @@ import org.springframework.context.annotation.ComponentScan;
  * Example microservice application.
  */
 @SpringBootApplication
-@ComponentScan({"nl.tudelft.sem.template.authentication", "nl.tudelft.sem.template.checkout.domain",
-    "nl.tudelft.sem.template.checkout.controllers", "nl.tudelft.sem.template.commons.utils"})
+@ComponentScan({"nl.tudelft.sem.template.authentication",
+    "nl.tudelft.sem.template.checkout.domain", "nl.tudelft.sem.template.checkout.controllers",
+    "nl.tudelft.sem.template.commons.utils"})
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
