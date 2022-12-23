@@ -6,11 +6,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.ElementCollection;
+import javax.persistence.Convert;
 
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.authentication.NetId;
 
 import lombok.Data;
+import nl.tudelft.sem.template.authentication.NetIdAttributeConverter;
 
 @Entity
 @Data
@@ -23,6 +25,7 @@ public class Customer {
     private int customerId;
 
     @Column(name = "netId", unique = true)
+    @Convert(converter = NetIdAttributeConverter.class, attributeName = "netIdValue")
     private NetId netId;
 
     @Column(name = "usedCoupons")

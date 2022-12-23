@@ -2,7 +2,6 @@ package nl.tudelft.sem.customer.controllers;
 
 import lombok.Data;
 import nl.tudelft.sem.customer.domain.Customer;
-import nl.tudelft.sem.customer.domain.CustomerNotFoundException;
 import nl.tudelft.sem.customer.domain.CustomerService;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.NetId;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @Data
