@@ -34,4 +34,14 @@ class EmailNotificationServiceTest {
         verify(emailSender, times(1)).send(mimeMessage);
         assertThat(mimeMessage.getContent()).isEqualTo("Hello World!");
     }
+
+    @Test
+    @SneakyThrows
+    void notifyOrderCancelOrder() {
+        var mimeMessage = new MimeMessage(Session.getInstance(new Properties()));
+        when(emailSender.createMimeMessage()).thenReturn(mimeMessage);
+        notificationService.notifyOrderRemove("test@email.com");
+        verify(emailSender, times(1)).send(mimeMessage);
+        assertThat(mimeMessage.getContent()).isEqualTo("Delete order!");
+    }
 }
