@@ -110,7 +110,7 @@ public class CouponController {
         }
     }
 
-    @MicroServiceInteraction
+//    @MicroServiceInteraction
     @PostMapping("/selectCoupon")
     public ResponseEntity<CouponFinalPriceModel> selectCoupon(@RequestBody PricesCodesModel pricesCodesModel) {
         List<Double> prices = pricesCodesModel.getPrices();
@@ -122,7 +122,7 @@ public class CouponController {
         List<String> unusedCodes = requestHelper
             .postRequest(8081, "/customers/checkUsedCoupons/" + pricesCodesModel.getNetId(), codes, List.class);
         if(unusedCodes == null || unusedCodes.isEmpty()) {
-            return ResponseEntity.ok(new CouponFinalPriceModel("", prices.stream().mapToDouble(Double::doubleValue).sum()));
+            return ResponseEntity.ok(new CouponFinalPriceModel(null, prices.stream().mapToDouble(Double::doubleValue).sum()));
         }
         for (String code : unusedCodes) {
             ResponseEntity<Coupon> c;
@@ -148,7 +148,7 @@ public class CouponController {
             }
         }
         if (pq.isEmpty()) {
-            return ResponseEntity.ok(new CouponFinalPriceModel("", prices.stream().mapToDouble(Double::doubleValue).sum()));
+            return ResponseEntity.ok(new CouponFinalPriceModel(null, prices.stream().mapToDouble(Double::doubleValue).sum()));
         }
         return ResponseEntity.ok(pq.peek());
     }
