@@ -109,13 +109,17 @@ public class OrderController {
 
         try {
             Order orderToBeRemoved = orderService.getOrderById(orderId);
+            String customerId = orderToBeRemoved.getCustomerId();
             long storeId = orderToBeRemoved.getStoreId();
-            if (role.equals("ROLE_STORE_OWNER")) {
+            if (role.equals("ROLE_STORE_OWNER"))
+
                 return ResponseEntity.badRequest().body("Store owners can't cancel orders");
-            if (role.equals(UserRole.REGIONAL_MANAGER) ||
+            if (role.equals("ROLE_REGIONAL_MANAGER") ||
                 (customerId.equals(netId) && orderService.getOrdersForCustomer(netId).contains(orderToBeRemoved)
-                    && !orderToBeRemoved.getPickupTime().minusMinutes(30).isBefore(LocalDateTime.now()))) {
+                    && !orderToBeRemoved.getPickupTime().minusMinutes(30).isBefore(LocalDateTime.now())))
+            {
                 orderService.removeOrderById(orderId);
+
                 if (orderToBeRemoved.getCoupon() != null) {
                     requestHelper.postRequest(8081, "/customers/" + netId + "/coupons/remove", orderToBeRemoved.getCoupon(),
                         String.class); // remove from customer's used coupons
