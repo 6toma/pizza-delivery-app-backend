@@ -118,16 +118,16 @@ public class CouponController {
     public ResponseEntity<CouponFinalPriceModel> selectCoupon(@RequestBody PricesCodesModel pricesCodesModel) {
         List<Double> prices = pricesCodesModel.getPrices();
         List<String> codes = pricesCodesModel.getCodes();
-        if (prices.isEmpty() || codes.isEmpty()) {
+        if (prices == null || prices.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
         PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
-        var unusedCodes = getUnusedCodes(pricesCodesModel.getNetId(), codes);
+        List<String> unusedCodes = requestHelper
+            .postRequest(8081, "/customers/checkUsedCoupons/" + pricesCodesModel.getNetId(), codes, List.class);
         for (String code : unusedCodes) {
             ResponseEntity<Coupon> c;
             try {
                 c = getCouponByCode(code);
-                //TODO: call endpoint for used
             } catch (InvalidCouponCodeException e) {
                 continue;
             }
@@ -148,17 +148,8 @@ public class CouponController {
             }
         }
         if (pq.isEmpty()) {
-            return ResponseEntity.ok(
-                new CouponFinalPriceModel(null, prices.stream().mapToDouble(x -> x).sum())
-            );
+            return ResponseEntity.ok(new CouponFinalPriceModel("", prices.stream().mapToDouble(Double::doubleValue).sum()));
         }
         return ResponseEntity.ok(pq.peek());
     }
-
-    private List<String> getUnusedCodes(String netId, Collection<String> codes) {
-        return Arrays.asList(
-            requestHelper.postRequest(8081, "/customers/checkUsedCoupons/" + netId, codes, String[].class)
-        );
-    }
-
 }
