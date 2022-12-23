@@ -21,11 +21,11 @@ import org.springframework.http.ResponseEntity;
 
 public class CustomerControllerTest {
 
-    private CustomerController customerController;
-    private CustomerService customerService;
-    private AuthManager authManager;
-    private Customer customer;
-    private CustomerRepository repo;
+    private transient CustomerController customerController;
+    private transient CustomerService customerService;
+    private transient AuthManager authManager;
+    private transient Customer customer;
+    private transient CustomerRepository repo;
 
     @BeforeEach
     public void setup() {

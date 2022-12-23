@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class CustomerTest {
 
     @Test
-    public void constructNotNull(){
+    public void constructNotNull() {
         NetId netId = new NetId("example123@test.com");
         Customer customer = new Customer(netId);
         assertNotNull(customer);
@@ -48,9 +48,9 @@ class CustomerTest {
         NetId netId = new NetId("example123@test.com");
 
         Customer customer = new Customer(netId);
-            customer.setCustomerId(customerId);
-            customer.setAllergens(allergens);
-            customer.setUsedCoupons(usedCoupons);
+        customer.setCustomerId(customerId);
+        customer.setAllergens(allergens);
+        customer.setUsedCoupons(usedCoupons);
 
         assertEquals(usedCoupons, customer.getUsedCoupons());
 
@@ -67,9 +67,9 @@ class CustomerTest {
         NetId netId = new NetId("example123@test.com");
 
         Customer customer = new Customer(netId);
-            customer.setCustomerId(customerId);
-            customer.setAllergens(allergens);
-            customer.setUsedCoupons(usedCoupons);
+        customer.setCustomerId(customerId);
+        customer.setAllergens(allergens);
+        customer.setUsedCoupons(usedCoupons);
 
         assertEquals(allergens, customer.getAllergens());
 
@@ -86,9 +86,9 @@ class CustomerTest {
         NetId netId = new NetId("example123@test.com");
 
         Customer customer = new Customer(netId);
-            customer.setCustomerId(customerId);
-            customer.setAllergens(allergens);
-            customer.setUsedCoupons(usedCoupons);
+        customer.setCustomerId(customerId);
+        customer.setAllergens(allergens);
+        customer.setUsedCoupons(usedCoupons);
 
         assertEquals(customerId, customer.getCustomerId());
 
@@ -114,9 +114,9 @@ class CustomerTest {
         NetId netId = new NetId("example123@test.com");
 
         Customer customer = new Customer(netId);
-            customer.setCustomerId(customerId);
-            customer.setAllergens(allergens);
-            customer.setUsedCoupons(usedCoupons);
+        customer.setCustomerId(customerId);
+        customer.setAllergens(allergens);
+        customer.setUsedCoupons(usedCoupons);
         assertEquals(netId, customer.getNetId());
 
         NetId newNetId = new NetId("example456@test.com");
