@@ -57,28 +57,12 @@ public class CustomerControllerTest {
     }
 
     @Test
-    public void testGetCustomerById_customerNotFound() {
-        int customerId = 123;
-        when(repo.findById(123456)).thenReturn(java.util.Optional.ofNullable(null));
-        ResponseEntity<Customer> response = customerController.getCustomerById(customerId);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    }
-
-
-    @Test
     public void testGetCustomerByNetId() {
         when(repo.findByNetId(new NetId("example123"))).thenReturn(Optional.of(customer));
+
         ResponseEntity<Customer> response = customerController.getCustomerByNetId("example123");
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(customer);
-    }
-
-    @Test
-    public void testGetCustomerByNetId_customerNotFound() {
-        String netId = "example123";
-        when(repo.findByNetId(new NetId(netId))).thenReturn(java.util.Optional.ofNullable(null));
-        ResponseEntity<Customer> response = customerController.getCustomerByNetId(netId);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
