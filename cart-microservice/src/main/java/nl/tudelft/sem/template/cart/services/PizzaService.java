@@ -89,6 +89,7 @@ public class PizzaService {
         }
         defaultPizza.get().setPrice(price);
         defaultPizza.get().setToppings(toppings);
+        pizzaRepository.save(defaultPizza.get());
     }
 
     /**
