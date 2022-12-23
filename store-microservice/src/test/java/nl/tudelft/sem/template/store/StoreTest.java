@@ -1,9 +1,9 @@
-package nl.tudelft.sem.store;
+package nl.tudelft.sem.template.store;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import nl.tudelft.sem.store.domain.Store;
+import nl.tudelft.sem.template.store.domain.Store;
 import org.junit.jupiter.api.Test;
 
 class StoreTest {

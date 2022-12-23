@@ -1,4 +1,4 @@
-package nl.tudelft.sem.store.services;
+package nl.tudelft.sem.template.store.services;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
