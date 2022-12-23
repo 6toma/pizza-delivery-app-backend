@@ -1,8 +1,8 @@
-package nl.tudelft.sem.store;
+package nl.tudelft.sem.template.store;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import nl.tudelft.sem.store.domain.StoreAddress;
+import nl.tudelft.sem.template.store.domain.StoreAddress;
 import org.junit.jupiter.api.Test;
 
 
