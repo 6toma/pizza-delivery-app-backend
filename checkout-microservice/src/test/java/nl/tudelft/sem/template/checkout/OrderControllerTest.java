@@ -386,7 +386,7 @@ public class OrderControllerTest {
     @Test
     public void remove_order_order_does_not_exist() throws Exception{
         when(authManager.getNetId()).thenReturn("Matt");
-        when(authManager.getRole()).thenReturn(UserRole.CUSTOMER);
+        when(authManager.getRoleAuthority()).thenReturn("ROLE_CUSTOMER");
 
         long orderId = 1;
         when(orderService.getOrderById(orderId)).thenThrow(new OrderNotFoundException(orderId));
@@ -401,7 +401,7 @@ public class OrderControllerTest {
     @Test
     public void remove_order_store_owner() throws Exception{
         when(authManager.getNetId()).thenReturn("Matt");
-        when(authManager.getRole()).thenReturn(UserRole.STORE_OWNER);
+        when(authManager.getRoleAuthority()).thenReturn("ROLE_STORE_OWNER");
 
         long orderId = 1;
         when(orderService.getOrderById(orderId)).thenReturn(order);
@@ -415,7 +415,7 @@ public class OrderControllerTest {
 
     @Test
     public void remove_order_regional_manager_no_coupon() throws Exception{
-        when(authManager.getRole()).thenReturn(UserRole.REGIONAL_MANAGER);
+        when(authManager.getRoleAuthority()).thenReturn("ROLE_REGIONAL_MANAGER");
 
         long orderId = 1;
         order.setOrderId(1);
@@ -432,7 +432,7 @@ public class OrderControllerTest {
 
     @Test
     public void remove_order_customer_does_not_own_it_1() throws Exception{
-        when(authManager.getRole()).thenReturn(UserRole.CUSTOMER);
+        when(authManager.getRoleAuthority()).thenReturn("ROLE_CUSTOMER");
         when(authManager.getNetId()).thenReturn("Matt");
 
         long orderId = 1;
@@ -448,7 +448,7 @@ public class OrderControllerTest {
 
     @Test
     public void remove_order_customer_does_not_own_it_2() throws Exception{
-        when(authManager.getRole()).thenReturn(UserRole.CUSTOMER);
+        when(authManager.getRoleAuthority()).thenReturn("ROLE_CUSTOMER");
         when(authManager.getNetId()).thenReturn("Andy");
 
         long orderId = 1;
@@ -464,7 +464,7 @@ public class OrderControllerTest {
 
     @Test
     public void remove_order_customer_owns_it_but_too_late_to_cancel() throws Exception{
-        when(authManager.getRole()).thenReturn(UserRole.CUSTOMER);
+        when(authManager.getRoleAuthority()).thenReturn("ROLE_CUSTOMER");
         when(authManager.getNetId()).thenReturn("Matt");
 
         long orderId = 1;
@@ -481,7 +481,7 @@ public class OrderControllerTest {
 
     @Test
     public void remove_order_customer_owns_it_has_coupon_and_cancel() throws Exception{
-        when(authManager.getRole()).thenReturn(UserRole.CUSTOMER);
+        when(authManager.getRoleAuthority()).thenReturn("ROLE_CUSTOMER");
         when(authManager.getNetId()).thenReturn("Matt");
 
         long orderId = 1;

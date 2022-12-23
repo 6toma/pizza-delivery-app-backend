@@ -1,4 +1,4 @@
-package nl.tudelft.sem.customer.domain;
+package nl.tudelft.sem.template.customer.domain;
 
 import java.util.ArrayList;
 import java.util.List;

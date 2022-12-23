@@ -105,18 +105,28 @@ public class OrderController {
     @PostMapping("/remove/{id}")
     public ResponseEntity<String> removeOrderById(@PathVariable("id") long orderId) {
         String netId = authManager.getNetId();
-        UserRole role = authManager.getRole();
+        String role = authManager.getRoleAuthority();
+
         try {
             Order orderToBeRemoved = orderService.getOrderById(orderId);
             String customerId = orderToBeRemoved.getCustomerId();
-            if (role.equals(UserRole.STORE_OWNER))
+            long storeId = orderToBeRemoved.getStoreId();
+            if (role.equals("ROLE_STORE_OWNER"))
+
                 return ResponseEntity.badRequest().body("Store owners can't cancel orders");
-            if (role.equals(UserRole.REGIONAL_MANAGER) ||
+            if (role.equals("ROLE_REGIONAL_MANAGER") ||
                 (customerId.equals(netId) && orderService.getOrdersForCustomer(netId).contains(orderToBeRemoved)
-                    && !orderToBeRemoved.getPickupTime().minusMinutes(30).isBefore(LocalDateTime.now()))) {
+                    && !orderToBeRemoved.getPickupTime().minusMinutes(30).isBefore(LocalDateTime.now())))
+            {
                 orderService.removeOrderById(orderId);
-                if(orderToBeRemoved.getCoupon() != null)
-                    requestHelper.postRequest(8081, "/customers/" + netId + "/coupons/remove", orderToBeRemoved.getCoupon(), String.class); // remove from customer's used coupons
+
+                if (orderToBeRemoved.getCoupon() != null) {
+                    requestHelper.postRequest(8081, "/customers/" + netId + "/coupons/remove", orderToBeRemoved.getCoupon(),
+                        String.class); // remove from customer's used coupons
+                }
+
+                requestHelper.postRequest(8084, "/store/notifyRemoveOrder", storeId,
+                    String.class); // notify store of remove order
                 return ResponseEntity.ok("Order with id " + orderId + " successfully removed");
             } else {
                 return ResponseEntity.badRequest().body(
