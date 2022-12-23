@@ -6,12 +6,17 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.ElementCollection;
+import javax.persistence.Convert;
+
+import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.authentication.NetId;
 
 import lombok.Data;
+import nl.tudelft.sem.template.authentication.NetIdAttributeConverter;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "customer")
 public class Customer {
 
@@ -36,10 +41,11 @@ public class Customer {
      * @param allergens - the list of allergens that this customer has set for themselves.
      * @param customerId - unique customer ID //should match user ID in some way 
      */
-    public Customer(List<String> usedCoupons, List<String> allergens, int customerId) {
+    public Customer(List<String> usedCoupons, List<String> allergens, int customerId, NetId netId) {
         this.usedCoupons = usedCoupons;
         this.allergens = allergens;
         this.customerId = customerId;
+        this.netId = netId;
     }
 
 }
