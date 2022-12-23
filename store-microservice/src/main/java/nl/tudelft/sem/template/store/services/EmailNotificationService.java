@@ -50,9 +50,33 @@ public class EmailNotificationService {
         mailSender.send(message);
     }
 
+    /**
+     * Sends an email notification indicating that an order has been cancelled.
+     *
+     * @param emailAddress THe recipient email address
+     * @throws IOException        Any errors reading the HTML template
+     * @throws MessagingException Any errors with building and sending the mail message
+     */
+    public void notifyOrderRemove(String emailAddress) throws IOException, MessagingException {
+        var message = mailSender.createMimeMessage();
+        var helper = new MimeMessageHelper(message, false);
+        helper.setFrom(senderEmailAddress);
+        helper.setTo(emailAddress);
+        helper.setText(readOrderNotificationTemplate(), true);
+        helper.setSubject("An order has been placed");
+
+        mailSender.send(message);
+    }
+
     private String readOrderNotificationTemplate() throws IOException {
         try (var inputStream
                  = EmailNotificationService.class.getResourceAsStream("/order_notification.html")) {
+            return new String(Objects.requireNonNull(inputStream).readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+    private String readOrderNotificationTemplateCancelOrder() throws IOException {
+        try (var inputStream
+                 = EmailNotificationService.class.getResourceAsStream("/order_notification_cancel.html")) {
             return new String(Objects.requireNonNull(inputStream).readAllBytes(), StandardCharsets.UTF_8);
         }
     }

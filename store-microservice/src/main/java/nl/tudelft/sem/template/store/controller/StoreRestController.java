@@ -106,6 +106,22 @@ public class StoreRestController {
         return "Store " + storeId + " was notified of the order.";
     }
 
+    @PostMapping("/notifyRemoveOrder")
+    public String notifyStoreOrder(@RequestBody long storeId) {
+        Optional<Store> optionalStore = storeRepository.findById(storeId); // the id passed as a request might be not good
+        if (optionalStore.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Store with id " + storeId + " not found");
+        }
+        Store store = optionalStore.get();
+        try {
+            emailNotificationService.notifyOrderRemove(store.getStoreOwnerNetId().toString());
+        } catch (IOException | MessagingException e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't send email notification");
+        }
+        return "Store " + storeId + " was notified of the order.";
+    }
+
     @PostMapping("/existsByStoreId")
     public boolean existsByStoreId(@RequestBody long storeId) {
         return storeRepository.existsById(storeId);
