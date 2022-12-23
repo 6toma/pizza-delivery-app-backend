@@ -75,7 +75,7 @@ public class CouponController {
      * @return Coupon with given code if exists
      * @throws DiscountCouponIncompleteException if discount percentage is missing for a new discount coupon
      */
-    //@RoleStoreOwnerOrRegionalManager
+    @RoleStoreOwnerOrRegionalManager
     @PostMapping("/addCoupon")
     public ResponseEntity<Coupon> addCoupon(@RequestBody Coupon coupon) {
         if (coupon.getCode() == null) {
@@ -112,14 +112,14 @@ public class CouponController {
         PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
         for (String code : codes) {
             ResponseEntity<Coupon> c;
-            ResponseEntity<Boolean> used = null; //TODO: endpoint needs to be created in customer
+            Boolean used;
             try {
                 c = getCouponByCode(code);
-                //TODO: call endpoint for used
+                used = requestHelper.getRequest(8081, "/customers/" + authManager.getNetId() + "/coupons/" + code, Boolean.class);
             } catch (InvalidCouponCodeException e) {
                 continue;
             }
-            if(c.getStatusCode().equals(HttpStatus.BAD_REQUEST) || used.getBody())
+            if(c.getStatusCode().equals(HttpStatus.BAD_REQUEST) || used)
                 continue;
             Coupon coupon = c.getBody();
             if (coupon.getType() == CouponType.DISCOUNT) {
@@ -131,7 +131,7 @@ public class CouponController {
             }
         }
         if(pq.isEmpty())
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.ok(new CouponFinalPriceModel("", prices.stream().mapToDouble(Double::doubleValue).sum()));
         return ResponseEntity.ok(pq.peek());
     }
 

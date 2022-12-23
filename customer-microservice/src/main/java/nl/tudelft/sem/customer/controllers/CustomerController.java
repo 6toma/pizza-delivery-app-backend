@@ -37,9 +37,10 @@ public class CustomerController {
      * @param customerId the id to search for.
      * @return the Customer with the specified id.
      */
-    @GetMapping("/{customerId}")
-    public Customer getCustomerById(@PathVariable int customerId) {
-        return customerService.getCustomerById(customerId);
+    @GetMapping("/id/{customerId}")
+    public ResponseEntity<Customer> getCustomerById(@PathVariable int customerId){
+        Customer customer = customerService.getCustomerById(customerId);
+        return ResponseEntity.ok(customer);
     }
 
     /**
@@ -48,10 +49,11 @@ public class CustomerController {
      * @param netId the netId to search for.
      * @return the Customer with the specified netId.
      */
-    @GetMapping("/{netId}")
-    public Customer getCustomerByNetId(@PathVariable String netId) {
+    @GetMapping("/netId/{netId}")
+    public ResponseEntity<Customer> getCustomerByNetId(@PathVariable String netId) {
         NetId customerNetId = new NetId(netId);
-        return customerService.getCustomerByNetId(customerNetId);
+        Customer customer = customerService.getCustomerByNetId(customerNetId);
+        return ResponseEntity.ok(customer);
     }
 
     /**
@@ -70,7 +72,7 @@ public class CustomerController {
      * @param customer the Customer object to save to the repo.
      * @return ok
      */
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<String> addCustomer(@RequestBody Customer customer) {
         customerService.addCustomer(customer);
         return ResponseEntity.ok("Customer added.");
@@ -134,11 +136,12 @@ public class CustomerController {
      * @param couponCodes the list of coupon codes to evaluate
      * @return a list of all the coupons that have not been used yet out of that list
      */
-    @GetMapping("/checkUsedCoupons")
-    public List<String> checkUsedCoupons(@RequestParam("couponCodes") List<String> couponCodes) {
-        NetId netId = new NetId(authManager.getNetId());
-        return customerService.checkUsedCoupons(netId, couponCodes);
+    @PostMapping("/{netId}/checkUsedCoupons")
+    public ResponseEntity<List<String>> checkUsedCoupons(@PathVariable String netId, @RequestBody List<String> couponCodes) {
+        NetId customerNetId = new NetId(netId);
+        return ResponseEntity.ok(customerService.checkUsedCoupons(customerNetId, couponCodes));
     }
+
     /**
      * Endpoint to set a customer's list of allergens.
      * The endpoint adds the given list of allergens to the existing list of allergens of the customer with the provided id.
@@ -150,7 +153,7 @@ public class CustomerController {
     public ResponseEntity<String> updateAllergens(@RequestBody List<String> newToppings) {
         // get netid of customer IN CURRENT CONTEXT
         NetId netId = new NetId(authManager.getNetId());
-        // then use that to find the customer in the DB to update allergens
+
         customerService.updateAllergens(netId, newToppings);
         return ResponseEntity.ok("Allergens updated.");
     }
