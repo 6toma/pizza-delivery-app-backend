@@ -115,7 +115,8 @@ public class OrderController {
                 (customerId.equals(netId) && orderService.getOrdersForCustomer(netId).contains(orderToBeRemoved)
                     && !orderToBeRemoved.getPickupTime().minusMinutes(30).isBefore(LocalDateTime.now()))) {
                 orderService.removeOrderById(orderId);
-                requestHelper.postRequest(8081, "/customers/" + netId + "/coupons/remove", orderToBeRemoved.getCoupon(), String.class); // remove from customer's used coupons
+                if(orderToBeRemoved.getCoupon() != null)
+                    requestHelper.postRequest(8081, "/customers/" + netId + "/coupons/remove", orderToBeRemoved.getCoupon(), String.class); // remove from customer's used coupons
                 return ResponseEntity.ok("Order with id " + orderId + " successfully removed");
             } else {
                 return ResponseEntity.badRequest().body(
