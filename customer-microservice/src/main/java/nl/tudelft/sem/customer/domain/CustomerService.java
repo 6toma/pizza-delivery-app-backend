@@ -69,8 +69,7 @@ public class CustomerService {
     /**
      * Adds a coupon Code to the Customer's list of used coupons.
      *
-     * @param couponCode the coupon code used by the customer,
-     *                   i.e. the coupon to be added to the list of used coupons.
+     * @param couponCode the coupon code used by the customer, i.e. the coupon to be added to the list of used coupons.
      */
     public void addToUsedCoupons(NetId netId, String couponCode) {
 
@@ -82,12 +81,12 @@ public class CustomerService {
 
         customerRepository.save(customer);
     }
-    
+
     /**
      * Removes a coupon Code from the Customer's list of used coupons.
      *
-     * @param couponCode the coupon code that should not anymore be used by the customer,
-     *                   i.e. the coupon to be removed from the list of used coupons.
+     * @param couponCode the coupon code that should not anymore be used by the customer, i.e. the coupon to be removed from
+     *                   the list of used coupons.
      */
     public void removeFromUsedCoupons(NetId netId, String couponCode) {
 
@@ -103,7 +102,7 @@ public class CustomerService {
     /**
      * Checks if a specific coupon code has been used by a given customer.
      *
-     * @param netId String netId of the customer for which to perform this check.
+     * @param netId      String netId of the customer for which to perform this check.
      * @param couponCode the coupon code to verify
      * @return true if the coupon has been used, false otherwise
      */
@@ -121,6 +120,9 @@ public class CustomerService {
     public List<String> checkUsedCoupons(NetId netId, List<String> couponCodes) {
         Customer customer = getCustomerByNetId(netId);
         List<String> usedCoupons = customer.getUsedCoupons();
+        if (usedCoupons == null || usedCoupons.isEmpty()) {
+            return couponCodes;
+        }
         List<String> unusedCoupons = new ArrayList<>();
         for (String couponCode : couponCodes) {
             if (!usedCoupons.contains(couponCode)) {
@@ -134,7 +136,7 @@ public class CustomerService {
     /**
      * Adds the given list of allergens to the existing list of allergens of the Customer with the provided id.
      *
-     * @param netId the id of the Customer whose allergens should be updated.
+     * @param netId       the id of the Customer whose allergens should be updated.
      * @param newToppings the new list of toppings to be added to the existing List of Allergens.
      */
     public void updateAllergens(NetId netId, List<String> newToppings) {

@@ -1,13 +1,25 @@
 package nl.tudelft.sem.template.cart.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
-import nl.tudelft.sem.template.cart.PizzaService;
+import nl.tudelft.sem.template.cart.exceptions.ToppingNotFoundException;
+import nl.tudelft.sem.template.cart.services.PizzaService;
+import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.models.PizzaModel;
+import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,24 +35,28 @@ import org.springframework.web.server.ResponseStatusException;
 public class PizzaController {
 
     private final transient PizzaService pizzaService;
+    private final transient ToppingService toppingService;
+    private final transient RequestHelper requestHelper;
+    private final transient AuthManager authManager;
 
     /**
      * A post request to send a new pizza to the DB.
      *
      * @param pizza the new pizza
      * @return ResponseEntity
-     * @throws Exception if the pizza already exists
+     * @throws ToppingNotFoundException Thrown if one of the provided topping names wasn't found in the database
      */
     @PostMapping("/add")
-//    @RoleRegionalManager
-    public ResponseEntity<String> addPizza(@RequestBody PizzaModel pizza) throws Exception {
+    @RoleRegionalManager
+    public ResponseEntity<String> addPizza(@Validated @RequestBody PizzaModel pizza) throws ToppingNotFoundException {
+        var toppings = toppingService.findAllByNames(pizza.getToppings());
         try {
-            pizzaService.addPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
+            var newPizza = pizzaService.addPizza(pizza.getPizzaName(), toppings, pizza.getPrice());
+            return ResponseEntity.ok("Pizza added with id " + newPizza.getId());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 
-        return ResponseEntity.ok("Pizza added");
     }
 
     /**
@@ -71,14 +87,13 @@ public class PizzaController {
      */
     @PutMapping("/edit")
     @RoleRegionalManager
-    public ResponseEntity<String> editPizza(@RequestBody PizzaModel pizza) {
-
+    public ResponseEntity<String> editPizza(@RequestBody PizzaModel pizza) throws ToppingNotFoundException {
+        var toppings = toppingService.findAllByNames(pizza.getToppings());
         try {
-            pizzaService.editPizza(pizza.getPizzaName(), pizza.getToppings(), pizza.getPrice());
+            pizzaService.editPizza(pizza.getPizzaName(), toppings, pizza.getPrice());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-
         return ResponseEntity.ok("Pizza edited");
     }
 
@@ -95,11 +110,16 @@ public class PizzaController {
     /**
      * Gets all the pizzas from the DB filtered on allergens.
      *
-     * @param allergens the list of allergens
      * @return the list of filtered pizzas
      */
-    @PostMapping("/getAll")
-    public List<DefaultPizza> getPizzas(@RequestBody List<String> allergens) {
+    @GetMapping("/getAllFiltered")
+    public List<DefaultPizza> getPizzasFiltered() {
+        var allergens = getUserAllergens(authManager.getNetId());
         return pizzaService.getAllByFilter(allergens);
+    }
+
+    private Set<String> getUserAllergens(String netId) {
+        return Arrays.stream(requestHelper.getRequest(8081, "/customers/allergens/" + netId, String[].class))
+            .collect(Collectors.toSet());
     }
 }

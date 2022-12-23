@@ -168,9 +168,10 @@ public class RoleAuthorizationTests {
     private void testAccess(String endpoint, UserRole role, ResultMatcher expect) throws Exception {
         when(mockJwtTokenVerifier.getRoleFromToken(anyString())).thenReturn(role.getJwtRoleName());
 
-        mockMvc.perform(get(endpoint)
-                .header("Authorization", "Bearer MockedToken"))
-            .andExpect(expect);
+        var result = mockMvc.perform(get(endpoint)
+                .header("Authorization", "Bearer MockedToken"));
+
+        result.andExpect(expect);
     }
 
 }

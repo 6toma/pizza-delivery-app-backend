@@ -3,12 +3,13 @@ package nl.tudelft.sem.template.cart.controllers;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
-import nl.tudelft.sem.template.cart.ToppingService;
+import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.cart.exceptions.ToppingNotFoundException;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.models.ToppingModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +35,7 @@ public class ToppingController {
      */
     @PostMapping("/add")
     @RoleRegionalManager
-    public ResponseEntity<String> addTopping(@RequestBody ToppingModel tm) throws Exception {
+    public ResponseEntity<String> addTopping(@Validated @RequestBody ToppingModel tm) throws Exception {
 
         try {
             ts.addTopping(tm.getName(), tm.getPrice());
@@ -54,7 +55,7 @@ public class ToppingController {
      */
     @DeleteMapping("/remove")
     @RoleRegionalManager
-    public ResponseEntity removeTopping(@RequestBody String name) throws Exception {
+    public ResponseEntity<String> removeTopping(@RequestBody String name) throws Exception {
 
         try {
             ts.removeTopping(name);
@@ -73,7 +74,7 @@ public class ToppingController {
      */
     @PutMapping("/edit")
     @RoleRegionalManager
-    public ResponseEntity editTopping(@RequestBody ToppingModel tm) throws ToppingNotFoundException {
+    public ResponseEntity<String> editTopping(@RequestBody ToppingModel tm) throws ToppingNotFoundException {
 
         try {
             ts.editTopping(tm.getName(), tm.getPrice());

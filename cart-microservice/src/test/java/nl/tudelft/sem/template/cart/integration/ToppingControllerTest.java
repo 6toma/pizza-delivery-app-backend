@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import nl.tudelft.sem.template.cart.ToppingRepository;
-import nl.tudelft.sem.template.cart.ToppingService;
+import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.models.ToppingModel;
 import nl.tudelft.sem.testing.IntegrationTest;
