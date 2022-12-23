@@ -1,12 +1,15 @@
-package nl.tudelft.sem.store.controller;
+package nl.tudelft.sem.template.store.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import javax.mail.MessagingException;
 import lombok.AllArgsConstructor;
-import nl.tudelft.sem.store.domain.Store;
-import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
-import nl.tudelft.sem.store.domain.StoreRepository;
 import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.store.domain.Store;
+import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
+import nl.tudelft.sem.template.store.domain.StoreRepository;
+import nl.tudelft.sem.template.store.services.EmailNotificationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/store")
 public class StoreRestController {
     private StoreRepository storeRepository;
+    private EmailNotificationService emailNotificationService;
 
 
     /**
@@ -76,7 +80,7 @@ public class StoreRestController {
             return storeRepository.getStoreIdFromStoreName(storeName);
         } catch (Exception e) {
             // in the case when the storeName is bad we return -1
-            return -1l;
+            return -1L;
         }
     }
 
@@ -93,7 +97,12 @@ public class StoreRestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Store with id " + storeId + " not found");
         }
         Store store = optionalStore.get();
-        store.preparePizza();
+        try {
+            emailNotificationService.notifyOrder(store.getStoreOwnerNetId().toString());
+        } catch (IOException | MessagingException e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't send email notification");
+        }
         return "Store " + storeId + " was notified of the order.";
     }
 

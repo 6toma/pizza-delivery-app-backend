@@ -1,8 +1,11 @@
-package nl.tudelft.sem.template.cart;
+package nl.tudelft.sem.template.cart.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameNotFoundException;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
@@ -33,10 +36,10 @@ public class PizzaService {
      * @param allergens the list of allergens
      * @return List of filtered pizzas
      */
-    public List<DefaultPizza> getAllByFilter(List<String> allergens) {
-        List<DefaultPizza> pizzas = pizzaRepository.findAll();
-        //Todo implement filter
-        return pizzas;
+    public List<DefaultPizza> getAllByFilter(Set<String> allergens) {
+        return pizzaRepository.findAll().stream()
+            .filter(pizza -> pizza.getToppings().stream().noneMatch(topping -> allergens.contains(topping.getName())))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -45,15 +48,13 @@ public class PizzaService {
      * @param pizzaName the name of the pizza
      * @param toppings  the toppings on the pizza
      * @return the resulting Pizza
-     * @throws Exception when the name of the pizza already exists
+     * @throws PizzaNameAlreadyInUseException when the name of the pizza already exists
      */
-    public DefaultPizza addPizza(String pizzaName, List<Topping> toppings, double price) throws Exception {
-
+    public DefaultPizza addPizza(String pizzaName, List<Topping> toppings, double price)
+        throws PizzaNameAlreadyInUseException {
         if (checkPizzaIsUnique(pizzaName)) {
             DefaultPizza pizza = new DefaultPizza(pizzaName, toppings, price);
-            pizzaRepository.save(pizza);
-
-            return pizza;
+            return pizzaRepository.save(pizza);
         }
         throw new PizzaNameAlreadyInUseException(pizzaName);
     }
@@ -62,9 +63,9 @@ public class PizzaService {
      * Removes a pizza from the DB.
      *
      * @param pizzaName the name of the pizza
-     * @throws Exception when no pizza is found with the input name
+     * @throws PizzaNameNotFoundException when no pizza is found with the input name
      */
-    public void removePizza(String pizzaName) throws Exception {
+    public void removePizza(String pizzaName) throws PizzaNameNotFoundException {
 
         if (!checkPizzaIsUnique(pizzaName)) {
             DefaultPizza p = pizzaRepository.findByPizzaName(pizzaName).get();
@@ -79,15 +80,16 @@ public class PizzaService {
      *
      * @param pizzaName the name of the pizza
      * @param toppings  the topppings on the pizza
+     * @throws PizzaNameNotFoundException Thrown when pizza not found by name
      */
     public void editPizza(String pizzaName, List<Topping> toppings, double price) throws PizzaNameNotFoundException {
-        try {
-            removePizza(pizzaName);
-            addPizza(pizzaName, toppings, price);
-        } catch (Exception e) {
+        var defaultPizza = pizzaRepository.findByPizzaName(pizzaName);
+        if (defaultPizza.isEmpty()) {
             throw new PizzaNameNotFoundException(pizzaName);
         }
-
+        defaultPizza.get().setPrice(price);
+        defaultPizza.get().setToppings(toppings);
+        pizzaRepository.save(defaultPizza.get());
     }
 
     /**

@@ -1,4 +1,4 @@
-package nl.tudelft.sem.store.domain;
+package nl.tudelft.sem.template.store.domain;
 
 import javax.persistence.Embeddable;
 import lombok.AllArgsConstructor;

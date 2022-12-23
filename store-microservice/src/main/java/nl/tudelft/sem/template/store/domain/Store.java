@@ -1,4 +1,4 @@
-package nl.tudelft.sem.store.domain;
+package nl.tudelft.sem.template.store.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,10 +36,4 @@ public class Store {
     @Column(name = "store_owner_netid", nullable = false)
     NetId storeOwnerNetId;
 
-    /**
-     * Dummy method for now to prepare pizza.
-     */
-    public void preparePizza() {
-        System.out.println("Preparing pizza");
-    }
 }

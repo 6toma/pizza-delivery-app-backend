@@ -1,7 +1,9 @@
-package nl.tudelft.sem.template.cart;
+package nl.tudelft.sem.template.cart.services;
 
+import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.template.cart.ToppingRepository;
 import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.ToppingNotFoundException;
 import nl.tudelft.sem.template.commons.entity.Topping;
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ToppingService {
 
-    private final transient ToppingRepository tr;
+    private final transient ToppingRepository toppingRepository;
 
     /**
      * Retrieves all the Toppings from the DB.
@@ -22,14 +24,14 @@ public class ToppingService {
      * @return List of Toppings
      */
     public List<Topping> getAll() {
-        return tr.findAll();
+        return toppingRepository.findAll();
     }
 
     /**
      * Adds a Topping to the DB.
      *
      * @param toppingName the name of the topping
-     * @param price the price of the topping
+     * @param price       the price of the topping
      * @return the resulting Topping
      * @throws Exception when the name of the Topping already exists
      */
@@ -37,7 +39,7 @@ public class ToppingService {
 
         if (checkToppingIsUnique(toppingName)) {
             Topping topping = new Topping(toppingName, price);
-            tr.save(topping);
+            toppingRepository.save(topping);
 
             return topping;
         }
@@ -53,8 +55,8 @@ public class ToppingService {
     public void removeTopping(String toppingName) throws Exception {
 
         if (!checkToppingIsUnique(toppingName)) {
-            Topping t = tr.findByName(toppingName).get();
-            tr.delete(t);
+            Topping t = toppingRepository.findByName(toppingName).get();
+            toppingRepository.delete(t);
             return;
         }
         throw new ToppingNotFoundException(toppingName);
@@ -64,7 +66,7 @@ public class ToppingService {
      * Edits a Topping from the DB.
      *
      * @param toppingName the name of the Topping
-     * @param price is the price of the topping
+     * @param price       is the price of the topping
      */
     public void editTopping(String toppingName, double price) throws ToppingNotFoundException {
 
@@ -84,7 +86,22 @@ public class ToppingService {
      * @return true if the name is unique else false
      */
     public boolean checkToppingIsUnique(String toppingName) {
-        return !tr.existsByName(toppingName);
+        return !toppingRepository.existsByName(toppingName);
     }
 
+    /**
+     * You provide a list of topping names and this method will attempt to find all the toppings by this name. If any of the
+     * provided topping names doesn't correspond to a real topping, the {@link ToppingNotFoundException} will be thrown.
+     *
+     * @param toppingNames The names of the toppings
+     * @return The list of actual toppings
+     * @throws ToppingNotFoundException Thrown if one of the toppings wasn't found
+     */
+    public List<Topping> findAllByNames(Collection<String> toppingNames) throws ToppingNotFoundException {
+        var toppings = toppingRepository.findAllByNameIn(toppingNames);
+        if (toppings.size() != toppingNames.size()) {
+            throw new ToppingNotFoundException("");
+        }
+        return toppings;
+    }
 }

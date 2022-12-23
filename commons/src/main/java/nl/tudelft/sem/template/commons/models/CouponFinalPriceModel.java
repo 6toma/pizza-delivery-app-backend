@@ -1,7 +1,9 @@
 package nl.tudelft.sem.template.commons.models;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Data
 public class CouponFinalPriceModel implements Comparable<CouponFinalPriceModel> {
 

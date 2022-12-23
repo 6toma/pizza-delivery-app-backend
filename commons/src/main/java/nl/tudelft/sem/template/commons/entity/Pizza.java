@@ -14,6 +14,7 @@ import javax.persistence.ManyToMany;
 import javax.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -34,11 +35,13 @@ public class Pizza {
     @Column(name = "toppings", nullable = false)
     @ManyToMany
     @Getter
+    @Setter
     private List<Topping> toppings;
 
     @Column(name = "price", nullable = false)
     @Min(value = 5, message = "The pizza's price should be at least 5 euros")
     @Getter
+    @Setter
     private double price;
 
     /**

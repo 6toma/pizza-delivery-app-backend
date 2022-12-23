@@ -10,6 +10,7 @@ public class OrderBuilder {
     private LocalDateTime pickupTime;
     private List<CartPizza> pizzaList;
     private String coupon;
+    private double finalPrice;
 
     public OrderBuilder withStoreId(long storeId) {
         this.storeId = storeId;
@@ -36,6 +37,11 @@ public class OrderBuilder {
         return this;
     }
 
+    public OrderBuilder withFinalPrice(double finalPrice) {
+        this.finalPrice = finalPrice;
+        return this;
+    }
+
     public Order build() {
         Order order = new Order();
         order.setStoreId(storeId);
@@ -43,6 +49,7 @@ public class OrderBuilder {
         order.setCoupon(coupon);
         order.setPickupTime(pickupTime);
         order.setPizzaList(pizzaList);
+        order.setFinalPrice(finalPrice);
         return order;
     }
 }

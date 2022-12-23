@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.coupon.controllers;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.SneakyThrows;
-import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
+import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.models.PricesCodesModel;
@@ -55,7 +57,7 @@ class CouponControllerTest {
         authManager = Mockito.mock(AuthManager.class);
         requestHelper = Mockito.mock(RequestHelper.class);
 
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         LocalDate LOCAL_DATE = LocalDate.of(2022, 12, 13);
         fixedClock = Clock.fixed(LOCAL_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
@@ -66,7 +68,7 @@ class CouponControllerTest {
         couponController = new CouponController(authManager, requestHelper, repo, couponService);
         c.setCode("ABCD12");
         c.setExpiryDate(new Date(10, 10, 2024));
-        c.setStoreId(2L);
+        c.setStoreId(1L);
         c.setType(CouponType.ONE_PLUS_ONE);
     }
 
@@ -195,7 +197,7 @@ class CouponControllerTest {
         Coupon coupon = new Coupon();
         coupon.setCode(code);
         coupon.setStoreId(-1L);
-        when(authManager.getRole())
+        when(authManager.getRoleAuthority())
             .thenReturn("ROLE_STORE_OWNER");
         assertThrows(NotRegionalManagerException.class, () -> couponController.addCoupon(coupon));
     }
@@ -221,6 +223,7 @@ class CouponControllerTest {
     @Test
     void addCouponNormal() {
         when(authManager.getNetId()).thenReturn("netId");
+        when(repo.save(any())).thenReturn(c);
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), c.getStoreId());
         when(requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class))
             .thenReturn(true);
@@ -232,20 +235,31 @@ class CouponControllerTest {
 
     @Test
     void selectCouponEmptyPriceList() {
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(new ArrayList<>(), List.of("ABDC12")));
+        ResponseEntity<CouponFinalPriceModel> res =
+            couponController.selectCoupon(new PricesCodesModel("netId", 1, new ArrayList<>(), List.of("ABDC12")));
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
     void selectCouponEmptyCouponList() {
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(List.of(10.0), new ArrayList<>()));
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel("Tester", 1, List.of(10.0), new ArrayList<>()));
         assertThat(res.getBody().getCode()).isEmpty();
         assertThat(res.getBody().getPrice()).isEqualTo(10.0);
     }
 
     @Test
     void selectCouponInvalidCoupon() {
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(List.of(10.0), List.of("ABC76")));
+        when(requestHelper.postRequest(8081, "/customers/checkUsedCoupons/Tester", List.of("ABC76"), List.class)).thenReturn(List.of("ABC76"));
+        when(repo.existsById("ABCD76")).thenReturn(false);
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel("Tester", 1, List.of(10.0), List.of("ABC76")));
+        assertThat(res.getBody().getCode()).isEmpty();
+        assertThat(res.getBody().getPrice()).isEqualTo(10.0);
+    }
+
+    @Test
+    void selectCouponCouponDoesNotExist() {
+        when(requestHelper.postRequest(8081, "/customers/checkUsedCoupons/Tester", List.of("ABCD76"), List.class)).thenReturn(List.of("ABCD76"));
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel("Tester", 1, List.of(10.0), List.of("ABCD76")));
         assertThat(res.getBody().getCode()).isEmpty();
         assertThat(res.getBody().getPrice()).isEqualTo(10.0);
     }
@@ -254,9 +268,28 @@ class CouponControllerTest {
     void selectCouponUsedCoupon() {
         when(repo.existsById("ABCD12")).thenReturn(true);
         when(repo.findById("ABCD12")).thenReturn(Optional.ofNullable(c));
-        when(authManager.getNetId()).thenReturn("Tester");
-        when(requestHelper.getRequest(8081, "/customers/Tester/coupons/ABCD12", Boolean.class)).thenReturn(true);
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(List.of(10.0), List.of("ABCD12")));
+        when(requestHelper.postRequest(8081, "/customers/checkUsedCoupons/Tester", List.of("ABCD12"), List.class)).thenReturn(new ArrayList());
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel("Tester", 1, List.of(10.0), List.of("ABCD12")));
+        assertThat(res.getBody().getCode()).isEmpty();
+        assertThat(res.getBody().getPrice()).isEqualTo(10.0);
+    }
+
+    @Test
+    void selectCouponOtherStoreId() {
+        when(repo.existsById("ABCD12")).thenReturn(true);
+        when(repo.findById("ABCD12")).thenReturn(Optional.ofNullable(c));
+        when(requestHelper.postRequest(8081, "/customers/checkUsedCoupons/Tester", List.of("ABCD12"), List.class)).thenReturn(List.of("ABCD12"));
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel("Tester", 2, List.of(10.0), List.of("ABCD12")));
+        assertThat(res.getBody().getCode()).isEmpty();
+        assertThat(res.getBody().getPrice()).isEqualTo(10.0);
+    }
+
+    @Test
+    void selectCouponOPOSinglePrice() {
+        when(repo.existsById("ABCD12")).thenReturn(true);
+        when(repo.findById("ABCD12")).thenReturn(Optional.ofNullable(c));
+        when(requestHelper.postRequest(8081, "/customers/checkUsedCoupons/Tester", List.of("ABCD12"), List.class)).thenReturn(List.of("ABCD12"));
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel("Tester", 1, List.of(10.0), List.of("ABCD12")));
         assertThat(res.getBody().getCode()).isEmpty();
         assertThat(res.getBody().getPrice()).isEqualTo(10.0);
     }
@@ -270,14 +303,12 @@ class CouponControllerTest {
         c2.setCode("CHEA12");
         c2.setExpiryDate(new Date(10, 10, 2025));
         c2.setStoreId(1L);
-        when(authManager.getNetId()).thenReturn("Tester");
         when(repo.existsById("CHEA12")).thenReturn(true);
         when(repo.findById("CHEA12")).thenReturn(Optional.ofNullable(c2));
-        when(requestHelper.getRequest(8081, "/customers/Tester/coupons/CHEA12", Boolean.class)).thenReturn(true);
         when(repo.existsById("ABCD12")).thenReturn(true);
         when(repo.findById("ABCD12")).thenReturn(Optional.ofNullable(c));
-        when(requestHelper.getRequest(8081, "/customers/Tester/coupons/ABCD12", Boolean.class)).thenReturn(false);
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(List.of(10.0, 9.0), List.of("ABCD12", "CHEA12")));
+        when(requestHelper.postRequest(8081, "/customers/checkUsedCoupons/Tester", List.of("ABCD12", "CHEA12"), List.class)).thenReturn(List.of("ABCD12"));
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel("Tester", 1, List.of(10.0, 9.0), List.of("ABCD12", "CHEA12")));
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(res.getBody().getCode()).isEqualTo("ABCD12");
     }
@@ -294,11 +325,10 @@ class CouponControllerTest {
         when(authManager.getNetId()).thenReturn("Tester");
         when(repo.existsById("CHEA12")).thenReturn(true);
         when(repo.findById("CHEA12")).thenReturn(Optional.ofNullable(c2));
-        when(requestHelper.getRequest(8081, "/customers/Tester/coupons/CHEA12", Boolean.class)).thenReturn(false);
         when(repo.existsById("ABCD12")).thenReturn(true);
         when(repo.findById("ABCD12")).thenReturn(Optional.ofNullable(c));
-        when(requestHelper.getRequest(8081, "/customers/Tester/coupons/ABCD12", Boolean.class)).thenReturn(false);
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(List.of(10.0, 9.0), List.of("ABCD12", "CHEA12")));
+        when(requestHelper.postRequest(8081, "/customers/checkUsedCoupons/Tester", List.of("ABCD12", "CHEA12"), List.class)).thenReturn(List.of("ABCD12", "CHEA12"));
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel("Tester", 1, List.of(10.0, 9.0), List.of("ABCD12", "CHEA12")));
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(res.getBody().getCode()).isEqualTo("CHEA12");
     }
@@ -314,5 +344,7 @@ class CouponControllerTest {
     }
 
     @Test
-    void getRequestHelper() { assertThat(couponController.getRequestHelper()).isEqualTo(requestHelper); }
+    void getRequestHelper() {
+        assertThat(couponController.getRequestHelper()).isEqualTo(requestHelper);
+    }
 }
