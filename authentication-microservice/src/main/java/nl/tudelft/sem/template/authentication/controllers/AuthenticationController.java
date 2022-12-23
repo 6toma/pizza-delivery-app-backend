@@ -72,7 +72,7 @@ public class AuthenticationController {
             NetId netId = new NetId(request.getNetId());
             Password password = new Password(request.getPassword());
             registrationService.registerUser(netId, password);
-            requestHelper.postRequest(8081, "/customers/", netId.toString(), String.class);
+            requestHelper.postRequest(8081, "/customers/add", netId.toString(), String.class);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

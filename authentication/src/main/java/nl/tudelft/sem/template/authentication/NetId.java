@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.authentication;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.io.Serializable;
 import javax.persistence.Embeddable;
 import lombok.EqualsAndHashCode;
@@ -22,6 +23,7 @@ public class NetId implements Serializable {
         this.netIdValue = netId;
     }
 
+    @JsonValue
     @Override
     public String toString() {
         return netIdValue;

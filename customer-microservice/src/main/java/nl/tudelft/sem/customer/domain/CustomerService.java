@@ -150,9 +150,7 @@ public class CustomerService {
             return;
         }
 
-        List<String> toppings = customer.getAllergens();
-        toppings.addAll(newToppings);
-        customer.setAllergens(toppings);
+        customer.setAllergens(newToppings);
 
         customerRepository.save(customer);
     }

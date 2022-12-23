@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.cart.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
@@ -34,10 +36,10 @@ public class PizzaService {
      * @param allergens the list of allergens
      * @return List of filtered pizzas
      */
-    public List<DefaultPizza> getAllByFilter(List<String> allergens) {
-        List<DefaultPizza> pizzas = pizzaRepository.findAll();
-        //Todo implement filter
-        return pizzas;
+    public List<DefaultPizza> getAllByFilter(Set<String> allergens) {
+        return pizzaRepository.findAll().stream()
+            .filter(pizza -> pizza.getToppings().stream().noneMatch(topping -> allergens.contains(topping.getName())))
+            .collect(Collectors.toList());
     }
 
     /**

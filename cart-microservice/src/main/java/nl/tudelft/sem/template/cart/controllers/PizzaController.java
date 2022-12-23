@@ -1,13 +1,22 @@
 package nl.tudelft.sem.template.cart.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
 import nl.tudelft.sem.template.cart.exceptions.ToppingNotFoundException;
 import nl.tudelft.sem.template.cart.services.PizzaService;
 import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.models.PizzaModel;
+import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +36,8 @@ public class PizzaController {
 
     private final transient PizzaService pizzaService;
     private final transient ToppingService toppingService;
+    private final transient RequestHelper requestHelper;
+    private final transient AuthManager authManager;
 
     /**
      * A post request to send a new pizza to the DB.
@@ -99,11 +110,16 @@ public class PizzaController {
     /**
      * Gets all the pizzas from the DB filtered on allergens.
      *
-     * @param allergens the list of allergens
      * @return the list of filtered pizzas
      */
-    @PostMapping("/getAll")
-    public List<DefaultPizza> getPizzas(@RequestBody List<String> allergens) {
+    @GetMapping("/getAllFiltered")
+    public List<DefaultPizza> getPizzasFiltered() {
+        var allergens = getUserAllergens(authManager.getNetId());
         return pizzaService.getAllByFilter(allergens);
+    }
+
+    private Set<String> getUserAllergens(String netId) {
+        return Arrays.stream(requestHelper.getRequest(8081, "/customers/allergens/" + netId, String[].class))
+            .collect(Collectors.toSet());
     }
 }

@@ -40,7 +40,7 @@ public class CustomerController {
      * @param customerId the id to search for.
      * @return the Customer with the specified id.
      */
-    @GetMapping("/{customerId}")
+    @GetMapping("/id/{customerId}")
     public Customer getCustomerById(@PathVariable int customerId) {
         return customerService.getCustomerById(customerId);
     }
@@ -51,7 +51,7 @@ public class CustomerController {
      * @param netId the netId to search for.
      * @return the Customer with the specified netId.
      */
-    @GetMapping("/{netId}")
+    @GetMapping("/netId/{netId}")
     public Customer getCustomerByNetId(@PathVariable String netId) {
         NetId customerNetId = new NetId(netId);
         return customerService.getCustomerByNetId(customerNetId);
@@ -74,7 +74,7 @@ public class CustomerController {
      * @return ok
      */
     @MicroServiceInteraction
-    @PostMapping({"", "/"})
+    @PostMapping("/add")
     public ResponseEntity<String> addCustomer(@NotNull @RequestBody String netId) {
         if (customerService.getCustomerByNetId(new NetId(netId)) != null) {
             return ResponseEntity.ok("Customer added.");
@@ -163,6 +163,20 @@ public class CustomerController {
         // then use that to find the customer in the DB to update allergens
         customerService.updateAllergens(netId, newToppings);
         return ResponseEntity.ok("Allergens updated.");
+    }
+
+    /**
+     * Endpoint to retrieve the allergens of a specific user.
+     *
+     * @return The user's allergens
+     */
+    @GetMapping("/allergens/{netId}")
+    public ResponseEntity<List<String>> getAllergens(@PathVariable("netId") String netId) {
+        Customer customer = customerService.getCustomerByNetId(new NetId(netId));
+        if (customer == null) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+        return ResponseEntity.ok(customer.getAllergens());
     }
 
 }
