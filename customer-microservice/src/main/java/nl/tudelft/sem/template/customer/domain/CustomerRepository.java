@@ -1,10 +1,9 @@
 package nl.tudelft.sem.template.customer.domain;
 
+import java.util.Optional;
+import nl.tudelft.sem.template.authentication.NetId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import nl.tudelft.sem.template.authentication.NetId;
-
-import java.util.Optional;
 
 
 /**

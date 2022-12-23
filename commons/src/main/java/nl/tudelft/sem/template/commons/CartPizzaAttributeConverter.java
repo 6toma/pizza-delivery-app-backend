@@ -7,7 +7,7 @@ import nl.tudelft.sem.template.commons.models.CartPizza;
 
 public class CartPizzaAttributeConverter implements AttributeConverter<CartPizza, String> {
 
-    private transient final ObjectMapper mapper = new ObjectMapper();
+    private final transient ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public String convertToDatabaseColumn(CartPizza attribute) {

@@ -37,6 +37,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Data
 public class CouponController {
 
+    private static final int ONE = 1;
+
     private final transient AuthManager authManager;
     private final RequestHelper requestHelper;
     private final CouponRepository repo;
@@ -96,21 +98,27 @@ public class CouponController {
             throw new InvalidStoreIdException();
         }
 
-        if (coupon.getStoreId() == -1 && authManager.getRole() != UserRole.REGIONAL_MANAGER) {
+        if (coupon.getStoreId() == -ONE && authManager.getRole() != UserRole.REGIONAL_MANAGER) {
             throw new NotRegionalManagerException();
         }
         if (coupon.getType() == null || coupon.getExpiryDate() == null) {
             throw new IncompleteCouponException();
         }
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), coupon.getStoreId());
-        if (coupon.getStoreId() == -1 || requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class)) {
+        if (coupon.getStoreId() == -ONE || requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class)) {
             return ResponseEntity.ok(repo.save(coupon));
         } else {
             throw new InvalidStoreIdException();
         }
     }
 
-//    @MicroServiceInteraction
+    /**
+     * Endpoint that takes a list of prices and list of coupons and tries to apply the best coupon.
+     *
+     * @param pricesCodesModel The model containing all the information about prices and coupons
+     * @return The final price after (optionally) applying a coupon
+     */
+    @MicroServiceInteraction
     @PostMapping("/selectCoupon")
     public ResponseEntity<CouponFinalPriceModel> selectCoupon(@RequestBody PricesCodesModel pricesCodesModel) {
         List<Double> prices = pricesCodesModel.getPrices();
@@ -121,8 +129,9 @@ public class CouponController {
         PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
         List<String> unusedCodes = requestHelper
             .postRequest(8081, "/customers/checkUsedCoupons/" + pricesCodesModel.getNetId(), codes, List.class);
-        if(unusedCodes == null || unusedCodes.isEmpty()) {
-            return ResponseEntity.ok(new CouponFinalPriceModel(null, prices.stream().mapToDouble(Double::doubleValue).sum()));
+        if (unusedCodes == null || unusedCodes.isEmpty()) {
+            return ResponseEntity.ok(
+                new CouponFinalPriceModel(null, prices.stream().mapToDouble(Double::doubleValue).sum()));
         }
         for (String code : unusedCodes) {
             ResponseEntity<Coupon> c;
@@ -135,20 +144,21 @@ public class CouponController {
                 continue;
             }
             Coupon coupon = c.getBody();
-            if (coupon.getStoreId() != -1 && coupon.getStoreId() != pricesCodesModel.getStoreId()) {
+            if (coupon.getStoreId() != -ONE && coupon.getStoreId() != pricesCodesModel.getStoreId()) {
                 continue;
             }
             if (coupon.getType() == CouponType.DISCOUNT) {
                 pq.add(new CouponFinalPriceModel(code, couponService.applyDiscount(coupon, prices)));
             } else {
-                if (prices.size() == 1) {
+                if (prices.size() == ONE) {
                     continue;
                 }
                 pq.add(new CouponFinalPriceModel(code, couponService.applyOnePlusOne(coupon, prices)));
             }
         }
         if (pq.isEmpty()) {
-            return ResponseEntity.ok(new CouponFinalPriceModel(null, prices.stream().mapToDouble(Double::doubleValue).sum()));
+            return ResponseEntity.ok(
+                new CouponFinalPriceModel(null, prices.stream().mapToDouble(Double::doubleValue).sum()));
         }
         return ResponseEntity.ok(pq.peek());
     }

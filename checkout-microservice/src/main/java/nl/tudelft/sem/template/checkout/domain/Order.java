@@ -6,8 +6,14 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.persistence.*;
-
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -49,7 +55,7 @@ public class Order {
     @Column(name = "coupon")
     private String coupon;
 
-    @Column(name="finalPrice", nullable = false)
+    @Column(name = "finalPrice", nullable = false)
     @Min(0)
     @Getter
     private double finalPrice;
@@ -58,6 +64,11 @@ public class Order {
         return new OrderBuilder();
     }
 
+    /**
+     * Calculates the price of the order without any discounts.
+     *
+     * @return The price of the order without discounts
+     */
     public double calculatePriceWithoutDiscount() {
         double price = 0;
         for (CartPizza pizza : pizzaList) {

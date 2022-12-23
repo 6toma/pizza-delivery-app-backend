@@ -20,6 +20,11 @@ public class NetId implements Serializable {
 
     private String netIdValue;
 
+    /**
+     * Creates a new NetId instance with a specific net id which should be an email address.
+     *
+     * @param netId The net id (email address).
+     */
     public NetId(String netId) {
         // validate NetID
         this.netIdValue = netId;

@@ -341,7 +341,7 @@ public class CouponIntegrationTest extends IntegrationTest {
 
     @SneakyThrows
     private ResultActions selectCoupon(PricesCodesModel pcm) {
-        return mockMvc.perform(authenticated(post("/selectCoupon"))
+        return mockMvc.perform(microservice(post("/selectCoupon"))
             .contentType(MediaType.APPLICATION_JSON)
             .content(toJson(pcm)));
     }

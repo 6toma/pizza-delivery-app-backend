@@ -11,6 +11,8 @@ import java.text.ParseException;
  */
 public class DateJsonDeserializer extends StdDeserializer<Date> {
 
+    private static final int serialVersionUID = -1274771824;
+
     protected DateJsonDeserializer() {
         super(Date.class);
     }

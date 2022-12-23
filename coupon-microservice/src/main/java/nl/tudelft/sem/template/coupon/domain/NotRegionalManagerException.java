@@ -8,5 +8,7 @@ public class NotRegionalManagerException extends RuntimeException {
 
     static final long serialVersionUID = -2387516998124229567L;
 
-    public NotRegionalManagerException() { super();}
+    public NotRegionalManagerException() {
+        super();
+    }
 }

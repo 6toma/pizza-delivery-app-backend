@@ -10,13 +10,18 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PickupTimeConfig {
 
+    /**
+     * Bean that sets up serialization/deserialization for the LocalDateTime in JSON.
+     *
+     * @return The customizer with our serialization/deserialization
+     */
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
 
         return builder -> {
 
             // formatter
-            DateTimeFormatter dateTimeFormatter =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
             // deserializers
             builder.deserializers(new LocalDateTimeDeserializer(dateTimeFormatter));

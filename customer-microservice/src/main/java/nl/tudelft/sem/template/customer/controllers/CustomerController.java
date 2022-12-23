@@ -1,23 +1,22 @@
 package nl.tudelft.sem.template.customer.controllers;
 
 import java.util.Collections;
+import java.util.List;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
-import nl.tudelft.sem.template.customer.domain.Customer;
-import nl.tudelft.sem.template.customer.domain.CustomerService;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.authentication.annotations.role.MicroServiceInteraction;
-import org.springframework.http.ResponseEntity;
+import nl.tudelft.sem.template.customer.domain.Customer;
+import nl.tudelft.sem.template.customer.domain.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Data
@@ -34,7 +33,6 @@ public class CustomerController {
     }
 
     /**
-     *
      * Endpoint to retrieve a Customer from the Customer Repository by their unique id.
      *
      * @param customerId the id to search for.
@@ -42,13 +40,12 @@ public class CustomerController {
      */
     @MicroServiceInteraction
     @GetMapping("/id/{customerId}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable int customerId){
+    public ResponseEntity<Customer> getCustomerById(@PathVariable int customerId) {
         Customer customer = customerService.getCustomerById(customerId);
         return ResponseEntity.ok(customer);
     }
 
     /**
-     *
      * Endpoint to retrieve a Customer from the Customer Repository by their (unique) NetId.
      *
      * @param netId the netId to search for.
@@ -63,7 +60,6 @@ public class CustomerController {
     }
 
     /**
-     *
      * Endpoint that gets all the customers from the Customer Repository.
      *
      * @return the List of all Customers.
@@ -146,7 +142,7 @@ public class CustomerController {
     }
 
     /**
-     * Endpoint that takes a list of String coupon codes and returns which coupons have not yet been used
+     * Endpoint that takes a list of String coupon codes and returns which coupons have not yet been used.
      *
      * @param couponCodes the list of coupon codes to evaluate
      * @return a list of all the coupons that have not been used yet out of that list

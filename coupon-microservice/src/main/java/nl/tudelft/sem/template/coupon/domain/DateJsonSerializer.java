@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import java.io.IOException;
 
 /**
- * Custom json serializer that converts a date to a string formatted as: dd/MM/yyyy
+ * Custom json serializer that converts a date to a string formatted as: dd/MM/yyyy.
  */
 public class DateJsonSerializer extends StdSerializer<Date> {
+
+    private static final int serialVersionUID = -1274718231;
 
     protected DateJsonSerializer() {
         super(Date.class);
