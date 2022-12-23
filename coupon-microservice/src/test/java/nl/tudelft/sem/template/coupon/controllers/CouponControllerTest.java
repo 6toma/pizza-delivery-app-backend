@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.SneakyThrows;
-import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.models.PricesCodesModel;
@@ -28,6 +27,7 @@ import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
 import nl.tudelft.sem.template.coupon.domain.InvalidStoreIdException;
 import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
 import nl.tudelft.sem.template.coupon.services.CouponService;
+import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -58,8 +58,8 @@ class CouponControllerTest {
 
         MockitoAnnotations.openMocks(this);
 
-        LocalDate LOCAL_DATE = LocalDate.of(2022, 12, 13);
-        fixedClock = Clock.fixed(LOCAL_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+        LocalDate localDate = LocalDate.of(2022, 12, 13);
+        fixedClock = Clock.fixed(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
         when(clock.instant()).thenReturn(fixedClock.instant());
         when(clock.getZone()).thenReturn(fixedClock.getZone());
 
@@ -241,14 +241,16 @@ class CouponControllerTest {
 
     @Test
     void selectCouponEmptyCouponList() {
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel("Tester", 1, List.of(10.0), new ArrayList<>()));
+        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(
+            new PricesCodesModel("Tester", 1, List.of(10.0), new ArrayList<>()));
         assertThat(res.getBody().getCode()).isNull();
         assertThat(res.getBody().getPrice()).isEqualTo(10.0);
     }
 
     @Test
     void selectCouponInvalidCoupon() {
-        when(requestHelper.postRequest(8081, "/customers/checkUsedCoupons/Tester", List.of("ABC76"), List.class)).thenReturn(List.of("ABC76"));
+        when(requestHelper.postRequest(8081, "/customers/checkUsedCoupons/Tester", List.of("ABC76"), List.class))
+            .thenReturn(List.of("ABC76"));
         when(repo.existsById("ABCD76")).thenReturn(false);
         ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel("Tester", 1, List.of(10.0), List.of("ABC76")));
         assertThat(res.getBody().getCode()).isNull();
