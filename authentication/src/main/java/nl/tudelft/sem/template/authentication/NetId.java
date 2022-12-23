@@ -3,6 +3,8 @@ package nl.tudelft.sem.template.authentication;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.io.Serializable;
 import javax.persistence.Embeddable;
+
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 

@@ -121,6 +121,9 @@ public class CouponController {
         PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
         List<String> unusedCodes = requestHelper
             .postRequest(8081, "/customers/checkUsedCoupons/" + pricesCodesModel.getNetId(), codes, List.class);
+        if(unusedCodes == null || unusedCodes.isEmpty()) {
+            return ResponseEntity.ok(new CouponFinalPriceModel("", prices.stream().mapToDouble(Double::doubleValue).sum()));
+        }
         for (String code : unusedCodes) {
             ResponseEntity<Coupon> c;
             try {

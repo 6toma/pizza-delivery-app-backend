@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
+
 import nl.tudelft.sem.template.authentication.NetId;
 
 /**
@@ -24,11 +25,11 @@ public class CustomerService {
      * @return the Customer with the specified id.
      */
     public Customer getCustomerById(int customerId) {
-        try {
-            return customerRepository.findById(customerId);
-        } catch (NoSuchElementException e) {
+        Optional<Customer> customer = customerRepository.findById(customerId);
+        if (!customer.isPresent()) {
             throw new CustomerNotFoundException(customerId);
         }
+        return customer.get();
     }
 
     /**
@@ -38,11 +39,11 @@ public class CustomerService {
      * @return the Customer with the specified NetId.
      */
     public Customer getCustomerByNetId(NetId netId) {
-        try {
-            return customerRepository.findByNetId(netId);
-        } catch (NoSuchElementException e) {
+        Optional<Customer> customer = customerRepository.findByNetId(netId);
+        if (!customer.isPresent()) {
             throw new CustomerNotFoundException(netId);
         }
+        return customer.get();
     }
 
 
@@ -73,11 +74,8 @@ public class CustomerService {
     public void addToUsedCoupons(NetId netId, String couponCode) {
 
         Customer customer = getCustomerByNetId(netId);
-        if (customer == null) {
-            return;
-        }
 
-        List<String> coupons = customer.getUsedCoupons();
+        List<String> coupons = new ArrayList<>(customer.getUsedCoupons());
         coupons.add(couponCode);
         customer.setUsedCoupons(coupons);
 
@@ -97,7 +95,7 @@ public class CustomerService {
             return;
         }
 
-        List<String> coupons = customer.getUsedCoupons();
+        List<String> coupons = new ArrayList<>(customer.getUsedCoupons());
         coupons.remove(couponCode);
         customer.setUsedCoupons(coupons);
 
@@ -145,10 +143,7 @@ public class CustomerService {
      * @param newToppings the new list of toppings to be added to the existing List of Allergens.
      */
     public void updateAllergens(NetId netId, List<String> newToppings) {
-        Customer customer = customerRepository.findByNetId(netId);
-        if (customer == null) {
-            return;
-        }
+        Customer customer = getCustomerByNetId(netId);
 
         customer.setAllergens(newToppings);
 
