@@ -76,7 +76,7 @@ public class CustomerService {
 
         Customer customer = getCustomerByNetId(netId);
 
-        List<String> coupons = customer.getUsedCoupons();
+        List<String> coupons = new ArrayList<>(customer.getUsedCoupons());
         coupons.add(couponCode);
         customer.setUsedCoupons(coupons);
 

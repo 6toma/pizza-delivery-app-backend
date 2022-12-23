@@ -35,4 +35,64 @@ class CustomerTest {
         assertEquals(customerId, customer.getCustomerId());
         assertEquals(netId, customer.getNetId());
     }
+
+    @Test
+    public void testSetUsedCoupons() {
+        List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
+        List<String> allergens = Arrays.asList("peanut", "gluten");
+        int customerId = 123456;
+        NetId netId = new NetId("example123");
+
+        Customer customer = new Customer(usedCoupons, allergens, customerId, netId);
+        assertEquals(usedCoupons, customer.getUsedCoupons());
+
+        List<String> newUsedCoupons = Arrays.asList("coupon3", "coupon4");
+        customer.setUsedCoupons(newUsedCoupons);
+        assertEquals(newUsedCoupons, customer.getUsedCoupons());
+    }
+
+    @Test
+    public void testSetAllergens() {
+        List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
+        List<String> allergens = Arrays.asList("peanut", "gluten");
+        int customerId = 123456;
+        NetId netId = new NetId("example123");
+
+        Customer customer = new Customer(usedCoupons, allergens, customerId, netId);
+        assertEquals(allergens, customer.getAllergens());
+
+        List<String> newAllergens = Arrays.asList("dairy", "egg");
+        customer.setAllergens(newAllergens);
+        assertEquals(newAllergens, customer.getAllergens());
+    }
+
+    @Test
+    public void testSetCustomerId() {
+        List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
+        List<String> allergens = Arrays.asList("peanut", "gluten");
+        int customerId = 123456;
+        NetId netId = new NetId("example123");
+
+        Customer customer = new Customer(usedCoupons, allergens, customerId, netId);
+        assertEquals(customerId, customer.getCustomerId());
+
+        int newCustomerId = 654321;
+        customer.setCustomerId(newCustomerId);
+        assertEquals(newCustomerId, customer.getCustomerId());
+    }
+
+    @Test
+    public void testSetNetId() {
+        List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
+        List<String> allergens = Arrays.asList("peanut", "gluten");
+        int customerId = 123456;
+        NetId netId = new NetId("example123");
+
+        Customer customer = new Customer(usedCoupons, allergens, customerId, netId);
+        assertEquals(netId, customer.getNetId());
+
+        NetId newNetId = new NetId("example456");
+        customer.setNetId(newNetId);
+        assertEquals(newNetId, customer.getNetId());
+    }
 }
