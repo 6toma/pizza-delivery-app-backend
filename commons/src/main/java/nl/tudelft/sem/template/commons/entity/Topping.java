@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "toppings")
@@ -25,6 +26,7 @@ public class Topping {
     private String name;
 
     @Column(name = "price", nullable = false)
+    @Setter
     private double price;
 
     public Topping(String name, double price) {

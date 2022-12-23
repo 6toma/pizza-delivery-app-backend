@@ -69,14 +69,13 @@ public class ToppingService {
      * @param price       is the price of the topping
      */
     public void editTopping(String toppingName, double price) throws ToppingNotFoundException {
+        var topping = toppingRepository.findByName(toppingName);
+        if (topping.isEmpty()) {
 
-        try {
-            removeTopping(toppingName);
-            addTopping(toppingName, price);
-        } catch (Exception e) {
             throw new ToppingNotFoundException(toppingName);
         }
-
+        topping.get().setPrice(price);
+        toppingRepository.save(topping.get());
     }
 
     /**
