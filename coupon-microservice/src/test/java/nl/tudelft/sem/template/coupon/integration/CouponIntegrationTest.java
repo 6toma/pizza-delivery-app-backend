@@ -1,8 +1,8 @@
 package nl.tudelft.sem.template.coupon.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -126,7 +126,7 @@ public class CouponIntegrationTest extends IntegrationTest {
     @SneakyThrows
     @Test
     void testAddCouponCodeInvalid() {
-        Coupon c1 = new Coupon("AB12", new Date(10,10,2025), 1L, CouponType.DISCOUNT);
+        Coupon c1 = new Coupon("AB12", new Date(10, 10, 2025), 1L, CouponType.DISCOUNT);
         ResultActions res = addCoupon(c1, UserRole.STORE_OWNER);
         res.andExpect(status().isBadRequest());
         assertThat(repository.count()).isZero();
@@ -144,7 +144,7 @@ public class CouponIntegrationTest extends IntegrationTest {
     @SneakyThrows
     @Test
     void testAddCouponInvalidStoreId() {
-        Coupon c1 = new Coupon("ABCD12", new Date(10,10,2025), null, CouponType.DISCOUNT);
+        Coupon c1 = new Coupon("ABCD12", new Date(10, 10, 2025), null, CouponType.DISCOUNT);
         ResultActions res = addCoupon(c1, UserRole.STORE_OWNER);
         res.andExpect(status().isBadRequest());
         assertThat(repository.count()).isZero();
@@ -162,7 +162,7 @@ public class CouponIntegrationTest extends IntegrationTest {
     @SneakyThrows
     @Test
     void testAddCouponNoType() {
-        Coupon c1 = new Coupon("ABCD12", new Date(10,10,2025), 1L, null);
+        Coupon c1 = new Coupon("ABCD12", new Date(10, 10, 2025), 1L, null);
         ResultActions res = addCoupon(c1, UserRole.REGIONAL_MANAGER);
         res.andExpect(status().isBadRequest());
         assertThat(repository.count()).isZero();
@@ -244,7 +244,7 @@ public class CouponIntegrationTest extends IntegrationTest {
 
     @SneakyThrows
     @Test
-    void testSelectCouponUnusedCodesNull () {
+    void testSelectCouponUnusedCodesNull() {
         PricesCodesModel pcm = new PricesCodesModel(TEST_USER, 1L, List.of(20.0), List.of("ABCD12"));
         mockCheckUsedCoupons(null);
         ResultActions res = selectCoupon(pcm);
@@ -311,7 +311,8 @@ public class CouponIntegrationTest extends IntegrationTest {
     }
 
     private void mockCheckUsedCoupons(PricesCodesModel model, List<String> response) {
-        when(requestHelper.postRequest(8081, "/customers/checkUsedCoupons/" + model.getNetId(), model.getCodes(), List.class))
+        when(requestHelper
+            .postRequest(8081, "/customers/checkUsedCoupons/" + model.getNetId(), model.getCodes(), List.class))
             .thenReturn(response);
     }
 
