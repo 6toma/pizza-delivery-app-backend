@@ -93,7 +93,7 @@ public class CustomerService {
 
         Customer customer = getCustomerByNetId(netId);
 
-        List<String> coupons = customer.getUsedCoupons();
+        List<String> coupons = new ArrayList<>(customer.getUsedCoupons());
         coupons.remove(couponCode);
         customer.setUsedCoupons(coupons);
 
@@ -140,9 +140,7 @@ public class CustomerService {
     public void updateAllergens(NetId netId, List<String> newToppings) {
         Customer customer = getCustomerByNetId(netId);
 
-        List<String> toppings = customer.getAllergens();
-        toppings.addAll(newToppings);
-        customer.setAllergens(toppings);
+        customer.setAllergens(newToppings);
 
         customerRepository.save(customer);
     }
