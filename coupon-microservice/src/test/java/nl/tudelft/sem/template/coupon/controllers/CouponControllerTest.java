@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.coupon.controllers;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -195,7 +197,7 @@ class CouponControllerTest {
         Coupon coupon = new Coupon();
         coupon.setCode(code);
         coupon.setStoreId(-1L);
-        when(authManager.getRole())
+        when(authManager.getRoleAuthority())
             .thenReturn("ROLE_STORE_OWNER");
         assertThrows(NotRegionalManagerException.class, () -> couponController.addCoupon(coupon));
     }
@@ -221,6 +223,7 @@ class CouponControllerTest {
     @Test
     void addCouponNormal() {
         when(authManager.getNetId()).thenReturn("netId");
+        when(repo.save(any())).thenReturn(c);
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), c.getStoreId());
         when(requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class))
             .thenReturn(true);
@@ -232,7 +235,8 @@ class CouponControllerTest {
 
     @Test
     void selectCouponEmptyPriceList() {
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(new ArrayList<>(), List.of("ABDC12")));
+        ResponseEntity<CouponFinalPriceModel> res =
+            couponController.selectCoupon(new PricesCodesModel("netId", 1, new ArrayList<>(), List.of("ABDC12")));
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -314,5 +318,7 @@ class CouponControllerTest {
     }
 
     @Test
-    void getRequestHelper() { assertThat(couponController.getRequestHelper()).isEqualTo(requestHelper); }
+    void getRequestHelper() {
+        assertThat(couponController.getRequestHelper()).isEqualTo(requestHelper);
+    }
 }

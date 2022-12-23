@@ -9,7 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
  * Example microservice application.
  */
 @SpringBootApplication
-@EntityScan({"nl.tudelft.sem.template.commons.entity", "nl.tudelft.sem.store"})
 @ComponentScan({"nl.tudelft.sem.template.authentication", "nl.tudelft.sem.store",
     "nl.tudelft.sem.template.commons"})
 public class Application {

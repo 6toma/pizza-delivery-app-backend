@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.cart.mockTest;
 
-import nl.tudelft.sem.template.cart.ToppingRepository;
-import nl.tudelft.sem.template.cart.ToppingService;
+import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.cart.controllers.ToppingController;
 import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.ToppingNotFoundException;
