@@ -1,21 +1,24 @@
 package nl.tudelft.sem.template.customer;
 
-import nl.tudelft.sem.template.customer.domain.Customer;
-import nl.tudelft.sem.template.customer.domain.CustomerNotFoundException;
-import nl.tudelft.sem.template.customer.domain.CustomerRepository;
-import nl.tudelft.sem.template.customer.domain.CustomerService;
-import nl.tudelft.sem.template.authentication.AuthManager;
-import nl.tudelft.sem.template.authentication.NetId;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import nl.tudelft.sem.template.authentication.AuthManager;
+import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.customer.domain.Customer;
+import nl.tudelft.sem.template.customer.domain.CustomerNotFoundException;
+import nl.tudelft.sem.template.customer.domain.CustomerRepository;
+import nl.tudelft.sem.template.customer.domain.CustomerService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class CustomerServiceTest {
 
@@ -116,14 +119,13 @@ public class CustomerServiceTest {
 
     @Test
     void TestCheckUsedCoupons() {
-        List<String> res = Arrays.asList("coupon3");
+        List<String> res = List.of("coupon3");
         List<String> coupons = Arrays.asList("coupon1", "coupon3");
         assertEquals(customerService.checkUsedCoupons(new NetId("example123"), coupons), res);
     }
-
     @Test
     void TestUpdateAllergens() {
-        List<String> allergens = Arrays.asList("peanut");
+        List<String> allergens = List.of("peanut");
         customerService.updateAllergens(new NetId("example123"), allergens);
         customer.setAllergens(allergens);
         verify(repo).save(customer);

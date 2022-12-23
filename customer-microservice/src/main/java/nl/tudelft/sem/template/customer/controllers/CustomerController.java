@@ -34,11 +34,13 @@ public class CustomerController {
     }
 
     /**
+     *
      * Endpoint to retrieve a Customer from the Customer Repository by their unique id.
      *
      * @param customerId the id to search for.
      * @return the Customer with the specified id.
      */
+    @MicroServiceInteraction
     @GetMapping("/id/{customerId}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable int customerId){
         Customer customer = customerService.getCustomerById(customerId);
@@ -46,11 +48,13 @@ public class CustomerController {
     }
 
     /**
+     *
      * Endpoint to retrieve a Customer from the Customer Repository by their (unique) NetId.
      *
      * @param netId the netId to search for.
      * @return the Customer with the specified netId.
      */
+    @MicroServiceInteraction
     @GetMapping("/netId/{netId}")
     public ResponseEntity<Customer> getCustomerByNetId(@PathVariable String netId) {
         NetId customerNetId = new NetId(netId);
@@ -59,10 +63,12 @@ public class CustomerController {
     }
 
     /**
+     *
      * Endpoint that gets all the customers from the Customer Repository.
      *
      * @return the List of all Customers.
      */
+    @MicroServiceInteraction
     @GetMapping("/getAll")
     public List<Customer> getCustomers() {
         return customerService.getAll();
@@ -94,7 +100,8 @@ public class CustomerController {
      * @param couponCode the coupon code used by the customer, i.e. the coupon to be added to the list of used coupons
      * @return ok
      */
-    @PostMapping("/{netId}/coupons/add")
+    @MicroServiceInteraction
+    @PostMapping("{netId}/coupons/add")
     public ResponseEntity<String> addToUsedCoupons(@PathVariable String netId, @RequestBody String couponCode) {
 
         // make netID object using netID path variable
@@ -130,6 +137,7 @@ public class CustomerController {
      * @param couponCode the coupon code to verify
      * @return true if the coupon has been used, false otherwise
      */
+    @MicroServiceInteraction
     @GetMapping("/{netId}/coupons/{couponCode}")
     public ResponseEntity<Boolean> hasUsedCoupon(@PathVariable String netId, @PathVariable String couponCode) {
         NetId customerNetId = new NetId(netId);
@@ -171,12 +179,10 @@ public class CustomerController {
      *
      * @return The user's allergens
      */
+    @MicroServiceInteraction
     @GetMapping("/allergens/{netId}")
     public ResponseEntity<List<String>> getAllergens(@PathVariable("netId") String netId) {
         Customer customer = customerService.getCustomerByNetId(new NetId(netId));
-        if (customer == null) {
-            return ResponseEntity.ok(Collections.emptyList());
-        }
         return ResponseEntity.ok(customer.getAllergens());
     }
 

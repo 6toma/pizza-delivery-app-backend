@@ -40,7 +40,7 @@ public class CustomerService {
      */
     public Customer getCustomerByNetId(NetId netId) {
         Optional<Customer> customer = customerRepository.findByNetId(netId);
-        if (!customer.isPresent()) {
+        if (customer.isEmpty()) {
             throw new CustomerNotFoundException(netId);
         }
         return customer.get();
