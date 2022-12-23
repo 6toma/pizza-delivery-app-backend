@@ -25,7 +25,6 @@ public class Customer {
     private int customerId;
 
     @Column(name = "netId", unique = true)
-    @Convert(converter = NetIdAttributeConverter.class, attributeName = "netIdValue")
     private NetId netId;
 
     @Column(name = "usedCoupons")

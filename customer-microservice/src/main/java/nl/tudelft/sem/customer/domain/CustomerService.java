@@ -75,7 +75,6 @@ public class CustomerService {
     public void addToUsedCoupons(NetId netId, String couponCode) {
 
         Customer customer = getCustomerByNetId(netId);
-        if(customer == null) { return; }
 
         List<String> coupons = customer.getUsedCoupons();
         coupons.add(couponCode);
@@ -93,7 +92,6 @@ public class CustomerService {
     public void removeFromUsedCoupons(NetId netId, String couponCode) {
 
         Customer customer = getCustomerByNetId(netId);
-        if(customer == null) { return; }
 
         List<String> coupons = customer.getUsedCoupons();
         coupons.remove(couponCode);

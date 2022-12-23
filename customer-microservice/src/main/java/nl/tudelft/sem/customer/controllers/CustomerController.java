@@ -136,11 +136,12 @@ public class CustomerController {
      * @param couponCodes the list of coupon codes to evaluate
      * @return a list of all the coupons that have not been used yet out of that list
      */
-    @GetMapping("/checkUsedCoupons")
-    public List<String> checkUsedCoupons(@RequestParam("couponCodes") List<String> couponCodes) {
-        NetId netId = new NetId(authManager.getNetId());
-        return customerService.checkUsedCoupons(netId, couponCodes);
+    @PostMapping("/{netId}/checkUsedCoupons")
+    public ResponseEntity<List<String>> checkUsedCoupons(@PathVariable String netId, @RequestBody List<String> couponCodes) {
+        NetId customerNetId = new NetId(netId);
+        return ResponseEntity.ok(customerService.checkUsedCoupons(customerNetId, couponCodes));
     }
+
     /**
      * Endpoint to set a customer's list of allergens.
      * The endpoint adds the given list of allergens to the existing list of allergens of the customer with the provided id.
@@ -152,7 +153,7 @@ public class CustomerController {
     public ResponseEntity<String> updateAllergens(@RequestBody List<String> newToppings) {
         // get netid of customer IN CURRENT CONTEXT
         NetId netId = new NetId(authManager.getNetId());
-        // then use that to find the customer in the DB to update allergens
+
         customerService.updateAllergens(netId, newToppings);
         return ResponseEntity.ok("Allergens updated.");
     }
