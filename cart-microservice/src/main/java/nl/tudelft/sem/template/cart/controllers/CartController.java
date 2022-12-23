@@ -1,9 +1,12 @@
 package nl.tudelft.sem.template.cart.controllers;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,7 @@ import nl.tudelft.sem.template.cart.CartRepository;
 import nl.tudelft.sem.template.cart.CustomPizzaRepository;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
 import nl.tudelft.sem.template.cart.ToppingRepository;
+import nl.tudelft.sem.template.cart.models.AddToCartResponse;
 import nl.tudelft.sem.template.commons.entity.Cart;
 import nl.tudelft.sem.template.commons.entity.CustomPizza;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
@@ -99,7 +103,7 @@ public class CartController {
 
     @PostMapping("/addPizza/{id}")
     @Transactional
-    int addPizzaToCart(@PathVariable("id") int defaultPizzaId) {
+    AddToCartResponse addPizzaToCart(@PathVariable("id") int defaultPizzaId) {
         CustomPizza customPizza = getDefaultPizza(defaultPizzaId);
         Cart cart = getCartFromSessionNetId();
         if (cart == null) {
@@ -109,7 +113,9 @@ public class CartController {
         customPizza = customPizzaRepository.save(customPizza);
         cart.addPizza(customPizza);
         cartRepository.save(cart);
-        return customPizza.getId();
+        var allergens = getUserAllergens(authManager.getNetId());
+        var containsAllergens = customPizza.getToppings().stream().anyMatch(t -> allergens.contains(t.getName()));
+        return new AddToCartResponse(customPizza.getId(), containsAllergens);
     }
 
     @PostMapping("/incrementPizza/{id}")
@@ -193,5 +199,15 @@ public class CartController {
     private List<CartPizza> convertPizzaMap(Map<CustomPizza, Integer> map) {
         return map.entrySet().stream().map(entry -> new CartPizza(entry.getKey(), entry.getValue()))
             .collect(Collectors.toList());
+    }
+
+    private Set<String> getUserAllergens(String netId) {
+        try {
+            return Arrays.stream(requestHelper.getRequest(8081, "/customers/allergens/" + netId, String[].class))
+                .collect(Collectors.toSet());
+        } catch(Exception e) {
+            e.printStackTrace();
+            return Collections.emptySet();
+        }
     }
 }

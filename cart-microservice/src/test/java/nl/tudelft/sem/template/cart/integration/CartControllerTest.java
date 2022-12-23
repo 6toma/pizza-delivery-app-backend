@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,6 +19,7 @@ import nl.tudelft.sem.template.cart.CartRepository;
 import nl.tudelft.sem.template.cart.CustomPizzaRepository;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
 import nl.tudelft.sem.template.cart.ToppingRepository;
+import nl.tudelft.sem.template.cart.models.AddToCartResponse;
 import nl.tudelft.sem.template.commons.entity.CustomPizza;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
@@ -71,12 +75,13 @@ public class CartControllerTest extends IntegrationTest {
 
     @Test
     void testGetCartSuccess() throws Exception {
-        var id = parseResponseInt(addPizzaRequest(defaultPizza1.getId()).andExpect(status().isOk()));
+        var response =
+            parseResponseJson(addPizzaRequest(defaultPizza1.getId()).andExpect(status().isOk()), AddToCartResponse.class);
         var result = getCartRequest().andExpect(status().isOk());
         var pizzas = parseResponseJson(result, CartPizza[].class);
         assertThat(pizzas.length).isOne();
         assertThat(pizzas[0].getAmount()).isOne();
-        assertThat(pizzas[0].getPizza().getId()).isEqualTo(id);
+        assertThat(pizzas[0].getPizza().getId()).isEqualTo(response.getId());
     }
 
     @Test
@@ -88,10 +93,26 @@ public class CartControllerTest extends IntegrationTest {
     void testAddToCartSuccess() throws Exception {
         int id = defaultPizza1.getId();
         var result = addPizzaRequest(id);
+        var response = parseResponseJson(result, AddToCartResponse.class);
         result.andExpect(status().isOk());
         assertEquals(1, customRepository.count());
         var custom = customRepository.findAll().stream().findFirst().get();
         assertEqualsPizzas(defaultPizza1, custom);
+        assertThat(response.isHasAllergens()).isFalse();
+    }
+
+    @Test
+    void testAddToCartContainsAllergens() throws Exception {
+        int id = defaultPizza1.getId();
+        when(requestHelper.getRequest(anyInt(), any(), any())).thenReturn(
+            new String[] {defaultPizza1.getToppings().get(0).getName()});
+        var result = addPizzaRequest(id);
+        var response = parseResponseJson(result, AddToCartResponse.class);
+        result.andExpect(status().isOk());
+        assertEquals(1, customRepository.count());
+        var custom = customRepository.findAll().stream().findFirst().get();
+        assertEqualsPizzas(defaultPizza1, custom);
+        assertThat(response.isHasAllergens()).isTrue();
     }
 
     @Test
@@ -124,7 +145,8 @@ public class CartControllerTest extends IntegrationTest {
     void testIncrementPizza() throws Exception {
         int id = defaultPizza1.getId();
         var result = addPizzaRequest(id).andExpect(status().isOk());
-        var customPizza = customRepository.findById(parseResponseInt(result)).get();
+        var response = parseResponseJson(result, AddToCartResponse.class);
+        var customPizza = customRepository.findById(response.getId()).get();
 
         incrementPizzaRequest(customPizza.getId()).andExpect(status().isOk());
         var cart = cartRepository.findAll().get(0);
@@ -156,7 +178,8 @@ public class CartControllerTest extends IntegrationTest {
     void testDecrementPizza() throws Exception {
         int id = defaultPizza1.getId();
         var result = addPizzaRequest(id).andExpect(status().isOk());
-        var customPizza = customRepository.findById(parseResponseInt(result)).get();
+        var response = parseResponseJson(result, AddToCartResponse.class);
+        var customPizza = customRepository.findById(response.getId()).get();
         incrementPizzaRequest(customPizza.getId()).andExpect(status().isOk());
         decrementPizzaRequest(customPizza.getId()).andExpect(status().isOk());
 
@@ -188,8 +211,8 @@ public class CartControllerTest extends IntegrationTest {
     @Test
     void testDecrementDeletesPizza() throws Exception {
         int id = defaultPizza1.getId();
-        int customPizzaId = parseResponseInt(addPizzaRequest(id).andExpect(status().isOk()));
-        decrementPizzaRequest(customPizzaId).andExpect(status().isOk());
+        var response = parseResponseJson(addPizzaRequest(id).andExpect(status().isOk()), AddToCartResponse.class);
+        decrementPizzaRequest(response.getId()).andExpect(status().isOk());
         assertEquals(0, customRepository.count());
     }
 
@@ -199,9 +222,9 @@ public class CartControllerTest extends IntegrationTest {
         // add one pizza
         var result = addPizzaRequest(idPizza1).andExpect(status().isOk());
 
-        int pizzaId = parseResponseInt(result);
+        var response = parseResponseJson(result, AddToCartResponse.class);
 
-        removePizzaRequest(pizzaId).andExpect(status().isOk());
+        removePizzaRequest(response.getId()).andExpect(status().isOk());
 
         assertThat(customRepository.count()).isZero();
     }
@@ -230,26 +253,26 @@ public class CartControllerTest extends IntegrationTest {
     @Test
     void testAddTopping() throws Exception {
         var result = addPizzaRequest(defaultPizza1.getId()).andExpect(status().isOk());
-        var pizzaId = parseResponseInt(result);
+        var response = parseResponseJson(result, AddToCartResponse.class);
         var topping = toppingRepository.save(new Topping("Test topping", 100));
-        addToppingRequest(pizzaId, topping.getId()).andExpect(status().isOk());
-        var customPizza = customRepository.findById(pizzaId).get();
+        addToppingRequest(response.getId(), topping.getId()).andExpect(status().isOk());
+        var customPizza = customRepository.findById(response.getId()).get();
         assertTrue(customPizza.getToppings().contains(topping));
     }
 
     @Test
     void testToppingDoesNotExist() throws Exception {
         var result = addPizzaRequest(defaultPizza1.getId()).andExpect(status().isOk());
-        var pizzaId = parseResponseInt(result);
-        addToppingRequest(pizzaId, -1).andExpect(status().isBadRequest());
+        var response = parseResponseJson(result, AddToCartResponse.class);
+        addToppingRequest(response.getId(), -1).andExpect(status().isBadRequest());
     }
 
     @Test
     void testToppingAlreadyOnPizza() throws Exception {
         var result = addPizzaRequest(defaultPizza1.getId()).andExpect(status().isOk());
-        var pizzaId = parseResponseInt(result);
+        var response = parseResponseJson(result, AddToCartResponse.class);
         var topping = defaultPizza1.getToppings().get(0);
-        addToppingRequest(pizzaId, topping.getId()).andExpect(status().isBadRequest());
+        addToppingRequest(response.getId(), topping.getId()).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -272,26 +295,26 @@ public class CartControllerTest extends IntegrationTest {
     @Test
     void testAddToppingDoesntExist() throws Exception {
         var result = addPizzaRequest(defaultPizza1.getId()).andExpect(status().isOk());
-        var pizzaId = parseResponseInt(result);
-        addToppingRequest(pizzaId, -1).andExpect(status().isBadRequest());
+        var response = parseResponseJson(result, AddToCartResponse.class);
+        addToppingRequest(response.getId(), -1).andExpect(status().isBadRequest());
     }
 
     @Test
     void testRemoveTopping() throws Exception {
         var result = addPizzaRequest(defaultPizza1.getId()).andExpect(status().isOk());
-        var pizzaId = parseResponseInt(result);
+        var response = parseResponseJson(result, AddToCartResponse.class);
         var topping = defaultPizza1.getToppings().get(0);
-        removeToppingRequest(pizzaId, topping.getId()).andExpect(status().isOk());
-        var customPizza = customRepository.findById(pizzaId).get();
+        removeToppingRequest(response.getId(), topping.getId()).andExpect(status().isOk());
+        var customPizza = customRepository.findById(response.getId()).get();
         assertFalse(customPizza.getToppings().contains(topping));
     }
 
     @Test
     void testRemoveToppingNotOnPizza() throws Exception {
         var result = addPizzaRequest(defaultPizza1.getId()).andExpect(status().isOk());
-        var pizzaId = parseResponseInt(result);
+        var response = parseResponseJson(result, AddToCartResponse.class);
         var topping2 = toppingRepository.save(new Topping("abc", 200));
-        removeToppingRequest(pizzaId, topping2.getId()).andExpect(status().isBadRequest());
+        removeToppingRequest(response.getId(), topping2.getId()).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -313,8 +336,8 @@ public class CartControllerTest extends IntegrationTest {
     @Test
     void testRemoveToppingDoesntExist() throws Exception {
         var result = addPizzaRequest(defaultPizza1.getId()).andExpect(status().isOk());
-        var pizzaId = parseResponseInt(result);
-        removeToppingRequest(pizzaId, -1).andExpect(status().isBadRequest());
+        var response = parseResponseJson(result, AddToCartResponse.class);
+        removeToppingRequest(response.getId(), -1).andExpect(status().isBadRequest());
     }
 
     @Test

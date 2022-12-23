@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.cart.mockTest;
 
+import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameNotFoundException;
 import nl.tudelft.sem.template.cart.services.PizzaService;
 import nl.tudelft.sem.template.cart.controllers.PizzaController;
@@ -9,6 +10,7 @@ import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.models.PizzaModel;
+import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -30,6 +32,8 @@ public class PizzaContollerTest {
     private DefaultPizza p1 = new DefaultPizza("hawaii", List.of(t1), 6);
     private PizzaService ps;
     private ToppingService toppingService;
+    private RequestHelper requestHelper;
+    private AuthManager authManager;
     private PizzaController pc;
     private PizzaModel pm = new PizzaModel();
 
@@ -37,7 +41,9 @@ public class PizzaContollerTest {
     void beforeEach() {
         ps = Mockito.mock(PizzaService.class);
         toppingService = Mockito.mock(ToppingService.class);
-        pc = new PizzaController(ps, toppingService);
+        requestHelper = Mockito.mock(RequestHelper.class);
+        authManager = Mockito.mock(AuthManager.class);
+        pc = new PizzaController(ps, toppingService, requestHelper, authManager);
         pm.setPizzaName("hawaii");
         pm.setPrice(6);
         pm.setToppings(List.of(t1.getName()));
