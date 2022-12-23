@@ -36,14 +36,14 @@ public class CustomerServiceTest {
         List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
         List<String> allergens = Arrays.asList("peanut", "gluten");
         int customerId = 123456;
-        NetId netId = new NetId("example123");
+        NetId netId = new NetId("example123@test.com");
 
         customer = new Customer(netId);
             customer.setCustomerId(customerId);
             customer.setAllergens(allergens);
             customer.setUsedCoupons(usedCoupons);
 
-        when(repo.findByNetId(new NetId("example123"))).thenReturn(java.util.Optional.ofNullable(customer));
+        when(repo.findByNetId(new NetId("example123@test.com"))).thenReturn(java.util.Optional.ofNullable(customer));
         customerService = new CustomerService(repo);
     }
 
@@ -63,14 +63,14 @@ public class CustomerServiceTest {
 
     @Test
     void TestGetCustomerByNetIdSuccess() {
-        assertEquals(customerService.getCustomerByNetId(new NetId("example123")), customer);
+        assertEquals(customerService.getCustomerByNetId(new NetId("example123@test.com")), customer);
     }
 
     @Test
     void TestGetCustomerByNetIdException() {
-        when(repo.findByNetId(new NetId("example123"))).thenReturn(java.util.Optional.ofNullable(null));
+        when(repo.findByNetId(new NetId("example123@test.com"))).thenReturn(java.util.Optional.ofNullable(null));
         assertThrows(CustomerNotFoundException.class, () -> {
-            customerService.getCustomerByNetId(new NetId("example123"));
+            customerService.getCustomerByNetId(new NetId("example123@test.com"));
         });
     }
 
@@ -108,25 +108,25 @@ public class CustomerServiceTest {
     @Test
     void TestHasUsedCouponsTrue() {
         String coupon = "coupon2";
-        assertTrue(customerService.hasUsedCoupon(new NetId("example123"), coupon));
+        assertTrue(customerService.hasUsedCoupon(new NetId("example123@test.com"), coupon));
     }
 
     @Test
     void TestHasUsedCouponsFalse() {
         String coupon = "coupon3";
-        assertFalse(customerService.hasUsedCoupon(new NetId("example123"), coupon));
+        assertFalse(customerService.hasUsedCoupon(new NetId("example123@test.com"), coupon));
     }
 
     @Test
     void TestCheckUsedCoupons() {
         List<String> res = List.of("coupon3");
         List<String> coupons = Arrays.asList("coupon1", "coupon3");
-        assertEquals(customerService.checkUsedCoupons(new NetId("example123"), coupons), res);
+        assertEquals(customerService.checkUsedCoupons(new NetId("example123@test.com"), coupons), res);
     }
     @Test
     void TestUpdateAllergens() {
         List<String> allergens = List.of("peanut");
-        customerService.updateAllergens(new NetId("example123"), allergens);
+        customerService.updateAllergens(new NetId("example123@test.com"), allergens);
         customer.setAllergens(allergens);
         verify(repo).save(customer);
     }

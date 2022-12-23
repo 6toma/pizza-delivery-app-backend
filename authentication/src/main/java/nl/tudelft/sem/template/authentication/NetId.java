@@ -2,9 +2,9 @@ package nl.tudelft.sem.template.authentication;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.persistence.Embeddable;
-
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +23,16 @@ public class NetId implements Serializable {
     public NetId(String netId) {
         // validate NetID
         this.netIdValue = netId;
+        if (!checkEmail(netId)) {
+            throw new EmailNotValidException("The email '" + this.netIdValue + "' is not valid.");
+        }
+    }
+
+    private boolean checkEmail(String email) {
+        String regex = "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     @JsonValue

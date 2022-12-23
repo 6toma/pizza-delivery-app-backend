@@ -1,20 +1,20 @@
 package nl.tudelft.sem.template.customer;
 
-import nl.tudelft.sem.template.customer.domain.Customer;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
-
 import nl.tudelft.sem.template.authentication.NetId;
-
-import static org.junit.jupiter.api.Assertions.*;
+import nl.tudelft.sem.template.customer.domain.Customer;
+import org.junit.jupiter.api.Test;
 
 class CustomerTest {
 
     @Test
     public void constructNotNull(){
-        NetId netId = new NetId("example123");
+        NetId netId = new NetId("example123@test.com");
         Customer customer = new Customer(netId);
         assertNotNull(customer);
         assertTrue(customer.getUsedCoupons().isEmpty());
@@ -26,7 +26,7 @@ class CustomerTest {
         List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
         List<String> allergens = Arrays.asList("peanut", "gluten");
         int customerId = 123456;
-        NetId netId = new NetId("example123");
+        NetId netId = new NetId("example123@test.com");
 
         Customer customer = new Customer(netId);
         customer.setCustomerId(customerId);
@@ -45,7 +45,7 @@ class CustomerTest {
         List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
         List<String> allergens = Arrays.asList("peanut", "gluten");
         int customerId = 123456;
-        NetId netId = new NetId("example123");
+        NetId netId = new NetId("example123@test.com");
 
         Customer customer = new Customer(netId);
             customer.setCustomerId(customerId);
@@ -64,7 +64,7 @@ class CustomerTest {
         List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
         List<String> allergens = Arrays.asList("peanut", "gluten");
         int customerId = 123456;
-        NetId netId = new NetId("example123");
+        NetId netId = new NetId("example123@test.com");
 
         Customer customer = new Customer(netId);
             customer.setCustomerId(customerId);
@@ -83,7 +83,7 @@ class CustomerTest {
         List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
         List<String> allergens = Arrays.asList("peanut", "gluten");
         int customerId = 123456;
-        NetId netId = new NetId("example123");
+        NetId netId = new NetId("example123@test.com");
 
         Customer customer = new Customer(netId);
             customer.setCustomerId(customerId);
@@ -100,7 +100,7 @@ class CustomerTest {
     @Test
     public void testGetCustomerId() {
         int customerId = 123456;
-        NetId netId = new NetId("example123");
+        NetId netId = new NetId("example123@test.com");
         Customer customer = new Customer(netId);
         customer.setCustomerId(customerId);
         assertEquals(customerId, customer.getCustomerId());
@@ -111,7 +111,7 @@ class CustomerTest {
         List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
         List<String> allergens = Arrays.asList("peanut", "gluten");
         int customerId = 123456;
-        NetId netId = new NetId("example123");
+        NetId netId = new NetId("example123@test.com");
 
         Customer customer = new Customer(netId);
             customer.setCustomerId(customerId);
@@ -119,14 +119,14 @@ class CustomerTest {
             customer.setUsedCoupons(usedCoupons);
         assertEquals(netId, customer.getNetId());
 
-        NetId newNetId = new NetId("example456");
+        NetId newNetId = new NetId("example456@test.com");
         customer.setNetId(newNetId);
         assertEquals(newNetId, customer.getNetId());
     }
 
     @Test
     public void testGetNetId() {
-        NetId netId = new NetId("example123");
+        NetId netId = new NetId("example123@test.com");
         Customer customer = new Customer(netId);
         assertEquals(netId, customer.getNetId());
     }
@@ -134,7 +134,7 @@ class CustomerTest {
     @Test
     public void testGetUsedCoupons() {
         List<String> usedCoupons = Arrays.asList("coupon1", "coupon2");
-        NetId netId = new NetId("example123");
+        NetId netId = new NetId("example123@test.com");
         Customer customer = new Customer(netId);
         customer.setUsedCoupons(usedCoupons);
         assertEquals(usedCoupons, customer.getUsedCoupons());
@@ -143,7 +143,7 @@ class CustomerTest {
     @Test
     public void testGetAllergens() {
         List<String> allergens = Arrays.asList("peanut", "gluten");
-        NetId netId = new NetId("example123");
+        NetId netId = new NetId("example123@test.com");
         Customer customer = new Customer(netId);
         customer.setAllergens(allergens);
         assertEquals(allergens, customer.getAllergens());

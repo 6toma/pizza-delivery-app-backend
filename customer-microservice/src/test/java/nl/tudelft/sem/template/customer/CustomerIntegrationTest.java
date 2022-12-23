@@ -36,7 +36,7 @@ public class CustomerIntegrationTest extends IntegrationTest {
     void setup() {
         customerRepository.deleteAll();
         customerRepository.flush();
-        customer1 = customerRepository.save(new Customer(new NetId("netId")));
+        customer1 = customerRepository.save(new Customer(new NetId("someUser@gmail.com")));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class CustomerIntegrationTest extends IntegrationTest {
 
     @Test
     public void testCustomerByNetIdNotThere() throws Exception {
-        getCustomerByNetId("Random user here").andExpect(status().isNotFound());
+        getCustomerByNetId("someUser@user.com").andExpect(status().isNotFound());
     }
 
     @Test
@@ -68,14 +68,14 @@ public class CustomerIntegrationTest extends IntegrationTest {
 
     @Test
     public void testAddCustomer() throws Exception {
-        var res = postAdd("newCustomer").andExpect(status().isOk());
+        var res = postAdd("newCustomer@test.com").andExpect(status().isOk());
         assertEquals(customerRepository.findAll().size(), 2);
     }
 
     @Test
     public void testAddToUsedCoupon() throws Exception {
-        postAddToUsedCoupons("netId", "ABCD123").andExpect(status().isOk());
-        postAddToUsedCoupons("netId", "other").andExpect(status().isOk());
+        postAddToUsedCoupons("someUser@gmail.com", "ABCD123").andExpect(status().isOk());
+        postAddToUsedCoupons("someUser@gmail.com", "other").andExpect(status().isOk());
         Customer customer = customerRepository.findAll().get(0);
         assertThat(customer.getUsedCoupons().get(0)).isEqualTo("ABCD123");
         assertThat(customer.getUsedCoupons().get(1)).isEqualTo("other");
@@ -83,36 +83,36 @@ public class CustomerIntegrationTest extends IntegrationTest {
 
     @Test
     public void testRemoveFromUsedCoupon() throws Exception {
-        postAddToUsedCoupons("netId", "ABCD123").andExpect(status().isOk());
-        postRemoveFromUsedCoupons("netId", "ABCD123").andExpect(status().isOk());
+        postAddToUsedCoupons("someUser@gmail.com", "ABCD123").andExpect(status().isOk());
+        postRemoveFromUsedCoupons("someUser@gmail.com", "ABCD123").andExpect(status().isOk());
         Customer customer = customerRepository.findAll().get(0);
         assertThat(customer.getUsedCoupons().size()).isEqualTo(0);
     }
 
     @Test
     public void testHasUsedCouponTrue() throws Exception {
-        postAddToUsedCoupons("netId", "ABCD123").andExpect(status().isOk());
-        postAddToUsedCoupons("netId", "other").andExpect(status().isOk());
+        postAddToUsedCoupons("someUser@gmail.com", "ABCD123").andExpect(status().isOk());
+        postAddToUsedCoupons("someUser@gmail.com", "other").andExpect(status().isOk());
 
-        getHasUsedCoupon("netId", "ABCD123").andExpect(status().isOk())
+        getHasUsedCoupon("someUser@gmail.com", "ABCD123").andExpect(status().isOk())
             .andExpect(content().string("true"));
-        getHasUsedCoupon("netId", "other").andExpect(status().isOk())
+        getHasUsedCoupon("someUser@gmail.com", "other").andExpect(status().isOk())
             .andExpect(content().string("true"));
     }
 
     @Test
     public void testHasUsedCouponFalse() throws Exception {
-        postAddToUsedCoupons("netId", "ABCD123").andExpect(status().isOk());
+        postAddToUsedCoupons("someUser@gmail.com", "ABCD123").andExpect(status().isOk());
 
-        getHasUsedCoupon("netId", "EFGH567").andExpect(status().isOk())
+        getHasUsedCoupon("someUser@gmail.com", "EFGH567").andExpect(status().isOk())
             .andExpect(content().string("false"));
     }
 
     @Test
     public void testCheckUsedCoupons() throws Exception {
         List<String> coupons = Arrays.asList("ABCD123", "AAAAA");
-        postAddToUsedCoupons("netId", "ABCD123").andExpect(status().isOk());
-        var res = postCheckUsedCoupons("netId", coupons).andExpect(status().isOk());
+        postAddToUsedCoupons("someUser@gmail.com", "ABCD123").andExpect(status().isOk());
+        var res = postCheckUsedCoupons("someUser@gmail.com", coupons).andExpect(status().isOk());
         String[] couponsArray = {"AAAAA"};
         res.andExpect(jsonPath("@", hasSize(1)))
             .andExpect(jsonPath("@", containsInAnyOrder(couponsArray)));
@@ -129,8 +129,8 @@ public class CustomerIntegrationTest extends IntegrationTest {
     @Test
     public void testGetAllergens() throws Exception {
         postUpdateAllergens(List.of("salami", "tomato"));
-        Customer customer = customerRepository.findByNetId(new NetId("netId")).get();
-        var res = getAllergens("netId");
+        Customer customer = customerRepository.findByNetId(new NetId("someUser@gmail.com")).get();
+        var res = getAllergens("someUser@gmail.com");
 
         res.andExpect(jsonPath("@", hasSize(2)))
             .andExpect(jsonPath("@", containsInAnyOrder("salami", "tomato")));
@@ -173,7 +173,7 @@ public class CustomerIntegrationTest extends IntegrationTest {
     }
 
     private ResultActions postUpdateAllergens(List<String> toppings) throws Exception {
-        return mockMvc.perform(authenticated(post("/customers/allergens"), "netId")
+        return mockMvc.perform(authenticated(post("/customers/allergens"), "someUser@gmail.com")
             .contentType(MediaType.APPLICATION_JSON).content(toJson(toppings)));
     }
 

@@ -14,7 +14,7 @@ public class CartTest {
     private Topping t2 = new Topping("salami", 1.5);
     private CustomPizza p1 = new CustomPizza("hawaii", 7, List.of(t1));
     private CustomPizza p2 = new CustomPizza("hawaii", 7, List.of(t1));
-    private Cart c1 = new Cart(new NetId("me"), new HashMap<>());
+    private Cart c1 = new Cart(new NetId("me@test.com"), new HashMap<>());
 
 
     @Test

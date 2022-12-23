@@ -359,7 +359,7 @@ public class CartControllerTest extends IntegrationTest {
 
     @Test
     void testGetCartNoCartForId() throws Exception {
-        getCartRequest(new NetId("Not a real ID")).andExpect(status().isBadRequest());
+        getCartRequest(new NetId("realid@gmail.com")).andExpect(status().isBadRequest());
     }
 
     private CustomPizza search(Collection<CustomPizza> pizzas, String name) {

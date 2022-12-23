@@ -30,13 +30,13 @@ class JwtUserDetailsServiceTest {
 
     @Test
     void loadUserByUsernameFound() {
-        var netId = new NetId("user");
+        var netId = new NetId("user@gmail.com");
         var password = new HashedPassword("hashed_password");
         var role = UserRole.REGIONAL_MANAGER;
         var user = new AppUser(netId, role, password);
         when(userRepository.findByNetId(any())).thenReturn(Optional.of(user));
 
-        var result = userDetailsService.loadUserByUsername("user");
+        var result = userDetailsService.loadUserByUsername("user@gmail.com");
         assertNotNull(result);
         assertEquals(netId.toString(), result.getUsername());
         assertEquals(password.toString(), result.getPassword());
@@ -47,6 +47,6 @@ class JwtUserDetailsServiceTest {
     @Test
     void loadUserByUsernameNotFound() {
         when(userRepository.findByNetId(any())).thenReturn(Optional.empty());
-        assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername("username"));
+        assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername("username@test.com"));
     }
 }

@@ -44,7 +44,7 @@ class StoreOwnerDataLoaderTest {
 
     @Test
     void testRunHasStoreOwners() {
-        var user = new AppUser(new NetId("user"), UserRole.STORE_OWNER, new HashedPassword("HashedPassword"));
+        var user = new AppUser(new NetId("user@test.com"), UserRole.STORE_OWNER, new HashedPassword("HashedPassword"));
         when(userRepository.findAllByRole(UserRole.STORE_OWNER)).thenReturn(Collections.singletonList(user));
         dataLoader.run(applicationArguments);
         verify(userRepository, times(1)).findAllByRole(any());

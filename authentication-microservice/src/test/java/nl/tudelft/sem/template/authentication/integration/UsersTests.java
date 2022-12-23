@@ -68,7 +68,7 @@ public class UsersTests {
     @Test
     public void register_withValidData_worksCorrectly() throws Exception {
         // Arrange
-        final NetId testUser = new NetId("SomeUser");
+        final NetId testUser = new NetId("someUser@gmail.com");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
@@ -95,7 +95,7 @@ public class UsersTests {
     @Test
     public void register_withExistingUser_throwsException() throws Exception {
         // Arrange
-        final NetId testUser = new NetId("SomeUser");
+        final NetId testUser = new NetId("someUser@gmail.com");
         final Password newTestPassword = new Password("password456");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
 
@@ -123,7 +123,7 @@ public class UsersTests {
     @Test
     public void login_withValidUser_returnsToken() throws Exception {
         // Arrange
-        final NetId testUser = new NetId("SomeUser");
+        final NetId testUser = new NetId("someUser@gmail.com");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
@@ -169,7 +169,7 @@ public class UsersTests {
     @Test
     public void login_withNonexistentUsername_returns403() throws Exception {
         // Arrange
-        final String testUser = "SomeUser";
+        final String testUser = "someUser@gmail.com";
         final String testPassword = "password123";
 
         when(mockAuthenticationManager.authenticate(argThat(authentication ->
@@ -199,7 +199,7 @@ public class UsersTests {
     @Test
     public void login_withInvalidPassword_returns403() throws Exception {
         // Arrange
-        final String testUser = "SomeUser";
+        final String testUser = "someUser@gmail.com";
         final String wrongPassword = "password1234";
         final String testPassword = "password123";
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
@@ -234,7 +234,7 @@ public class UsersTests {
 
     @Test
     public void testLoginDisabledAccount() throws Exception {
-        final String testUser = "SomeUser";
+        final String testUser = "someUser@gmail.com";
         final String wrongPassword = "password1234";
         final String testPassword = "password123";
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
