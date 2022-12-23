@@ -1,25 +1,26 @@
 package nl.tudelft.sem.template.customer;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import nl.tudelft.sem.template.authentication.AuthManager;
-import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.customer.controllers.CustomerController;
 import nl.tudelft.sem.template.customer.domain.Customer;
 import nl.tudelft.sem.template.customer.domain.CustomerNotFoundException;
 import nl.tudelft.sem.template.customer.domain.CustomerRepository;
 import nl.tudelft.sem.template.customer.domain.CustomerService;
+import nl.tudelft.sem.template.authentication.AuthManager;
+import nl.tudelft.sem.template.authentication.NetId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 public class CustomerControllerTest {
 
@@ -56,32 +57,12 @@ public class CustomerControllerTest {
     }
 
     @Test
-    public void testGetCustomerById_customerNotFound() {
-        int customerId = 123;
-        when(repo.findById(123456)).thenReturn(java.util.Optional.ofNullable(null));
-
-        assertThrows(CustomerNotFoundException.class, () -> {
-            customerController.getCustomerById(customerId);
-        });
-    }
-
-
-    @Test
     public void testGetCustomerByNetId() {
         when(repo.findByNetId(new NetId("example123"))).thenReturn(Optional.of(customer));
+
         ResponseEntity<Customer> response = customerController.getCustomerByNetId("example123");
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(customer);
-    }
-
-    @Test
-    public void testGetCustomerByNetId_customerNotFound() {
-        String netId = "example123";
-        when(repo.findByNetId(new NetId(netId))).thenReturn(java.util.Optional.ofNullable(null));
-
-        assertThrows(CustomerNotFoundException.class, () -> {
-            customerController.getCustomerByNetId("random netId");
-        });
     }
 
     @Test
