@@ -31,6 +31,8 @@ class OrderControllerTest extends IntegrationTest {
                 .withPizzaList(List.of(new CartPizza(pizza, 1)))
                 .withPickupTime(LocalDateTime.now())
                 .withStoreId(1L)
+                .withFinalPrice(100)
+                .withCoupon("ABCD12")
                 .build()
         );
         var result = doRequest(authenticated(get("/orders/"))).andExpect(status().isOk());

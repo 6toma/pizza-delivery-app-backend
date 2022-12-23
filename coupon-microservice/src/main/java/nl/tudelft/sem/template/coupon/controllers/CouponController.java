@@ -1,11 +1,14 @@
 package nl.tudelft.sem.template.coupon.controllers;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.PriorityQueue;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.store.domain.StoreOwnerValidModel;
 import nl.tudelft.sem.template.authentication.AuthManager;
+import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.authentication.annotations.role.MicroServiceInteraction;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwnerOrRegionalManager;
 import nl.tudelft.sem.template.authentication.domain.user.UserRole;
@@ -23,6 +26,7 @@ import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
 import nl.tudelft.sem.template.coupon.services.CouponService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -66,8 +70,9 @@ public class CouponController {
     @RoleStoreOwnerOrRegionalManager
     @GetMapping("/getCouponsForStore")
     public ResponseEntity<List<Coupon>> getCouponsForStore(@RequestBody long storeId) {
-        if(!requestHelper.postRequest(8084, "/store/existsByStoreId", storeId, Boolean.class))
+        if (!requestHelper.postRequest(8084, "/store/existsByStoreId", storeId, Boolean.class)) {
             throw new InvalidStoreIdException();
+        }
         return ResponseEntity.ok(repo.findByStoreId(storeId));
     }
 
@@ -80,7 +85,7 @@ public class CouponController {
      */
     @RoleStoreOwnerOrRegionalManager
     @PostMapping("/addCoupon")
-    public ResponseEntity<Coupon> addCoupon(@RequestBody Coupon coupon) {
+    public ResponseEntity<Coupon> addCoupon(@Validated @RequestBody Coupon coupon) {
         if (coupon.getCode() == null) {
             throw new InvalidCouponCodeException("No coupon code provided!");
         }
@@ -94,16 +99,18 @@ public class CouponController {
             throw new InvalidStoreIdException();
         }
 
-        if (coupon.getStoreId() == -1 && authManager.getRole() != UserRole.REGIONAL_MANAGER)
+        if (coupon.getStoreId() == -1 && authManager.getRole() != UserRole.REGIONAL_MANAGER) {
             throw new NotRegionalManagerException();
-        if (coupon.getType() == null || coupon.getExpiryDate() == null)
+        }
+        if (coupon.getType() == null || coupon.getExpiryDate() == null) {
             throw new IncompleteCouponException();
+        }
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), coupon.getStoreId());
-        if(requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class))
-            repo.save(coupon);
-        else
+        if (coupon.getStoreId() == -1 || requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class)) {
+            return ResponseEntity.ok(repo.save(coupon));
+        } else {
             throw new InvalidStoreIdException();
-        return ResponseEntity.ok(coupon);
+        }
     }
 
     @MicroServiceInteraction
@@ -111,32 +118,47 @@ public class CouponController {
     public ResponseEntity<CouponFinalPriceModel> selectCoupon(@RequestBody PricesCodesModel pricesCodesModel) {
         List<Double> prices = pricesCodesModel.getPrices();
         List<String> codes = pricesCodesModel.getCodes();
-        if (prices.isEmpty())
+        if (prices.isEmpty() || codes.isEmpty()) {
             return ResponseEntity.badRequest().build();
+        }
         PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
-        for (String code : codes) {
+        var unusedCodes = getUnusedCodes(pricesCodesModel.getNetId(), codes);
+        for (String code : unusedCodes) {
             ResponseEntity<Coupon> c;
-            ResponseEntity<Boolean> used = null; //TODO: endpoint needs to be created in customer
             try {
                 c = getCouponByCode(code);
                 //TODO: call endpoint for used
             } catch (InvalidCouponCodeException e) {
                 continue;
             }
-            if(c.getStatusCode().equals(HttpStatus.BAD_REQUEST))
+            if (c.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
                 continue;
+            }
             Coupon coupon = c.getBody();
+            if (coupon.getStoreId() != -1 && coupon.getStoreId() != pricesCodesModel.getStoreId()) {
+                continue;
+            }
             if (coupon.getType() == CouponType.DISCOUNT) {
                 pq.add(new CouponFinalPriceModel(code, couponService.applyDiscount(coupon, prices)));
             } else {
-                if (prices.size() == 1)
+                if (prices.size() == 1) {
                     continue;
+                }
                 pq.add(new CouponFinalPriceModel(code, couponService.applyOnePlusOne(coupon, prices)));
             }
         }
-        if(pq.isEmpty())
-            return ResponseEntity.badRequest().build();
+        if (pq.isEmpty()) {
+            return ResponseEntity.ok(
+                new CouponFinalPriceModel(null, prices.stream().mapToDouble(x -> x).sum())
+            );
+        }
         return ResponseEntity.ok(pq.peek());
+    }
+
+    private List<String> getUnusedCodes(String netId, Collection<String> codes) {
+        return Arrays.asList(
+            requestHelper.postRequest(8081, "/customers/checkUsedCoupons/" + netId, codes, String[].class)
+        );
     }
 
 }

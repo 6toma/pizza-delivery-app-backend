@@ -76,6 +76,9 @@ public class CustomerController {
     @MicroServiceInteraction
     @PostMapping({"", "/"})
     public ResponseEntity<String> addCustomer(@NotNull @RequestBody String netId) {
+        if (customerService.getCustomerByNetId(new NetId(netId)) != null) {
+            return ResponseEntity.ok("Customer added.");
+        }
         var customer = new Customer();
         customer.setNetId(new NetId(netId));
         customer.setAllergens(Collections.emptyList());
@@ -140,10 +143,10 @@ public class CustomerController {
      * @param couponCodes the list of coupon codes to evaluate
      * @return a list of all the coupons that have not been used yet out of that list
      */
-    @GetMapping("/checkUsedCoupons")
-    public List<String> checkUsedCoupons(@RequestParam("couponCodes") List<String> couponCodes) {
-        NetId netId = new NetId(authManager.getNetId());
-        return customerService.checkUsedCoupons(netId, couponCodes);
+    @PostMapping("/checkUsedCoupons/{netId}")
+    @MicroServiceInteraction
+    public List<String> checkUsedCoupons(@PathVariable("netId") String netId, @RequestBody List<String> couponCodes) {
+        return customerService.checkUsedCoupons(new NetId(netId), couponCodes);
     }
 
     /**

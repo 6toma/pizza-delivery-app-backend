@@ -34,7 +34,7 @@ public class OrderController {
     private final transient OrderService orderService;
 
     private long getStoreId(String storeName) {
-        String storeIdLong = requestHelper.postRequest(8089, "/store/getStoreIdFromName", storeName, String.class);
+        String storeIdLong = requestHelper.postRequest(8084, "/store/getStoreIdFromName", storeName, String.class);
         long storeId = Long.parseLong(storeIdLong);
         if (storeId == -1) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This is not a real store");
@@ -50,7 +50,9 @@ public class OrderController {
     private List<Double> getPriceForEachPizza(List<CartPizza> pizzas) {
         List<Double> priceList = new ArrayList<>(pizzas.size());
         for (CartPizza pizza : pizzas) {
-            priceList.add(pizza.getPizza().calculatePrice() * pizza.getAmount());
+            for (int i = 0; i < pizza.getAmount(); i++) {
+                priceList.add(pizza.getPizza().calculatePrice());
+            }
         }
         return priceList;
     }
@@ -81,7 +83,7 @@ public class OrderController {
             .withPizzaList(pizzas)
             .withFinalPrice(pizzaPrices.stream().mapToDouble(x -> x).sum());
         if (!couponCodes.isEmpty()) {
-            PricesCodesModel pcm = new PricesCodesModel(pizzaPrices, couponCodes);
+            PricesCodesModel pcm = new PricesCodesModel(authManager.getNetId(), storeId, pizzaPrices, couponCodes);
             CouponFinalPriceModel finalCoupon =
                 requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class); // get the best coupon
             orderBuilder = orderBuilder.withCoupon(finalCoupon.getCode()).withFinalPrice(finalCoupon.getPrice());
@@ -91,7 +93,7 @@ public class OrderController {
             requestHelper.postRequest(8081, "/customers/" + customer + "/coupons/add", order.getCoupon(),
                 String.class); // add to customer's used coupons
         }
-        requestHelper.postRequest(8089, "/store/notify", storeId, String.class); // notify store of new order
+        requestHelper.postRequest(8084, "/store/notify", storeId, String.class); // notify store of new order
         return ResponseEntity.ok("Order added with id " + order.getOrderId());
     }
 

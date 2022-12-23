@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.coupon.controllers;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -221,6 +223,7 @@ class CouponControllerTest {
     @Test
     void addCouponNormal() {
         when(authManager.getNetId()).thenReturn("netId");
+        when(repo.save(any())).thenReturn(c);
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), c.getStoreId());
         when(requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class))
             .thenReturn(true);
@@ -232,20 +235,27 @@ class CouponControllerTest {
 
     @Test
     void selectCouponEmptyPriceList() {
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(new ArrayList<>(), List.of("ABDC12")));
+        ResponseEntity<CouponFinalPriceModel> res =
+            couponController.selectCoupon(new PricesCodesModel("netId", 1, new ArrayList<>(), List.of("ABDC12")));
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
     void selectCouponEmptyCouponList() {
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(List.of(10.0), new ArrayList<>()));
+        ResponseEntity<CouponFinalPriceModel> res =
+            couponController.selectCoupon(new PricesCodesModel("netId", 1, List.of(10.0), new ArrayList<>()));
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
     void selectCouponInvalidCoupon() {
-        ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(List.of(10.0), List.of("ABC76")));
-        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        String code = "ABC76";
+        when(requestHelper.postRequest(anyInt(), any(), any(), any())).thenReturn(new String[] {"ABC76"});
+        var expected = new CouponFinalPriceModel(null, 10.0);
+        ResponseEntity<CouponFinalPriceModel> res =
+            couponController.selectCoupon(new PricesCodesModel("netId", 1, List.of(10.0), List.of(code)));
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(res.getBody()).isEqualTo(expected);
     }
 
     @Test
@@ -276,5 +286,7 @@ class CouponControllerTest {
     }
 
     @Test
-    void getRequestHelper() { assertThat(couponController.getRequestHelper()).isEqualTo(requestHelper); }
+    void getRequestHelper() {
+        assertThat(couponController.getRequestHelper()).isEqualTo(requestHelper);
+    }
 }
