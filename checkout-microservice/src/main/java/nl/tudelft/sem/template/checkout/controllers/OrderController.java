@@ -80,34 +80,40 @@ public class OrderController {
 
         List<Double> pizzaPrices = getPriceForEachPizza(pizzas);
         List<String> couponCodes = storeTimeCoupons.getCoupons();
-        List<Double> pizzaPrices = getPriceForEachPizza(pizzas);
-        PricesCodesModel pcm = new PricesCodesModel(pizzaPrices, couponCodes);
+        PricesCodesModel pcm = new PricesCodesModel(customer, storeId, pizzaPrices, couponCodes);
         CouponFinalPriceModel finalCoupon = requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class); // get the best coupon
+
         String finalCouponCode = finalCoupon.getCode();
-        Order order = Order.builder()
-                .withStoreId(storeId)
-                    .withCustomerId(customer)
-                        .withPickupTime(pickupTime)
-                            .withPizzaList(pizzas)
-                                .withCoupon(finalCouponCode)
-                                    .build();
-        order = orderService.addOrder(order);
-        requestHelper.postRequest(8081, "/customers/" + customer + "/coupons/add", finalCouponCode, String.class); // add to customer's used coupons
-        requestHelper.postRequest(8089, "/store/notify", storeId, String.class); // notify store of new order
+        OrderBuilder orderBuilder = Order.builder()
+            .withStoreId(storeId)
+            .withCustomerId(customer)
+            .withPickupTime(pickupTime)
+            .withPizzaList(pizzas)
+            .withFinalPrice(finalCoupon.getPrice());
+
+        if(finalCouponCode.isEmpty()) {
+            orderBuilder.withCoupon(null);
+        } else {
+            orderBuilder.withCoupon(finalCouponCode);
+            requestHelper.postRequest(8081, "/customers/" + customer + "/coupons/add", finalCouponCode, String.class); // add to customer's used coupons
+        }
+        Order order = orderService.addOrder(orderBuilder.build());
+        requestHelper.postRequest(8084, "/store/notify", storeId, String.class); // notify store of new order
         return ResponseEntity.ok("Order added with id " + order.getOrderId());
     }
 
     @PostMapping("/remove/{id}")
     public ResponseEntity<String> removeOrderById(@PathVariable("id") long orderId) {
-        String role = authManager.getRole();
         String netId = authManager.getNetId();
-        String role = authManager.getRole();
+        UserRole role = authManager.getRole();
         try {
             Order orderToBeRemoved = orderService.getOrderById(orderId);
-            if (role.equals("ROLE_STORE_OWNER"))
+            String customerId = orderToBeRemoved.getCustomerId();
+            if (role.equals(UserRole.STORE_OWNER))
                 return ResponseEntity.badRequest().body("Store owners can't cancel orders");
-            if (role.equals("ROLE_REGIONAL_MANGER") ||
-                (orderService.getOrdersForCustomer(netId).contains(orderToBeRemoved) && !orderToBeRemoved.getPickupTime().minusMinutes(30).isBefore(LocalDateTime.now()))) {
+            if (role.equals(UserRole.REGIONAL_MANAGER) ||
+                (customerId.equals(netId) && orderService.getOrdersForCustomer(netId).contains(orderToBeRemoved)
+                    && !orderToBeRemoved.getPickupTime().minusMinutes(30).isBefore(LocalDateTime.now()))) {
                 orderService.removeOrderById(orderId);
                 requestHelper.postRequest(8081, "/customers/" + netId + "/coupons/remove", orderToBeRemoved.getCoupon(), String.class); // remove from customer's used coupons
                 return ResponseEntity.ok("Order with id " + orderId + " successfully removed");
