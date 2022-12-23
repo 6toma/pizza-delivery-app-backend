@@ -239,13 +239,15 @@ class CouponControllerTest {
     @Test
     void selectCouponEmptyCouponList() {
         ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(List.of(10.0), new ArrayList<>()));
-        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(res.getBody().getCode()).isEmpty();
+        assertThat(res.getBody().getPrice()).isEqualTo(10.0);
     }
 
     @Test
     void selectCouponInvalidCoupon() {
         ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(List.of(10.0), List.of("ABC76")));
-        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(res.getBody().getCode()).isEmpty();
+        assertThat(res.getBody().getPrice()).isEqualTo(10.0);
     }
 
     @Test
@@ -255,7 +257,8 @@ class CouponControllerTest {
         when(authManager.getNetId()).thenReturn("Tester");
         when(requestHelper.getRequest(8081, "/customers/Tester/coupons/ABCD12", Boolean.class)).thenReturn(true);
         ResponseEntity<CouponFinalPriceModel> res = couponController.selectCoupon(new PricesCodesModel(List.of(10.0), List.of("ABCD12")));
-        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(res.getBody().getCode()).isEmpty();
+        assertThat(res.getBody().getPrice()).isEqualTo(10.0);
     }
 
     @SneakyThrows
