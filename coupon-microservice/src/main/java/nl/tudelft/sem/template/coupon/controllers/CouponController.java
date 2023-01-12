@@ -75,6 +75,11 @@ public class CouponController {
         return ResponseEntity.ok(repo.findByStoreId(storeId));
     }
 
+    @GetMapping("/getAllCoupons")
+    public List<Coupon> getAllCoupons() {
+        return repo.findAll();
+    }
+
     /**
      * Adds a new coupon from the database, storeId depends on person calling (regional manager or store owner).
      *
@@ -84,7 +89,7 @@ public class CouponController {
      */
     @RoleStoreOwnerOrRegionalManager
     @PostMapping("/addCoupon")
-    public ResponseEntity<Coupon> addCoupon(@Validated @RequestBody Coupon coupon) {
+    public ResponseEntity<String> addCoupon(@Validated @RequestBody Coupon coupon) {
         if (coupon.getCode() == null) {
             throw new InvalidCouponCodeException("No coupon code provided!");
         }
@@ -106,7 +111,9 @@ public class CouponController {
         }
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), coupon.getStoreId());
         if (coupon.getStoreId() == -ONE || requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class)) {
-            return ResponseEntity.ok(repo.save(coupon));
+            repo.save(coupon);
+//            return ResponseEntity.ok(repo.save(coupon));
+            return ResponseEntity.ok("The coupon '" + coupon.getCode() + "' was added");
         } else {
             throw new InvalidStoreIdException();
         }

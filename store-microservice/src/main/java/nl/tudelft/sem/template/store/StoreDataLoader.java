@@ -20,7 +20,7 @@ public class StoreDataLoader implements ApplicationRunner {
     private StoreRepository storeRepository;
 
     public static List<Store> DEFAULT_STORE_LIST = List.of(
-        Store.builder().storeId(1).storeName("Delft Dehoven").storeOwnerNetId(new NetId("nicolae.filat@gmail.com"))
+        Store.builder().storeId(1).storeName("Delft Dehoven").storeOwnerNetId(new NetId("dpdaan@hotmail.com"))
             .location(new StoreAddress("2624AK", "Papsouwselaan", 123)).build(),
         Store.builder().storeId(2).storeName("Delft Uni").storeOwnerNetId(new NetId("storeowner2@ap.nl"))
             .location(new StoreAddress("2611BK", "Binnenwatersloot ", 12)).build(),

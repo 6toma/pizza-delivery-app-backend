@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class StoreOwnerDataLoader implements ApplicationRunner {
 
     private static final String STORE_OWNER_PASSWORD = "password123";
-    private static final NetId STORE_OWNER_NET_ID_1 = new NetId("storeowner1@ap.nl");
+    private static final NetId STORE_OWNER_NET_ID_1 = new NetId("dpdaan@hotmail.com");
     private static final NetId STORE_OWNER_NET_ID_2 = new NetId("storeowner2@ap.nl");
     private static final NetId STORE_OWNER_NET_ID_3 = new NetId("storeowner3@ap.nl");
 

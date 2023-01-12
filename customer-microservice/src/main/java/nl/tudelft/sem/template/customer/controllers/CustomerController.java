@@ -51,7 +51,6 @@ public class CustomerController {
      * @param netId the netId to search for.
      * @return the Customer with the specified netId.
      */
-    @MicroServiceInteraction
     @GetMapping("/netId/{netId}")
     public ResponseEntity<Customer> getCustomerByNetId(@PathVariable String netId) {
         NetId customerNetId = new NetId(netId);

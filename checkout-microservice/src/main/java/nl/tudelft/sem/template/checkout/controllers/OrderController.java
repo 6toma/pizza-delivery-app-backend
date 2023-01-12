@@ -96,7 +96,7 @@ public class OrderController {
             Order.builder().withStoreId(storeId).withCustomerId(customer).withPickupTime(pickupTime).withPizzaList(pizzas)
                 .withFinalPrice(finalCoupon.getPrice());
 
-        if (finalCouponCode.isEmpty()) {
+        if (finalCouponCode == null || finalCouponCode.isEmpty()) {
             orderBuilder.withCoupon(null);
         } else {
             orderBuilder.withCoupon(finalCouponCode);
