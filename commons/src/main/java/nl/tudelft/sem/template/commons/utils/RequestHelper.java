@@ -8,14 +8,12 @@ import nl.tudelft.sem.template.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.annotations.role.MicroServiceInteraction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -87,22 +85,21 @@ public class RequestHelper {
         URI url = createUrl(port, path);
         logger.info("Doing a " + httpMethod.toString() + " on " + url);
 
-        try {
-            RequestEntity.HeadersBuilder<?> request =
-                RequestEntity.method(httpMethod, url).accept(MediaType.APPLICATION_JSON);
-            var requestWithToken = request.header("Authorization", "Bearer " + getAuthenticationToken());
-            if (toSend != null) {
-                // add to post request the object
-                var postRequest = ((RequestEntity.BodyBuilder) requestWithToken).body(toSend);
-                return new RestTemplate().exchange(postRequest, responseClass);
-            }
-            return new RestTemplate().exchange(request.build(), responseClass);
-        } catch (ResourceAccessException connectException) {
-            logger.error("The other microservice can't be reached. Check if port is ok or the path is ok.");
-            throw new IllegalArgumentException("The url " + url
-                +
-                " is not valid,copy url to postman to check. Maybe the other server is not running or the path is not good");
+        RequestEntity.HeadersBuilder<?> request =
+            RequestEntity.method(httpMethod, url).accept(MediaType.APPLICATION_JSON);
+        var requestWithToken = request.header("Authorization", "Bearer " + getAuthenticationToken());
+        if (toSend != null) {
+            // add to post request the object
+            var postRequest = ((RequestEntity.BodyBuilder) requestWithToken).body(toSend);
+            return new RestTemplate().exchange(postRequest, responseClass);
         }
+        return new RestTemplate().exchange(request.build(), responseClass);
+        //        } catch (ResourceAccessException connectException) {
+        //            logger.error("The other microservice can't be reached. Check if port is ok or the path is ok.");
+        //            throw new IllegalArgumentException("The url " + url
+        //                +
+        //                " is not valid,copy url to postman to check. Maybe the other server is not running or the path is not good");
+        //        }
     }
 
     private <T> T doRequest(HttpMethod httpMethod, int port, String path, Object toSend,
