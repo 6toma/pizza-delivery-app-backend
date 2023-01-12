@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
-import nl.tudelft.sem.template.cart.services.PizzaService;
 import nl.tudelft.sem.template.cart.ToppingRepository;
+import nl.tudelft.sem.template.cart.services.PizzaService;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
@@ -46,12 +46,12 @@ public class PizzaControllerTest extends IntegrationTest {
     void setup() {
         defaultRepository.deleteAll();
         toppingRepository.deleteAll();
-        var toppings1 = toppingRepository.saveAll(Arrays.asList(new Topping("test1", 10),
-            new Topping("some test topping", 13),
-            new Topping("some other topping", 15)));
         pizzaModel = new PizzaModel();
         pizzaModel.setPizzaName("Hawaii");
         pizzaModel.setPrice(7);
+        var toppings1 = toppingRepository.saveAll(Arrays.asList(new Topping("test1", 10),
+            new Topping("some test topping", 13),
+            new Topping("some other topping", 15)));
         pizzaModel.setToppings(toppings1.stream().map(Topping::getName).collect(Collectors.toList()));
         pizza1 = new DefaultPizza("Hawaii", toppings1, 7);
         pizza2 = new DefaultPizza("Hawaii", toppings1, 8);

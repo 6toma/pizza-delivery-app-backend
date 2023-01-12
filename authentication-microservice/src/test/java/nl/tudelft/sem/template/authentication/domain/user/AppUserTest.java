@@ -10,7 +10,7 @@ class AppUserTest {
 
     @Test
     void testChangePassword() {
-        var netId = new NetId("user");
+        var netId = new NetId("user1@test.com");
         var password = new HashedPassword("password_hash");
         var user = new AppUser(netId, password);
         assertEquals(password, user.getPassword());
@@ -21,7 +21,7 @@ class AppUserTest {
 
     @Test
     void testChangePasswordNull() {
-        var netId = new NetId("user");
+        var netId = new NetId("user1@test.com");
         var password = new HashedPassword("password_hash");
         var user = new AppUser(netId, password);
         assertEquals(password, user.getPassword());
@@ -31,7 +31,7 @@ class AppUserTest {
 
     @Test
     void testEquals() {
-        var netId = new NetId("user");
+        var netId = new NetId("user1@test.com");
         var user1 = new AppUser(netId, UserRole.CUSTOMER, new HashedPassword("password_1"));
         var user2 = new AppUser(netId, UserRole.REGIONAL_MANAGER, new HashedPassword("password_0"));
         assertEquals(user1, user2);
@@ -39,7 +39,7 @@ class AppUserTest {
 
     @Test
     void testHashCode() {
-        var netId = new NetId("user");
+        var netId = new NetId("user1@test.com");
         var user1 = new AppUser(netId, UserRole.CUSTOMER, new HashedPassword("password_1"));
         var user2 = new AppUser(netId, UserRole.REGIONAL_MANAGER, new HashedPassword("password_0"));
         assertEquals(user1.hashCode(), user2.hashCode());

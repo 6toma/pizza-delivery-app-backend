@@ -34,7 +34,7 @@ public class JwtUserDetailsServiceTests {
     @Test
     public void loadUserByUsername_withValidUser_returnsCorrectUser() {
         // Arrange
-        final NetId testUser = new NetId("SomeUser");
+        final NetId testUser = new NetId("SomeUser@test.com");
         final HashedPassword testHashedPassword = new HashedPassword("password123Hash");
 
         AppUser appUser = new AppUser(testUser, testHashedPassword);
@@ -51,9 +51,9 @@ public class JwtUserDetailsServiceTests {
     @Test
     public void loadUserByUsername_withNonexistentUser_throwsException() {
         // Arrange
-        final String testNonexistentUser = "SomeUser";
+        final String testNonexistentUser = "SomeUser@test.com";
 
-        final NetId testUser = new NetId("AnotherUser");
+        final NetId testUser = new NetId("AnotherUser@gmail.com");
         final String testPasswordHash = "password123Hash";
 
         AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash));

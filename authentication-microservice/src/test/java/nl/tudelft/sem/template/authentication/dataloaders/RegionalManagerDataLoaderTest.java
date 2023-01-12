@@ -44,7 +44,7 @@ class RegionalManagerDataLoaderTest {
 
     @Test
     void testRunHasRegionalManager() {
-        var user = new AppUser(new NetId("user"), UserRole.REGIONAL_MANAGER, new HashedPassword("HashedPassword"));
+        var user = new AppUser(new NetId("user@test.com"), UserRole.REGIONAL_MANAGER, new HashedPassword("HashedPassword"));
         when(userRepository.findAllByRole(UserRole.REGIONAL_MANAGER)).thenReturn(Collections.singletonList(user));
         dataLoader.run(applicationArguments);
         verify(userRepository, times(1)).findAllByRole(any());

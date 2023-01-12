@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.cart.mockTest;
+package nl.tudelft.sem.template.cart.mocktest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

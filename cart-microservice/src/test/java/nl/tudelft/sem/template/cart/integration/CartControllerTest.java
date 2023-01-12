@@ -93,11 +93,11 @@ public class CartControllerTest extends IntegrationTest {
     void testAddToCartSuccess() throws Exception {
         int id = defaultPizza1.getId();
         var result = addPizzaRequest(id);
-        var response = parseResponseJson(result, AddToCartResponse.class);
         result.andExpect(status().isOk());
         assertEquals(1, customRepository.count());
         var custom = customRepository.findAll().stream().findFirst().get();
         assertEqualsPizzas(defaultPizza1, custom);
+        var response = parseResponseJson(result, AddToCartResponse.class);
         assertThat(response.isHasAllergens()).isFalse();
     }
 
@@ -107,11 +107,11 @@ public class CartControllerTest extends IntegrationTest {
         when(requestHelper.getRequest(anyInt(), any(), any())).thenReturn(
             new String[] {defaultPizza1.getToppings().get(0).getName()});
         var result = addPizzaRequest(id);
-        var response = parseResponseJson(result, AddToCartResponse.class);
         result.andExpect(status().isOk());
         assertEquals(1, customRepository.count());
         var custom = customRepository.findAll().stream().findFirst().get();
         assertEqualsPizzas(defaultPizza1, custom);
+        var response = parseResponseJson(result, AddToCartResponse.class);
         assertThat(response.isHasAllergens()).isTrue();
     }
 
@@ -359,7 +359,7 @@ public class CartControllerTest extends IntegrationTest {
 
     @Test
     void testGetCartNoCartForId() throws Exception {
-        getCartRequest(new NetId("Not a real ID")).andExpect(status().isBadRequest());
+        getCartRequest(new NetId("realid@gmail.com")).andExpect(status().isBadRequest());
     }
 
     private CustomPizza search(Collection<CustomPizza> pizzas, String name) {
@@ -368,6 +368,10 @@ public class CartControllerTest extends IntegrationTest {
 
     private void assertEqualsPizzas(DefaultPizza defaultPizza, CustomPizza customPizza) {
         assertThat(customPizza.getToppings()).hasSameElementsAs(defaultPizza.getToppings());
+    }
+
+    private ResultActions getCartRequest(NetId netId) throws Exception {
+        return mockMvc.perform(authenticated(get("/cart/getCart/" + netId)));
     }
 
     private ResultActions getCartRequest() throws Exception {
@@ -388,10 +392,6 @@ public class CartControllerTest extends IntegrationTest {
 
     private ResultActions removePizzaRequest(int pizzaId) throws Exception {
         return mockMvc.perform(authenticated(post("/cart/removePizza/" + pizzaId)));
-    }
-
-    private ResultActions getCartRequest(NetId netId) throws Exception {
-        return mockMvc.perform(authenticated(get("/cart/getCart/" + netId)));
     }
 
     private ResultActions addToppingRequest(int pizzaId, int toppingId) throws Exception {

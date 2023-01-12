@@ -28,7 +28,7 @@ public class OrderServiceTest {
     private Order order;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         orderRepository = Mockito.mock(OrderRepository.class);
         orderService = new OrderService(orderRepository);
 

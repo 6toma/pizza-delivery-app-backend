@@ -20,7 +20,7 @@ import nl.tudelft.sem.template.authentication.NetId;
 @ToString
 @Getter
 @Builder
-@EqualsAndHashCode(of = "store_id")
+@EqualsAndHashCode(of = "storeId", callSuper = false)
 public class Store {
 
     @Id

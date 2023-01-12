@@ -3,16 +3,15 @@ package nl.tudelft.sem.template.customer.domain;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.ElementCollection;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.authentication.NetId;
-
-import lombok.Data;
 
 @Entity
 @Data
@@ -38,8 +37,8 @@ public class Customer {
 
     /**
      * Constructor for Customer object.
-
-     * @param netId  - unique netId
+     *
+     * @param netId - unique netId
      */
     public Customer(NetId netId) {
         this.usedCoupons = new ArrayList<>();

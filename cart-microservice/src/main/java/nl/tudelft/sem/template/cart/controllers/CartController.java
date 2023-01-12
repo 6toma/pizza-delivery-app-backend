@@ -205,7 +205,7 @@ public class CartController {
         try {
             return Arrays.stream(requestHelper.getRequest(8081, "/customers/allergens/" + netId, String[].class))
                 .collect(Collectors.toSet());
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptySet();
         }

@@ -5,12 +5,12 @@ import java.util.List;
 import nl.tudelft.sem.template.commons.models.CartPizza;
 
 public class OrderBuilder {
-    private long storeId;
-    private String customerId;
-    private LocalDateTime pickupTime;
-    private List<CartPizza> pizzaList;
-    private String coupon;
-    private double finalPrice;
+    private transient long storeId;
+    private transient String customerId;
+    private transient LocalDateTime pickupTime;
+    private transient List<CartPizza> pizzaList;
+    private transient String coupon;
+    private transient double finalPrice;
 
     public OrderBuilder withStoreId(long storeId) {
         this.storeId = storeId;
@@ -42,6 +42,11 @@ public class OrderBuilder {
         return this;
     }
 
+    /**
+     * Builds the order using the information given in the builder.
+     *
+     * @return The actual order object
+     */
     public Order build() {
         Order order = new Order();
         order.setStoreId(storeId);

@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailNotificationService {
 
-    private final String senderEmailAddress;
-    private final JavaMailSender mailSender;
+    private final transient String senderEmailAddress;
+    private final transient JavaMailSender mailSender;
 
     /**
      * Creates a new EmailNotificationService.
@@ -73,6 +73,7 @@ public class EmailNotificationService {
             return new String(Objects.requireNonNull(inputStream).readAllBytes(), StandardCharsets.UTF_8);
         }
     }
+
     private String readOrderNotificationTemplateCancelOrder() throws IOException {
         try (var inputStream
                  = EmailNotificationService.class.getResourceAsStream("/order_notification_cancel.html")) {

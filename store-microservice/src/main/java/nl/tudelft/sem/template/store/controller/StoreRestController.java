@@ -85,7 +85,7 @@ public class StoreRestController {
     }
 
     /**
-     * <b>POST</b>request to notify store from checkout.
+     * <b>POST</b>request to notify store from checkout of an order creation.
      *
      * @param storeId storeId to notify about an order
      * @return a String that says the notification was successfully or a bad request in case of invalid storeId
@@ -106,6 +106,12 @@ public class StoreRestController {
         return "Store " + storeId + " was notified of the order.";
     }
 
+    /**
+     * <b>POST</b>request to notify store from checkout of an order removal.
+     *
+     * @param storeId storeId to notify about an order
+     * @return a String that says the notification was successfully or a bad request in case of invalid storeId
+     */
     @PostMapping("/notifyRemoveOrder")
     public String notifyRemoveOrder(@RequestBody long storeId) {
         Optional<Store> optionalStore = storeRepository.findById(storeId); // the id passed as a request might be not good

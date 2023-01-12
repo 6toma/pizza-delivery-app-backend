@@ -59,7 +59,7 @@ public class JwtRequestFilterTests {
     public void correctToken() throws ServletException, IOException {
         // Arrange
         String token = "randomtoken123";
-        String user = "user123";
+        String user = "user123@test.com";
         when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(mockJwtTokenVerifier.validateToken(token)).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
@@ -81,7 +81,7 @@ public class JwtRequestFilterTests {
     public void invalidToken() throws ServletException, IOException {
         // Arrange
         String token = "randomtoken123";
-        String user = "user123";
+        String user = "user123@test.com";
         when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(mockJwtTokenVerifier.validateToken(token)).thenReturn(false);
         when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
@@ -104,7 +104,7 @@ public class JwtRequestFilterTests {
     @Test
     public void tokenVerificationNoRoleClaim() throws ServletException, IOException {
         String token = "randomtoken123";
-        String user = "user123";
+        String user = "user123@test.com";
         when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(mockJwtTokenVerifier.validateToken(token)).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
@@ -126,7 +126,7 @@ public class JwtRequestFilterTests {
         throws ServletException, IOException {
         // Arrange
         String token = "randomtoken123";
-        String user = "user123";
+        String user = "user123@test.com";
         when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(mockJwtTokenVerifier.validateToken(token)).thenThrow(throwable);
         when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
@@ -165,7 +165,7 @@ public class JwtRequestFilterTests {
     public void invalidPrefix() throws ServletException, IOException {
         // Arrange
         String token = "randomtoken123";
-        String user = "user123";
+        String user = "user123@test.com";
         when(mockRequest.getHeader("Authorization")).thenReturn("Bearer1 " + token);
         when(mockJwtTokenVerifier.validateToken(token)).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
@@ -182,7 +182,7 @@ public class JwtRequestFilterTests {
     public void noPrefix() throws ServletException, IOException {
         // Arrange
         String token = "randomtoken123";
-        String user = "user123";
+        String user = "user123@test.com";
         when(mockRequest.getHeader("Authorization")).thenReturn(token);
         when(mockJwtTokenVerifier.validateToken(token)).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);

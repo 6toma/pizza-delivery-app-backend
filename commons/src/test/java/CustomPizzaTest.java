@@ -21,9 +21,9 @@ public class CustomPizzaTest {
     @Test
     public void testCustomPizzaNotEq() {
         CustomPizza
-            pizza2 = new CustomPizza("name1",1, Arrays.asList(t1, t2,t3));
+            pizza2 = new CustomPizza("name1", 1, Arrays.asList(t1, t2, t3));
         CustomPizza
-            pizza1 = new CustomPizza("name2",1, Arrays.asList(t3,t1, t2));
-        assertNotEquals(pizza1,pizza2);
+            pizza1 = new CustomPizza("name2", 1, Arrays.asList(t3, t1, t2));
+        assertNotEquals(pizza1, pizza2);
     }
 }

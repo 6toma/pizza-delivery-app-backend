@@ -1,13 +1,11 @@
 package nl.tudelft.sem.template.customer.domain;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.NetId;
+import org.springframework.stereotype.Service;
 
 /**
  * Customer Service responsible for managing the Customer Repository.

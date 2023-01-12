@@ -1,12 +1,10 @@
 package nl.tudelft.sem.template.commons.entity;
 
-import java.util.List;
 import java.util.Map;
 import javax.persistence.ElementCollection;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 import lombok.Getter;
@@ -18,6 +16,9 @@ import nl.tudelft.sem.template.authentication.NetId;
 @NoArgsConstructor
 @Getter
 public class Cart {
+
+    private static final int ONE = 1;
+
     @EmbeddedId
     private NetId netId;
 
@@ -35,6 +36,7 @@ public class Cart {
      *
      * @param pizza custom pizza to add to the cart
      */
+
     public void addPizza(CustomPizza pizza) {
         if (pizzasMap.get(pizza) == null) {
             pizzasMap.put(pizza, 1);
@@ -53,7 +55,7 @@ public class Cart {
         if (pizzasMap.get(customPizza) == null) {
             return false;
         }
-        if (pizzasMap.get(customPizza) == 1) {
+        if (pizzasMap.get(customPizza) == ONE) {
             pizzasMap.remove(customPizza);
             return false;
         } else {
@@ -74,11 +76,18 @@ public class Cart {
         pizzasMap.remove(customPizza);
     }
 
+    /**
+     * Adds a topping to a pizza.
+     *
+     * @param pizza   the pizza to add a topping to
+     * @param topping the topping to be removed
+     * @return boolean, true if it was added successfully, else false
+     */
     public boolean addTopping(CustomPizza pizza, Topping topping) {
         if (pizzasMap.get(pizza) == null) {
             return false;
         }
-        if (pizzasMap.get(pizza) == 1) {
+        if (pizzasMap.get(pizza) == ONE) {
             pizzasMap.remove(pizza);
         } else {
             pizzasMap.put(pizza, pizzasMap.get(pizza) - 1);
@@ -88,11 +97,18 @@ public class Cart {
         return true;
     }
 
+    /**
+     * Removes a topping from this pizza.
+     *
+     * @param pizza   the object to remove a topping from
+     * @param topping the topping that will be removed from the pizza
+     * @return boolean, true if it was removed successful, else false
+     */
     public boolean removeTopping(CustomPizza pizza, Topping topping) {
         if (pizzasMap.get(pizza) == null) {
             return false;
         }
-        if (pizzasMap.get(pizza) == 1) {
+        if (pizzasMap.get(pizza) == ONE) {
             pizzasMap.remove(pizza);
         } else {
             pizzasMap.put(pizza, pizzasMap.get(pizza) - 1);
@@ -100,18 +116,5 @@ public class Cart {
         pizza.removeTopping(topping);
         pizzasMap.put(pizza, pizzasMap.get(pizza) + 1);
         return true;
-    }
-
-    @ManyToMany
-    private List<Pizza> pizzas;
-
-    public Cart(NetId netId, List<Pizza> pizzas) {
-        this.netId = netId;
-        this.pizzas = pizzas;
-    }
-
-    public void addPizza(Pizza pizza) {
-        pizzas.add(pizza);
-
     }
 }

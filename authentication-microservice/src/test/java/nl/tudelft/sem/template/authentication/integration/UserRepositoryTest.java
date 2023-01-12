@@ -15,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest()
@@ -32,47 +31,47 @@ class UserRepositoryTest {
 
     @Test
     void findByNetIdFound() {
-        var user1 = repository.save(user("user1", UserRole.CUSTOMER));
-        repository.save(user("user2", UserRole.CUSTOMER));
-        var found = repository.findByNetId(new NetId("user1"));
+        var user1 = repository.save(user("user1@gmail.com", UserRole.CUSTOMER));
+        repository.save(user("user2@gmail.com", UserRole.CUSTOMER));
+        var found = repository.findByNetId(new NetId("user1@gmail.com"));
         assertTrue(found.isPresent());
         assertEquals(user1, found.get());
     }
 
     @Test
     void findByNetIdNotFound() {
-        repository.save(user("user1", UserRole.CUSTOMER));
-        var found = repository.findByNetId(new NetId("user2"));
+        repository.save(user("user1@gmail.com", UserRole.CUSTOMER));
+        var found = repository.findByNetId(new NetId("user2@gmail.com"));
         assertFalse(found.isPresent());
     }
 
     @Test
     void existsByIdTrue() {
-        repository.save(user("user1", UserRole.CUSTOMER));
-        assertTrue(repository.existsByNetId(new NetId("user1")));
+        repository.save(user("user1@gmail.com", UserRole.CUSTOMER));
+        assertTrue(repository.existsByNetId(new NetId("user1@gmail.com")));
     }
 
     @Test
     void existsByIdFalse() {
-        repository.save(user("user1", UserRole.CUSTOMER));
-        assertFalse(repository.existsByNetId(new NetId("user2")));
+        repository.save(user("user1@gmail.com", UserRole.CUSTOMER));
+        assertFalse(repository.existsByNetId(new NetId("user2@gmail.com")));
     }
 
     @Test
     void findAllByRoleOneMatch() {
-        repository.save(user("user1", UserRole.CUSTOMER));
-        var user2 = repository.save(user("user2", UserRole.STORE_OWNER));
-        repository.save(user("user3", UserRole.REGIONAL_MANAGER));
+        repository.save(user("user1@gmail.com", UserRole.CUSTOMER));
+        var user2 = repository.save(user("user2@gmail.com", UserRole.STORE_OWNER));
+        repository.save(user("user3@gmail.com", UserRole.REGIONAL_MANAGER));
         var result = repository.findAllByRole(UserRole.STORE_OWNER);
         assertEquals(Collections.singletonList(user2), result);
     }
 
     @Test
     void findAllByRoleMultipleMatches() {
-        repository.save(user("user1", UserRole.CUSTOMER));
-        repository.save(user("user2", UserRole.STORE_OWNER));
-        var user3 = repository.save(user("user3", UserRole.REGIONAL_MANAGER));
-        var user4 = repository.save(user("user4", UserRole.REGIONAL_MANAGER));
+        repository.save(user("user1@gmail.com", UserRole.CUSTOMER));
+        repository.save(user("user2@gmail.com", UserRole.STORE_OWNER));
+        var user3 = repository.save(user("user3@gmail.com", UserRole.REGIONAL_MANAGER));
+        var user4 = repository.save(user("user4@gmail.com", UserRole.REGIONAL_MANAGER));
         var result = repository.findAllByRole(UserRole.REGIONAL_MANAGER);
         assertEquals(Arrays.asList(user3, user4), result);
 
@@ -80,8 +79,8 @@ class UserRepositoryTest {
 
     @Test
     void findAllByRoleNoMatches() {
-        repository.save(user("user1", UserRole.CUSTOMER));
-        repository.save(user("user2", UserRole.STORE_OWNER));
+        repository.save(user("user1@gmail.com", UserRole.CUSTOMER));
+        repository.save(user("user2@gmail.com", UserRole.STORE_OWNER));
         var result = repository.findAllByRole(UserRole.REGIONAL_MANAGER);
         assertTrue(result.isEmpty());
     }

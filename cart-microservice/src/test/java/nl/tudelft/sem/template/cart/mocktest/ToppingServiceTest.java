@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.cart.mockTest;
+package nl.tudelft.sem.template.cart.mocktest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -10,9 +10,9 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.template.cart.ToppingRepository;
-import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.cart.exceptions.ToppingAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.ToppingNotFoundException;
+import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

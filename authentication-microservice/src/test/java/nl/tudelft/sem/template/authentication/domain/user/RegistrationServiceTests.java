@@ -33,7 +33,7 @@ public class RegistrationServiceTests {
     @Test
     public void createUser_withValidData_worksCorrectly() throws Exception {
         // Arrange
-        final NetId testUser = new NetId("SomeUser");
+        final NetId testUser = new NetId("SomeUser@test.com");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
@@ -51,7 +51,7 @@ public class RegistrationServiceTests {
     @Test
     public void createUser_withExistingUser_throwsException() {
         // Arrange
-        final NetId testUser = new NetId("SomeUser");
+        final NetId testUser = new NetId("SomeUser@test.com");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
         final Password newTestPassword = new Password("password456");
 

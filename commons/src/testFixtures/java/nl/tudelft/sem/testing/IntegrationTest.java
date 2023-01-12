@@ -41,7 +41,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @ComponentScan({"nl.tudelft.sem.testing.profiles"})
 public class IntegrationTest {
 
-    protected static final String TEST_USER = "test_user";
+    protected static final String TEST_USER = "test_user@gmail.com";
 
     protected final ObjectMapper mapper = new ObjectMapper();
 

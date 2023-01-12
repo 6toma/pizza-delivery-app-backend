@@ -24,7 +24,7 @@ class UserWasCreatedListenerTest {
 
     @Test
     void onAccountWasCreated() {
-        listener.onAccountWasCreated(new UserWasCreatedEvent(new NetId("user")));
+        listener.onAccountWasCreated(new UserWasCreatedEvent(new NetId("user@gmail.com")));
         verify(logger, times(1)).info(anyString());
     }
 }

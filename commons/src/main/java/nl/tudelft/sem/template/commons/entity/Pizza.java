@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.commons.entity;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * Pizza entity.
@@ -33,7 +36,8 @@ public class Pizza {
     private int id;
 
     @Column(name = "toppings", nullable = false)
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @Getter
     @Setter
     private List<Topping> toppings;

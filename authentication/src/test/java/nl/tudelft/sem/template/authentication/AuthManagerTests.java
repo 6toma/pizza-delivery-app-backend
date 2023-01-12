@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,12 +17,12 @@ public class AuthManagerTests {
     private transient AuthManager authManager;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         authManager = new AuthManager();
     }
 
     @Test
-    public void getNetidTest() {
+    void getNetidTest() {
         // Arrange
         String expected = "user123";
         var authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -40,8 +39,8 @@ public class AuthManagerTests {
     }
 
     @Test
-    public void getNetIdObjectTest() {
-        String expected = "user123";
+    void getNetIdObjectTest() {
+        String expected = "user123@gmail.com";
         var authenticationToken = new UsernamePasswordAuthenticationToken(
             expected,
             null, List.of() // no credentials and no authorities
@@ -58,7 +57,7 @@ public class AuthManagerTests {
 
     @ParameterizedTest
     @EnumSource(value = UserRole.class)
-    public void getRoleTest(UserRole role) {
+    void getRoleTest(UserRole role) {
         var authenticationToken = new UsernamePasswordAuthenticationToken("user123", null,
             List.of(new SimpleGrantedAuthority(role.getJwtRoleName())));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
@@ -66,7 +65,7 @@ public class AuthManagerTests {
     }
 
     @Test
-    public void getRoleAuthorityTest() {
+    void getRoleAuthorityTest() {
         var role = UserRole.REGIONAL_MANAGER;
         var authenticationToken = new UsernamePasswordAuthenticationToken("user123", null,
             List.of(new SimpleGrantedAuthority(role.getJwtRoleName())));
@@ -75,7 +74,7 @@ public class AuthManagerTests {
     }
 
     @Test
-    public void getRoleAuthorityNotSpecifiedTest() {
+    void getRoleAuthorityNotSpecifiedTest() {
         var authenticationToken = new UsernamePasswordAuthenticationToken(
             "user123", null, List.of() // no credentials and no authorities
         );
