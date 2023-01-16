@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
-import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import nl.tudelft.sem.template.checkout.domain.Order;
 import nl.tudelft.sem.template.checkout.domain.OrderBuilder;
 import nl.tudelft.sem.template.checkout.domain.OrderService;
@@ -87,17 +86,15 @@ public class OrderController {
         if (pizzas.isEmpty()) {
             return ResponseEntity.badRequest().body("Cart is empty");
         }
-        Order order = createOrderFromAttributes(storeTimeCoupons, storeId, pickupTime, pizzas);
-        requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/notify"), storeId,
-            String.class); // notify store of new order
+        Order order = createOrderFromAttributes(storeTimeCoupons.getCoupons(), storeId, pickupTime, pizzas);
+        requestHelper.postRequest(8084, "/store/notify", storeId, String.class); // notify store of new order
         return ResponseEntity.ok("Order added with id " + order.getOrderId());
     }
 
-    private Order createOrderFromAttributes(StoreTimeCoupons storeTimeCoupons, long storeId, LocalDateTime pickupTime,
-                                            List<CartPizza> pizzas) {
+    private Order createOrderFromAttributes(List<String> couponCodes, long storeId, LocalDateTime pickupTime,
+                           List<CartPizza> pizzas) {
         String customer = authManager.getNetId();
         List<Double> pizzaPrices = getPriceForEachPizza(pizzas);
-        List<String> couponCodes = storeTimeCoupons.getCoupons();
         PricesCodesModel pcm = new PricesCodesModel(customer, storeId, pizzaPrices, couponCodes);
         CouponFinalPriceModel finalCoupon =
             requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8085, "/selectCoupon"), pcm,
