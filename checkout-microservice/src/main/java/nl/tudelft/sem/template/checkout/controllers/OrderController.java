@@ -141,7 +141,7 @@ public class OrderController {
         if (role.equals("ROLE_STORE_OWNER")) {
             return ResponseEntity.badRequest().body("Store owners can't cancel orders");
         }
-        if (isRegionalManagerOrOrderIsRemovable(netId, role, orderToBeRemoved, customerId)) {
+        if (orderService.isOrderRemovable(netId, role, orderToBeRemoved, customerId)) {
             orderService.removeOrderById(orderId);
             removeOrderAndCoupon(netId, orderToBeRemoved, storeId);
             return ResponseEntity.ok("Order with id " + orderId + " successfully removed");
@@ -150,13 +150,6 @@ public class OrderController {
                 "Order does not belong to customer or there are less than 30 minutes until pickup time, "
                     + "so cancelling is not possible");
         }
-    }
-
-    private boolean isRegionalManagerOrOrderIsRemovable(String netId, String role, Order orderToBeRemoved,
-                                                        String customerId) {
-        return role.equals("ROLE_REGIONAL_MANAGER")
-            || (customerId.equals(netId) && orderService.getOrdersForCustomer(netId).contains(orderToBeRemoved)
-            && !orderToBeRemoved.getPickupTime().minusMinutes(30).isBefore(LocalDateTime.now()));
     }
 
     private void removeOrderAndCoupon(String netId, Order orderToBeRemoved, long storeId) {
@@ -176,14 +169,7 @@ public class OrderController {
      */
     @GetMapping(path = {"", "/", "/all"})
     public List<Order> getAllOrders() {
-        UserRole role = authManager.getRole();
-        if (role == UserRole.REGIONAL_MANAGER) {
-            return orderService.getAllOrders();
-        } else if (role == UserRole.CUSTOMER) {
-            return orderService.getOrdersForCustomer(authManager.getNetId());
-        } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No access");
-        }
+        return orderService.getAllOrders(authManager.getNetId(), authManager.getRole());
     }
 
     /**
@@ -194,19 +180,7 @@ public class OrderController {
      */
     @GetMapping("/{id}")
     public Order getOrderById(@PathVariable("id") long orderId) {
-        String netId = authManager.getNetId();
-        UserRole role = authManager.getRole();
-        try {
-            Order order = orderService.getOrderById(orderId);
-            if (role == UserRole.REGIONAL_MANAGER || role == UserRole.STORE_OWNER
-                || (role == UserRole.CUSTOMER && order.getCustomerId().equals(netId))) {
-                return order;
-            } else {
-                throw new Exception("Order does not belong to customer, so they cannot check it");
-            }
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+        return orderService.getOrder(orderId, authManager.getNetId(), authManager.getRole());
     }
 
     /**
@@ -217,18 +191,7 @@ public class OrderController {
      */
     @GetMapping("/price/{id}")
     public double getOrderPrice(@PathVariable("id") long orderId) {
-        String netId = authManager.getNetId();
-        UserRole role = authManager.getRole();
-        try {
-            Order order = orderService.getOrderById(orderId);
-            if (role == UserRole.REGIONAL_MANAGER || role == UserRole.STORE_OWNER
-                || (role == UserRole.CUSTOMER && order.getCustomerId().equals(netId))) {
-                return order.calculatePriceWithoutDiscount();
-            } else {
-                throw new Exception("Order does not belong to customer, so they cannot check the price");
-            }
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+        return orderService.getPrice(orderId, authManager.getNetId(), authManager.getRole());
     }
+
 }
