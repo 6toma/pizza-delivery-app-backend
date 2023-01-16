@@ -317,7 +317,7 @@ public class CouponIntegrationTest extends IntegrationTest {
 
     private void mockCheckUsedCoupons(PricesCodesModel model, List<String> response) {
         when(requestHelper
-            .doRequest(eq(new RequestObject(HttpMethod.POST, 8081, "/customers/checkUsedCoupons/" + model.getNetId())),
+            .doRequest(new RequestObject(HttpMethod.POST, 8081, "/customers/checkUsedCoupons/" + model.getNetId()),
                 model.getCodes(), List.class))
             .thenReturn(response);
     }
