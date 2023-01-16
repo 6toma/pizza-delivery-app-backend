@@ -49,7 +49,7 @@ public class OrderController {
 
     private List<CartPizza> getPizzas() {
         CartPizza[] pizzas =
-            requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8082, "/cart/getCart/" + authManager.getNetId()),
+            requestHelper.doRequest(new RequestObject(HttpMethod.GET, 8082, "/cart/getCart/" + authManager.getNetId()),
                 CartPizza[].class);
         return Arrays.asList(pizzas);
     }

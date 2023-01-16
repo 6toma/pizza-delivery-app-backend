@@ -2,7 +2,6 @@ package nl.tudelft.sem.template.coupon.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -197,7 +196,7 @@ public class CouponIntegrationTest extends IntegrationTest {
     @SneakyThrows
     @Test
     void testAddCouponAlreadyExists() {
-        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, anyInt(), any()), any(), any())).thenReturn(true);
+        when(requestHelper.doRequest(any(), any(), any())).thenReturn(true);
         Coupon c1 = new Coupon("ABCD12", new Date(10, 10, 2025), -1L, CouponType.ONE_PLUS_ONE);
         Coupon c2 = new Coupon("ABCD12", new Date(11, 10, 2025), -1L, CouponType.DISCOUNT, 20);
         addCoupon(c1, UserRole.REGIONAL_MANAGER).andExpect(status().isOk());
@@ -318,14 +317,14 @@ public class CouponIntegrationTest extends IntegrationTest {
 
     private void mockCheckUsedCoupons(PricesCodesModel model, List<String> response) {
         when(requestHelper
-            .doRequest(new RequestObject(HttpMethod.POST, 8081, "/customers/checkUsedCoupons/" + model.getNetId()),
+            .doRequest(eq(new RequestObject(HttpMethod.POST, 8081, "/customers/checkUsedCoupons/" + model.getNetId())),
                 model.getCodes(), List.class))
             .thenReturn(response);
     }
 
     private void mockCheckUsedCoupons(List<String> response) {
         when(requestHelper.doRequest(
-            new RequestObject(HttpMethod.POST, eq(8081), eq("/customers/checkUsedCoupons/" + TEST_USER)), any(),
+            eq(new RequestObject(HttpMethod.POST, 8081, "/customers/checkUsedCoupons/" + TEST_USER)), any(),
             eq(List.class)))
             .thenReturn(response);
     }
