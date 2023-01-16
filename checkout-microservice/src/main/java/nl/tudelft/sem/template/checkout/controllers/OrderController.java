@@ -49,7 +49,7 @@ public class OrderController {
 
     private List<CartPizza> getPizzas() {
         CartPizza[] pizzas =
-            requestHelper.doRequest(new RequestObject(HttpMethod.GET, 8082, "/cart/getCart/" + authManager.getNetId()),
+            requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8082, "/cart/getCart/" + authManager.getNetId()),
                 CartPizza[].class);
         return Arrays.asList(pizzas);
     }
@@ -83,26 +83,29 @@ public class OrderController {
         if (pickupTime.minusMinutes(30).isBefore(LocalDateTime.now())) {
             return ResponseEntity.badRequest().body("Pickup time should be at least 30 minutes from order placement");
         }
-
         List<CartPizza> pizzas = getPizzas();
         if (pizzas.isEmpty()) {
             return ResponseEntity.badRequest().body("Cart is empty");
         }
+        Order order = createOrderFromAttributes(storeTimeCoupons, storeId, pickupTime, pizzas);
+        requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/notify"), storeId,
+            String.class); // notify store of new order
+        return ResponseEntity.ok("Order added with id " + order.getOrderId());
+    }
 
+    private Order createOrderFromAttributes(StoreTimeCoupons storeTimeCoupons, long storeId, LocalDateTime pickupTime,
+                                            List<CartPizza> pizzas) {
         String customer = authManager.getNetId();
-
         List<Double> pizzaPrices = getPriceForEachPizza(pizzas);
         List<String> couponCodes = storeTimeCoupons.getCoupons();
         PricesCodesModel pcm = new PricesCodesModel(customer, storeId, pizzaPrices, couponCodes);
         CouponFinalPriceModel finalCoupon =
             requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8085, "/selectCoupon"), pcm,
                 CouponFinalPriceModel.class); // get the best coupon
-
         String finalCouponCode = finalCoupon.getCode();
         OrderBuilder orderBuilder =
             Order.builder().withStoreId(storeId).withCustomerId(customer).withPickupTime(pickupTime).withPizzaList(pizzas)
                 .withFinalPrice(finalCoupon.getPrice());
-
         if (finalCouponCode.isEmpty()) {
             orderBuilder.withCoupon(null);
         } else {
@@ -110,10 +113,7 @@ public class OrderController {
             requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8081, "/customers/" + customer + "/coupons/add"),
                 finalCouponCode, String.class); // add to customer's used coupons
         }
-        Order order = orderService.addOrder(orderBuilder.build());
-        requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/notify"), storeId,
-            String.class); // notify store of new order
-        return ResponseEntity.ok("Order added with id " + order.getOrderId());
+        return orderService.addOrder(orderBuilder.build());
     }
 
     /**
@@ -128,34 +128,44 @@ public class OrderController {
         String role = authManager.getRoleAuthority();
 
         try {
-            Order orderToBeRemoved = orderService.getOrderById(orderId);
-            String customerId = orderToBeRemoved.getCustomerId();
-            long storeId = orderToBeRemoved.getStoreId();
-            if (role.equals("ROLE_STORE_OWNER")) {
-                return ResponseEntity.badRequest().body("Store owners can't cancel orders");
-            }
-            if (role.equals("ROLE_REGIONAL_MANAGER")
-                || (customerId.equals(netId) && orderService.getOrdersForCustomer(netId).contains(orderToBeRemoved)
-                && !orderToBeRemoved.getPickupTime().minusMinutes(30).isBefore(LocalDateTime.now()))) {
-                orderService.removeOrderById(orderId);
-
-                if (orderToBeRemoved.getCoupon() != null) {
-                    requestHelper.doRequest(
-                        new RequestObject(HttpMethod.POST, 8081, "/customers/" + netId + "/coupons/remove"),
-                        orderToBeRemoved.getCoupon(), String.class); // remove from customer's used coupons
-                }
-
-                requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/notifyRemoveOrder"), storeId,
-                    String.class); // notify store of remove order
-                return ResponseEntity.ok("Order with id " + orderId + " successfully removed");
-            } else {
-                return ResponseEntity.badRequest().body(
-                    "Order does not belong to customer or there are less than 30 minutes until pickup time, "
-                        + "so cancelling is not possible");
-            }
+            return tryRemoveOrderById(orderId, netId, role);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
+    }
+
+    private ResponseEntity<String> tryRemoveOrderById(long orderId, String netId, String role) throws Exception {
+        Order orderToBeRemoved = orderService.getOrderById(orderId);
+        String customerId = orderToBeRemoved.getCustomerId();
+        long storeId = orderToBeRemoved.getStoreId();
+        if (role.equals("ROLE_STORE_OWNER")) {
+            return ResponseEntity.badRequest().body("Store owners can't cancel orders");
+        }
+        if (isRegionalManagerOrOrderIsRemovable(netId, role, orderToBeRemoved, customerId)) {
+            orderService.removeOrderById(orderId);
+            removeOrderAndCoupon(netId, orderToBeRemoved, storeId);
+            return ResponseEntity.ok("Order with id " + orderId + " successfully removed");
+        } else {
+            return ResponseEntity.badRequest().body(
+                "Order does not belong to customer or there are less than 30 minutes until pickup time, "
+                    + "so cancelling is not possible");
+        }
+    }
+
+    private boolean isRegionalManagerOrOrderIsRemovable(String netId, String role, Order orderToBeRemoved,
+                                                        String customerId) {
+        return role.equals("ROLE_REGIONAL_MANAGER")
+            || (customerId.equals(netId) && orderService.getOrdersForCustomer(netId).contains(orderToBeRemoved)
+            && !orderToBeRemoved.getPickupTime().minusMinutes(30).isBefore(LocalDateTime.now()));
+    }
+
+    private void removeOrderAndCoupon(String netId, Order orderToBeRemoved, long storeId) {
+        if (orderToBeRemoved.getCoupon() != null) {
+            requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8081, "/customers/" + netId + "/coupons/remove"),
+                orderToBeRemoved.getCoupon(), String.class); // remove from customer's used coupons
+        }
+        requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/notifyRemoveOrder"), storeId,
+            String.class); // notify store of remove order
     }
 
     /**

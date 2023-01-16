@@ -34,4 +34,4 @@ gradle-app.setting
 
 *.db
 *.prefs
-codemr/*
+codemr/
