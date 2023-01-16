@@ -138,25 +138,24 @@ class CouponControllerTest {
     @Test
     void addCouponInvalid() {
         String code = "AB56";
-        Coupon coupon = new Coupon();
         coupon.setCode(code);
         assertThrows(InvalidCouponCodeException.class, () -> couponController.addCoupon(coupon));
     }
 
     @Test
     void addCouponNoPercentage() {
-        String code = "ABCD56";
-        Coupon coupon = new Coupon();
-        coupon.setCode(code);
         coupon.setType(CouponType.DISCOUNT);
         assertThrows(DiscountCouponIncompleteException.class, () -> couponController.addCoupon(coupon));
     }
 
+    @SneakyThrows
     @Test
     void addCouponNoStoreId() {
         String code = "ABCD56";
         Coupon coupon = new Coupon();
         coupon.setCode(code);
+        coupon.setExpiryDate(new Date(10, 10, 2024));
+        coupon.setType(CouponType.ONE_PLUS_ONE);
         assertThrows(InvalidStoreIdException.class, () -> couponController.addCoupon(coupon));
     }
 
@@ -192,9 +191,6 @@ class CouponControllerTest {
 
     @Test
     void addCouponNotRegionalManager() {
-        String code = "ABCD56";
-        Coupon coupon = new Coupon();
-        coupon.setCode(code);
         coupon.setStoreId(-1L);
         when(authManager.getRoleAuthority())
             .thenReturn("ROLE_STORE_OWNER");
