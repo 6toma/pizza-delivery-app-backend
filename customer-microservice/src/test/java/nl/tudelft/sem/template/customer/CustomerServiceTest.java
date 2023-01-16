@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.NetId;
@@ -79,9 +79,21 @@ public class CustomerServiceTest {
 
     @Test
     void testAddCustomer() {
-        when(repo.save(customer)).thenReturn(customer);
-        assertEquals(customerService.addCustomer(customer), customer);
+
+        var expectedCustomer = new Customer();
+        expectedCustomer.setNetId(new NetId("example123@test.com"));
+        expectedCustomer.setAllergens(Collections.emptyList());
+        expectedCustomer.setUsedCoupons(Collections.emptyList());
+
+        when(repo.save(expectedCustomer)).thenReturn(expectedCustomer);
+
+        Customer actualCustomer = customerService.addCustomer("example123@test.com");
+
+        assertEquals(expectedCustomer, actualCustomer);
+        verify(repo, times(1)).save(expectedCustomer);
     }
+
+
 
     @Test
     void testAddToUsedCouponsSuccess() {

@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.customer.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -57,10 +58,14 @@ public class CustomerService {
     /**
      * Adds (and returns) a customer to the Customer Repository.
      *
-     * @param customer the Customer to add to the Repository.
-     * @return the Customer
+     * @param netId the netId of the Customer to add to the Repository.
+     * @return the Customer saved.
      */
-    public Customer addCustomer(Customer customer) {
+    public Customer addCustomer(String netId) {
+        var customer = new Customer();
+        customer.setNetId(new NetId(netId));
+        customer.setAllergens(Collections.emptyList());
+        customer.setUsedCoupons(Collections.emptyList());
         return customerRepository.save(customer);
     }
 
