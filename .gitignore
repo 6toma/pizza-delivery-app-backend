@@ -34,36 +34,4 @@ gradle-app.setting
 
 *.db
 *.prefs
-codemr/idmap.json
-
-codemr/template (third attempt now on correct branch)/html/graph_htmls/
-
-codemr/template (third attempt now on correct branch)/html/html_report_templateauthentication-microservicemain/htmlx/
-
-codemr/template (third attempt now on correct branch)/html/html_report_templateauthenticationmain/htmlx/
-
-codemr/template (third attempt now on correct branch)/html/html_report_templatecart-microservicemain/htmlx/
-
-codemr/template (third attempt now on correct branch)/html/html_report_templatecheckout-microservicemain/htmlx/
-
-codemr/template (third attempt now on correct branch)/html/html_report_templatecommonsmain/htmlx/modeldata/
-
-codemr/template (third attempt now on correct branch)/html/main_report/html/assets/css/
-
-codemr/template (third attempt now on correct branch)/html/main_report/html/fonts/font-awesome-4.7.0/less/
-
-codemr/template (third attempt now on correct branch)/html/main_report/html/fonts/font-codemr/css/
-
-codemr/template (third attempt now on correct branch)/html/main_report/html/js/
-
-codemr/template (third attempt now on correct branch)/html/main_report/html/fonts/
-
-codemr/template (third attempt now on correct branch)/html/main_report/htmlx/
-
-codemr/template (third attempt now on correct branch)/html/
-
-codemr/template (third attempt now on correct branch)/
-
-codemr/controller/
-
-codemr/customer service/
+codemr/
