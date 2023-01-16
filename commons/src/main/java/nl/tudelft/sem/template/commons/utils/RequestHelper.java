@@ -29,39 +29,49 @@ public class RequestHelper {
 
     // TODO a better solution to handle post request. Right now toSend is simply null if the request is GET or DELETE
     public <T> T doRequest(RequestObject requestObject, Object toSend, Class<T> responseClass) {
-        URI url = createUrl(requestObject.getPort(), requestObject.getPath());
+        URI url = getUri(requestObject);
         logger.info("Doing a " + requestObject.getHttpMethod().toString() + " on " + url);
         try {
-            RequestEntity.HeadersBuilder<?> request = getHeadersBuilder(requestObject, url);
-            var requestWithToken = request.header("Authorization", "Bearer " + getAuthenticationToken());
-            if (toSend != null) {
-                // add to post request the object
-                var postRequest = ((RequestEntity.BodyBuilder) requestWithToken).body(toSend);
-                return new RestTemplate().exchange(postRequest, responseClass).getBody();
-            }
-            return new RestTemplate().exchange(requestWithToken.build(), responseClass).getBody();
+            return postRequestBack(requestObject, toSend, responseClass, url);
         } catch (ResourceAccessException connectException) {
             logger.error("The other microservice can't be reached. Check if port is ok or the path is ok.");
-            throw new IllegalArgumentException("The url " + url
-                +
+            throw new IllegalArgumentException("The url " + url +
                 " is not valid,copy url to postman to check. Maybe the other server is not running or the path is not good");
         }
     }
 
+    private <T> T postRequestBack(RequestObject requestObject, Object toSend, Class<T> responseClass, URI url) {
+        var requestWithToken = getRequestWithToken(requestObject, url);
+        // add to post request the object
+        var postRequest = ((RequestEntity.BodyBuilder) requestWithToken).body(toSend);
+        return new RestTemplate().exchange(postRequest, responseClass).getBody();
+    }
+
+    private URI getUri(RequestObject requestObject) {
+        return createUrl(requestObject.getPort(), requestObject.getPath());
+    }
+
     public <T> T doRequest(RequestObject requestObject, Class<T> responseClass) {
-        URI url = createUrl(requestObject.getPort(), requestObject.getPath());
+        URI url = getUri(requestObject);
         logger.info("Doing a " + requestObject.getHttpMethod().toString() + " on " + url);
         try {
-            RequestEntity.HeadersBuilder<?> request = getHeadersBuilder(requestObject, url);
-            var requestWithToken = request.header("Authorization", "Bearer " + getAuthenticationToken());
+            var requestWithToken = getRequestWithToken(requestObject, url);
             return new RestTemplate().exchange(requestWithToken.build(), responseClass).getBody();
         } catch (ResourceAccessException connectException) {
             logger.error("The other microservice can't be reached. Check if port is ok or the path is ok.");
-            throw new IllegalArgumentException("The url " + url + " is not valid,copy url to postman to check. Maybe the other server is not running or the path is not good");
+            throw new IllegalArgumentException("The url " + url +
+                " is not valid,copy url to postman to check. Maybe the other server is not running or the path is not good");
         }
     }
 
-    private <T> RequestEntity.HeadersBuilder<?> getHeadersBuilder(RequestObject requestObject, URI url) {
+    private RequestEntity.HeadersBuilder<? extends RequestEntity.HeadersBuilder<?>> getRequestWithToken(
+        RequestObject requestObject,
+        URI url) {
+        RequestEntity.HeadersBuilder<?> request = getHeadersBuilder(requestObject, url);
+        return request.header("Authorization", "Bearer " + getAuthenticationToken());
+    }
+
+    private RequestEntity.HeadersBuilder<?> getHeadersBuilder(RequestObject requestObject, URI url) {
         return RequestEntity.method(requestObject.getHttpMethod(), url).accept(MediaType.APPLICATION_JSON);
     }
 
