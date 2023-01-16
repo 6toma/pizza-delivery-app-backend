@@ -15,6 +15,8 @@ import nl.tudelft.sem.template.commons.models.CartPizza;
 import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.models.PricesCodesModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
+import nl.tudelft.sem.template.commons.utils.RequestObject;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +37,9 @@ public class OrderController {
     private final transient OrderService orderService;
 
     private long getStoreId(String storeName) {
-        String storeIdLong = requestHelper.postRequest(8084, "/store/getStoreIdFromName", storeName, String.class);
+        String storeIdLong =
+            requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/getStoreIdFromName"), storeName,
+                String.class);
         long storeId = Long.parseLong(storeIdLong);
         if (storeId == -1) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This is not a real store");
@@ -44,7 +48,9 @@ public class OrderController {
     }
 
     private List<CartPizza> getPizzas() {
-        CartPizza[] pizzas = requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class);
+        CartPizza[] pizzas =
+            requestHelper.doRequest(new RequestObject(HttpMethod.GET, 8082, "/cart/getCart/" + authManager.getNetId()),
+                CartPizza[].class);
         return Arrays.asList(pizzas);
     }
 
@@ -89,7 +95,8 @@ public class OrderController {
         List<String> couponCodes = storeTimeCoupons.getCoupons();
         PricesCodesModel pcm = new PricesCodesModel(customer, storeId, pizzaPrices, couponCodes);
         CouponFinalPriceModel finalCoupon =
-            requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class); // get the best coupon
+            requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8085, "/selectCoupon"), pcm,
+                CouponFinalPriceModel.class); // get the best coupon
 
         String finalCouponCode = finalCoupon.getCode();
         OrderBuilder orderBuilder =
@@ -100,11 +107,12 @@ public class OrderController {
             orderBuilder.withCoupon(null);
         } else {
             orderBuilder.withCoupon(finalCouponCode);
-            requestHelper.postRequest(8081, "/customers/" + customer + "/coupons/add", finalCouponCode,
-                String.class); // add to customer's used coupons
+            requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8081, "/customers/" + customer + "/coupons/add"),
+                finalCouponCode, String.class); // add to customer's used coupons
         }
         Order order = orderService.addOrder(orderBuilder.build());
-        requestHelper.postRequest(8084, "/store/notify", storeId, String.class); // notify store of new order
+        requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/notify"), storeId,
+            String.class); // notify store of new order
         return ResponseEntity.ok("Order added with id " + order.getOrderId());
     }
 
@@ -132,11 +140,12 @@ public class OrderController {
                 orderService.removeOrderById(orderId);
 
                 if (orderToBeRemoved.getCoupon() != null) {
-                    requestHelper.postRequest(8081, "/customers/" + netId + "/coupons/remove", orderToBeRemoved.getCoupon(),
-                        String.class); // remove from customer's used coupons
+                    requestHelper.doRequest(
+                        new RequestObject(HttpMethod.POST, 8081, "/customers/" + netId + "/coupons/remove"),
+                        orderToBeRemoved.getCoupon(), String.class); // remove from customer's used coupons
                 }
 
-                requestHelper.postRequest(8084, "/store/notifyRemoveOrder", storeId,
+                requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/notifyRemoveOrder"), storeId,
                     String.class); // notify store of remove order
                 return ResponseEntity.ok("Order with id " + orderId + " successfully removed");
             } else {

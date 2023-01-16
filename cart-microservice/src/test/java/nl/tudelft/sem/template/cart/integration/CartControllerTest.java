@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -104,7 +103,7 @@ public class CartControllerTest extends IntegrationTest {
     @Test
     void testAddToCartContainsAllergens() throws Exception {
         int id = defaultPizza1.getId();
-        when(requestHelper.getRequest(anyInt(), any(), any())).thenReturn(
+        when(requestHelper.doRequest(any(), any())).thenReturn(
             new String[] {defaultPizza1.getToppings().get(0).getName()});
         var result = addPizzaRequest(id);
         result.andExpect(status().isOk());

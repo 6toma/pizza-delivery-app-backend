@@ -1,13 +1,9 @@
 package nl.tudelft.sem.template.cart.controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleRegionalManager;
@@ -17,6 +13,8 @@ import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.models.PizzaModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
+import nl.tudelft.sem.template.commons.utils.RequestObject;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -119,7 +117,7 @@ public class PizzaController {
     }
 
     private Set<String> getUserAllergens(String netId) {
-        return Arrays.stream(requestHelper.getRequest(8081, "/customers/allergens/" + netId, String[].class))
+        return Arrays.stream(requestHelper.doRequest(new RequestObject(HttpMethod.GET,8081, "/customers/allergens/" + netId), String[].class))
             .collect(Collectors.toSet());
     }
 }
