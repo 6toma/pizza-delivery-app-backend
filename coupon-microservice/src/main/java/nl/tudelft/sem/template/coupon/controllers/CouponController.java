@@ -85,29 +85,36 @@ public class CouponController {
     @RoleStoreOwnerOrRegionalManager
     @PostMapping("/addCoupon")
     public ResponseEntity<Coupon> addCoupon(@Validated @RequestBody Coupon coupon) {
+        checkIncompleteInput(coupon);
+        checkValidInput(coupon);
+        StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), coupon.getStoreId());
+        if (coupon.getStoreId() == -ONE || requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class)) {
+            return ResponseEntity.ok(repo.save(coupon));
+        } else {
+            throw new InvalidStoreIdException();
+        }
+    }
+
+    private void checkValidInput(Coupon coupon) {
+        if (!couponService.validCodeFormat(coupon.getCode())) {
+            throw new InvalidCouponCodeException(coupon.getCode());
+        }
+        if (coupon.getStoreId() == -ONE && authManager.getRole() != UserRole.REGIONAL_MANAGER) {
+            throw new NotRegionalManagerException();
+        }
+    }
+
+    private void checkIncompleteInput(Coupon coupon) {
         if (coupon.getCode() == null) {
             throw new InvalidCouponCodeException("No coupon code provided!");
         }
-        if (!couponService.validCodeFormat(coupon.getCode())) {
-            throw new InvalidCouponCodeException(coupon.getCode());
+        if (coupon.getType() == null || coupon.getExpiryDate() == null) {
+            throw new IncompleteCouponException();
         }
         if (coupon.getPercentage() == null && coupon.getType() == CouponType.DISCOUNT) {
             throw new DiscountCouponIncompleteException();
         }
         if (coupon.getStoreId() == null) {
-            throw new InvalidStoreIdException();
-        }
-
-        if (coupon.getStoreId() == -ONE && authManager.getRole() != UserRole.REGIONAL_MANAGER) {
-            throw new NotRegionalManagerException();
-        }
-        if (coupon.getType() == null || coupon.getExpiryDate() == null) {
-            throw new IncompleteCouponException();
-        }
-        StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), coupon.getStoreId());
-        if (coupon.getStoreId() == -ONE || requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class)) {
-            return ResponseEntity.ok(repo.save(coupon));
-        } else {
             throw new InvalidStoreIdException();
         }
     }
@@ -126,40 +133,63 @@ public class CouponController {
         if (prices == null || prices.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
         List<String> unusedCodes = requestHelper
             .postRequest(8081, "/customers/checkUsedCoupons/" + pricesCodesModel.getNetId(), codes, List.class);
         if (unusedCodes == null || unusedCodes.isEmpty()) {
             return ResponseEntity.ok(
                 new CouponFinalPriceModel(null, prices.stream().mapToDouble(Double::doubleValue).sum()));
         }
-        for (String code : unusedCodes) {
-            ResponseEntity<Coupon> c;
-            try {
-                c = getCouponByCode(code);
-            } catch (InvalidCouponCodeException e) {
-                continue;
-            }
-            if (c.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
-                continue;
-            }
-            Coupon coupon = c.getBody();
-            if (coupon.getStoreId() != -ONE && coupon.getStoreId() != pricesCodesModel.getStoreId()) {
-                continue;
-            }
-            if (coupon.getType() == CouponType.DISCOUNT) {
-                pq.add(new CouponFinalPriceModel(code, couponService.applyDiscount(coupon, prices)));
-            } else {
-                if (prices.size() == ONE) {
-                    continue;
-                }
-                pq.add(new CouponFinalPriceModel(code, couponService.applyOnePlusOne(coupon, prices)));
-            }
-        }
+        PriorityQueue<CouponFinalPriceModel> pq = buildPriorityQueue(pricesCodesModel, prices, unusedCodes);
         if (pq.isEmpty()) {
             return ResponseEntity.ok(
                 new CouponFinalPriceModel(null, prices.stream().mapToDouble(Double::doubleValue).sum()));
         }
         return ResponseEntity.ok(pq.peek());
+    }
+
+    private PriorityQueue buildPriorityQueue(PricesCodesModel pricesCodesModel, List<Double> prices, List<String> unusedCodes) {
+        PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
+        for (String code : unusedCodes) {
+            Coupon coupon = checkCouponValid(pricesCodesModel, code);
+            if (coupon == null) {
+                continue;
+            }
+            CouponFinalPriceModel cfpm = applyCoupon(prices, code, coupon);
+            if (cfpm == null) {
+                continue;
+            }
+            pq.add(cfpm);
+        }
+        return pq;
+    }
+
+    private CouponFinalPriceModel applyCoupon(List<Double> prices, String code, Coupon coupon) {
+        CouponFinalPriceModel cfpm;
+        if (coupon.getType() == CouponType.DISCOUNT) {
+            cfpm = new CouponFinalPriceModel(code, couponService.applyDiscount(coupon, prices));
+        } else {
+            if (prices.size() == ONE) {
+                return null;
+            }
+            cfpm = new CouponFinalPriceModel(code, couponService.applyOnePlusOne(coupon, prices));
+        }
+        return cfpm;
+    }
+
+    private Coupon checkCouponValid(PricesCodesModel pricesCodesModel, String code) {
+        ResponseEntity<Coupon> c;
+        try {
+            c = getCouponByCode(code);
+        } catch (InvalidCouponCodeException e) {
+            return null;
+        }
+        if (c.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+            return null;
+        }
+        Coupon coupon = c.getBody();
+        if (coupon.getStoreId() != -ONE && coupon.getStoreId() != pricesCodesModel.getStoreId()) {
+            return null;
+        }
+        return coupon;
     }
 }
