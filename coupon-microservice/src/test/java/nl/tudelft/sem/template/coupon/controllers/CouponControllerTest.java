@@ -26,6 +26,7 @@ import nl.tudelft.sem.template.coupon.domain.IncompleteCouponException;
 import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
 import nl.tudelft.sem.template.coupon.domain.InvalidStoreIdException;
 import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
+import nl.tudelft.sem.template.coupon.services.CouponControllerService;
 import nl.tudelft.sem.template.coupon.services.CouponService;
 import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +44,7 @@ class CouponControllerTest {
     private AuthManager authManager;
     private RequestHelper requestHelper;
     private CouponService couponService;
+    private CouponControllerService couponControllerService;
     private Coupon coupon = new Coupon();
 
     @Mock
@@ -64,7 +66,7 @@ class CouponControllerTest {
         when(clock.getZone()).thenReturn(fixedClock.getZone());
 
         couponService = new CouponService(fixedClock);
-        couponController = new CouponController(authManager, requestHelper, repo, couponService);
+        couponController = new CouponController(authManager, requestHelper, repo, couponService, couponControllerService);
         coupon.setCode("ABCD12");
         coupon.setExpiryDate(new Date(10, 10, 2024));
         coupon.setStoreId(1L);

@@ -19,6 +19,7 @@ import nl.tudelft.sem.template.coupon.domain.IncompleteCouponException;
 import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
 import nl.tudelft.sem.template.coupon.domain.InvalidStoreIdException;
 import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
+import nl.tudelft.sem.template.coupon.services.CouponControllerService;
 import nl.tudelft.sem.template.coupon.services.CouponService;
 import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,7 @@ public class CouponController {
     private final RequestHelper requestHelper;
     private final CouponRepository repo;
     private final CouponService couponService;
+    private final CouponControllerService couponControllerService;
 
     /**
      * Retrieves coupon using passed code. throws InvalidCouponException if the coupon code format is incorrect.
@@ -85,36 +87,12 @@ public class CouponController {
     @RoleStoreOwnerOrRegionalManager
     @PostMapping("/addCoupon")
     public ResponseEntity<Coupon> addCoupon(@Validated @RequestBody Coupon coupon) {
-        checkIncompleteInput(coupon);
-        checkValidInput(coupon);
+        couponControllerService.checkIncompleteInput(coupon);
+        couponControllerService.checkValidInput(coupon);
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), coupon.getStoreId());
         if (coupon.getStoreId() == -ONE || requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class)) {
             return ResponseEntity.ok(repo.save(coupon));
         } else {
-            throw new InvalidStoreIdException();
-        }
-    }
-
-    private void checkValidInput(Coupon coupon) {
-        if (!couponService.validCodeFormat(coupon.getCode())) {
-            throw new InvalidCouponCodeException(coupon.getCode());
-        }
-        if (coupon.getStoreId() == -ONE && authManager.getRole() != UserRole.REGIONAL_MANAGER) {
-            throw new NotRegionalManagerException();
-        }
-    }
-
-    private void checkIncompleteInput(Coupon coupon) {
-        if (coupon.getCode() == null) {
-            throw new InvalidCouponCodeException("No coupon code provided!");
-        }
-        if (coupon.getType() == null || coupon.getExpiryDate() == null) {
-            throw new IncompleteCouponException();
-        }
-        if (coupon.getPercentage() == null && coupon.getType() == CouponType.DISCOUNT) {
-            throw new DiscountCouponIncompleteException();
-        }
-        if (coupon.getStoreId() == null) {
             throw new InvalidStoreIdException();
         }
     }
@@ -139,7 +117,7 @@ public class CouponController {
             return ResponseEntity.ok(
                 new CouponFinalPriceModel(null, prices.stream().mapToDouble(Double::doubleValue).sum()));
         }
-        PriorityQueue<CouponFinalPriceModel> pq = buildPriorityQueue(pricesCodesModel, prices, unusedCodes);
+        PriorityQueue<CouponFinalPriceModel> pq = couponControllerService.buildPriorityQueue(pricesCodesModel, prices, unusedCodes);
         if (pq.isEmpty()) {
             return ResponseEntity.ok(
                 new CouponFinalPriceModel(null, prices.stream().mapToDouble(Double::doubleValue).sum()));
@@ -147,49 +125,4 @@ public class CouponController {
         return ResponseEntity.ok(pq.peek());
     }
 
-    private PriorityQueue buildPriorityQueue(PricesCodesModel pricesCodesModel, List<Double> prices, List<String> unusedCodes) {
-        PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
-        for (String code : unusedCodes) {
-            Coupon coupon = checkCouponValid(pricesCodesModel, code);
-            if (coupon == null) {
-                continue;
-            }
-            CouponFinalPriceModel cfpm = applyCoupon(prices, code, coupon);
-            if (cfpm == null) {
-                continue;
-            }
-            pq.add(cfpm);
-        }
-        return pq;
-    }
-
-    private CouponFinalPriceModel applyCoupon(List<Double> prices, String code, Coupon coupon) {
-        CouponFinalPriceModel cfpm;
-        if (coupon.getType() == CouponType.DISCOUNT) {
-            cfpm = new CouponFinalPriceModel(code, couponService.applyDiscount(coupon, prices));
-        } else {
-            if (prices.size() == ONE) {
-                return null;
-            }
-            cfpm = new CouponFinalPriceModel(code, couponService.applyOnePlusOne(coupon, prices));
-        }
-        return cfpm;
-    }
-
-    private Coupon checkCouponValid(PricesCodesModel pricesCodesModel, String code) {
-        ResponseEntity<Coupon> c;
-        try {
-            c = getCouponByCode(code);
-        } catch (InvalidCouponCodeException e) {
-            return null;
-        }
-        if (c.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
-            return null;
-        }
-        Coupon coupon = c.getBody();
-        if (coupon.getStoreId() != -ONE && coupon.getStoreId() != pricesCodesModel.getStoreId()) {
-            return null;
-        }
-        return coupon;
-    }
 }
