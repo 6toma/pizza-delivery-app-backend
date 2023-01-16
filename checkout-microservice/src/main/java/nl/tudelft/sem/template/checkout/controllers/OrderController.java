@@ -87,7 +87,8 @@ public class OrderController {
             return ResponseEntity.badRequest().body("Cart is empty");
         }
         Order order = createOrderFromAttributes(storeTimeCoupons.getCoupons(), storeId, pickupTime, pizzas);
-        requestHelper.postRequest(8084, "/store/notify", storeId, String.class); // notify store of new order
+        requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/notify"), storeId,
+            String.class); // notify store of new order
         return ResponseEntity.ok("Order added with id " + order.getOrderId());
     }
 
