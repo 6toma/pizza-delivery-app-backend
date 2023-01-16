@@ -3,26 +3,20 @@ package nl.tudelft.sem.template.coupon.controllers;
 import java.util.List;
 import java.util.PriorityQueue;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.MicroServiceInteraction;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwnerOrRegionalManager;
-import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.models.PricesCodesModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import nl.tudelft.sem.template.coupon.domain.Coupon;
 import nl.tudelft.sem.template.coupon.domain.CouponRepository;
-import nl.tudelft.sem.template.coupon.domain.CouponType;
 import nl.tudelft.sem.template.coupon.domain.DiscountCouponIncompleteException;
-import nl.tudelft.sem.template.coupon.domain.IncompleteCouponException;
 import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
 import nl.tudelft.sem.template.coupon.domain.InvalidStoreIdException;
-import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
 import nl.tudelft.sem.template.coupon.services.CouponControllerService;
 import nl.tudelft.sem.template.coupon.services.CouponService;
 import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
  * Coupon Controller.
  */
 @RestController
-@RequiredArgsConstructor
 @Data
 public class CouponController {
 
@@ -45,6 +38,15 @@ public class CouponController {
     private final CouponRepository repo;
     private final CouponService couponService;
     private final CouponControllerService couponControllerService;
+
+    public CouponController(AuthManager authManager, RequestHelper requestHelper,
+                            CouponRepository repo, CouponService couponService) {
+        this.authManager = authManager;
+        this.requestHelper = requestHelper;
+        this.repo = repo;
+        this.couponService = couponService;
+        this.couponControllerService = new CouponControllerService(couponService, authManager, repo);
+    }
 
     /**
      * Retrieves coupon using passed code. throws InvalidCouponException if the coupon code format is incorrect.

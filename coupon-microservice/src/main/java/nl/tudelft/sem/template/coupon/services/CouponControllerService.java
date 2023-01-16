@@ -15,7 +15,9 @@ import nl.tudelft.sem.template.coupon.domain.IncompleteCouponException;
 import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
 import nl.tudelft.sem.template.coupon.domain.InvalidStoreIdException;
 import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
+import org.springframework.stereotype.Component;
 
+@Component
 @AllArgsConstructor
 public class CouponControllerService {
 
@@ -67,7 +69,7 @@ public class CouponControllerService {
      * @param unusedCodes
      * @return PriorityQueue
      */
-    public PriorityQueue buildPriorityQueue(PricesCodesModel pricesCodesModel, List<Double> prices, List<String> unusedCodes) {
+    public PriorityQueue<CouponFinalPriceModel> buildPriorityQueue(PricesCodesModel pricesCodesModel, List<Double> prices, List<String> unusedCodes) {
         PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
         for (String code : unusedCodes) {
             Coupon coupon = checkCouponValid(pricesCodesModel, code);

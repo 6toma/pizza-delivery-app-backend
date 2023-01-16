@@ -26,7 +26,6 @@ import nl.tudelft.sem.template.coupon.domain.IncompleteCouponException;
 import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
 import nl.tudelft.sem.template.coupon.domain.InvalidStoreIdException;
 import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
-import nl.tudelft.sem.template.coupon.services.CouponControllerService;
 import nl.tudelft.sem.template.coupon.services.CouponService;
 import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,9 +42,7 @@ class CouponControllerTest {
     private CouponRepository repo;
     private AuthManager authManager;
     private RequestHelper requestHelper;
-    private CouponService couponService;
-    private CouponControllerService couponControllerService;
-    private Coupon coupon = new Coupon();
+    private final Coupon coupon = new Coupon();
 
     @Mock
     private Clock clock;
@@ -65,8 +62,8 @@ class CouponControllerTest {
         when(clock.instant()).thenReturn(fixedClock.instant());
         when(clock.getZone()).thenReturn(fixedClock.getZone());
 
-        couponService = new CouponService(fixedClock);
-        couponController = new CouponController(authManager, requestHelper, repo, couponService, couponControllerService);
+        CouponService couponService = new CouponService(fixedClock);
+        couponController = new CouponController(authManager, requestHelper, repo, couponService);
         coupon.setCode("ABCD12");
         coupon.setExpiryDate(new Date(10, 10, 2024));
         coupon.setStoreId(1L);
@@ -270,10 +267,10 @@ class CouponControllerTest {
     @Test
     void selectCouponUsedCoupon() {
         when(repo.existsById("ABCD12")).thenReturn(true);
-        when(repo.findById("ABCD12")).thenReturn(Optional.ofNullable(coupon));
+        when(repo.findById("ABCD12")).thenReturn(Optional.of(coupon));
         when(
             requestHelper.postRequest(8081, "/customers/checkUsedCoupons/Tester", List.of("ABCD12"), List.class)).thenReturn(
-            new ArrayList());
+            new ArrayList<>());
         ResponseEntity<CouponFinalPriceModel> res =
             couponController.selectCoupon(new PricesCodesModel("Tester", 1, List.of(10.0), List.of("ABCD12")));
         assertThat(res.getBody().getCode()).isNull();
@@ -283,7 +280,7 @@ class CouponControllerTest {
     @Test
     void selectCouponOtherStoreId() {
         when(repo.existsById("ABCD12")).thenReturn(true);
-        when(repo.findById("ABCD12")).thenReturn(Optional.ofNullable(coupon));
+        when(repo.findById("ABCD12")).thenReturn(Optional.of(coupon));
         when(
             requestHelper.postRequest(8081, "/customers/checkUsedCoupons/Tester", List.of("ABCD12"), List.class)).thenReturn(
             List.of("ABCD12"));
