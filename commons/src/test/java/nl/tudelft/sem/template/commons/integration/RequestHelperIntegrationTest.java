@@ -7,6 +7,7 @@ import nl.tudelft.sem.template.authentication.annotations.role.MicroServiceInter
 import nl.tudelft.sem.template.authentication.annotations.role.RoleCustomer;
 import nl.tudelft.sem.template.authentication.config.RequestAuthenticationConfig;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
+import nl.tudelft.sem.template.commons.utils.RequestObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -15,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -70,26 +71,26 @@ class RequestHelperIntegrationTest {
 
     @Test
     void testHelperGet() {
-        var result = requestHelper.getRequest(port, "/get", String.class);
+        var result = requestHelper.doRequest(new RequestObject(HttpMethod.GET,port, "/get"), String.class);
         assertThat(result).isEqualTo("/get");
     }
 
     @Test
     void testHelperPost() {
-        var result = requestHelper.postRequest(port, "/post", "", String.class);
+        var result = requestHelper.doRequest(new RequestObject(HttpMethod.POST,port, "/post"), "", String.class);
         assertThat(result).isEqualTo("/post");
     }
 
     @Test
     void testHelperDelete() {
-        var result = requestHelper.deleteRequest(port, "/delete", String.class);
+        var result = requestHelper.doRequest(new RequestObject(HttpMethod.DELETE,port, "/delete"), String.class);
         assertThat(result).isEqualTo("/delete");
     }
 
     @Test
     void testHelperUnauthorized() {
         assertThrows(HttpClientErrorException.Forbidden.class,
-            () -> requestHelper.getRequest(port, "/unauthorized", String.class));
+            () -> requestHelper.doRequest(new RequestObject(HttpMethod.GET,port, "/unauthorized"), String.class));
     }
 
 

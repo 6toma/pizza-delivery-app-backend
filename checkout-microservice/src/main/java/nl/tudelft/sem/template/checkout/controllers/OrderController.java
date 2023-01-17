@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
-import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import nl.tudelft.sem.template.checkout.domain.Order;
 import nl.tudelft.sem.template.checkout.domain.OrderBuilder;
 import nl.tudelft.sem.template.checkout.domain.OrderService;
@@ -15,6 +14,8 @@ import nl.tudelft.sem.template.commons.models.CartPizza;
 import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.models.PricesCodesModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
+import nl.tudelft.sem.template.commons.utils.RequestObject;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +36,9 @@ public class OrderController {
     private final transient OrderService orderService;
 
     private long getStoreId(String storeName) {
-        String storeIdLong = requestHelper.postRequest(8084, "/store/getStoreIdFromName", storeName, String.class);
+        String storeIdLong =
+            requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/getStoreIdFromName"), storeName,
+                String.class);
         long storeId = Long.parseLong(storeIdLong);
         if (storeId == -1) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This is not a real store");
@@ -44,7 +47,9 @@ public class OrderController {
     }
 
     private List<CartPizza> getPizzas() {
-        CartPizza[] pizzas = requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class);
+        CartPizza[] pizzas =
+            requestHelper.doRequest(new RequestObject(HttpMethod.GET, 8082, "/cart/getCart/" + authManager.getNetId()),
+                CartPizza[].class);
         return Arrays.asList(pizzas);
     }
 
@@ -81,19 +86,20 @@ public class OrderController {
         if (pizzas.isEmpty()) {
             return ResponseEntity.badRequest().body("Cart is empty");
         }
-        Order order = createOrderFromAttributes(storeTimeCoupons, storeId, pickupTime, pizzas);
-        requestHelper.postRequest(8084, "/store/notify", storeId, String.class); // notify store of new order
+        Order order = createOrderFromAttributes(storeTimeCoupons.getCoupons(), storeId, pickupTime, pizzas);
+        requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/notify"), storeId,
+            String.class); // notify store of new order
         return ResponseEntity.ok("Order added with id " + order.getOrderId());
     }
 
-    private Order createOrderFromAttributes(StoreTimeCoupons storeTimeCoupons, long storeId, LocalDateTime pickupTime,
+    private Order createOrderFromAttributes(List<String> couponCodes, long storeId, LocalDateTime pickupTime,
                            List<CartPizza> pizzas) {
         String customer = authManager.getNetId();
         List<Double> pizzaPrices = getPriceForEachPizza(pizzas);
-        List<String> couponCodes = storeTimeCoupons.getCoupons();
         PricesCodesModel pcm = new PricesCodesModel(customer, storeId, pizzaPrices, couponCodes);
         CouponFinalPriceModel finalCoupon =
-            requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class); // get the best coupon
+            requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8085, "/selectCoupon"), pcm,
+                CouponFinalPriceModel.class); // get the best coupon
         String finalCouponCode = finalCoupon.getCode();
         OrderBuilder orderBuilder =
             Order.builder().withStoreId(storeId).withCustomerId(customer).withPickupTime(pickupTime).withPizzaList(pizzas)
@@ -102,8 +108,8 @@ public class OrderController {
             orderBuilder.withCoupon(null);
         } else {
             orderBuilder.withCoupon(finalCouponCode);
-            requestHelper.postRequest(8081, "/customers/" + customer + "/coupons/add", finalCouponCode,
-                String.class); // add to customer's used coupons
+            requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8081, "/customers/" + customer + "/coupons/add"),
+                finalCouponCode, String.class); // add to customer's used coupons
         }
         return orderService.addOrder(orderBuilder.build());
     }
@@ -133,7 +139,7 @@ public class OrderController {
         if (role.equals("ROLE_STORE_OWNER")) {
             return ResponseEntity.badRequest().body("Store owners can't cancel orders");
         }
-        if (isRegionalManagerOrOrderIsRemovable(netId, role, orderToBeRemoved, customerId)) {
+        if (orderService.isOrderRemovable(netId, role, orderToBeRemoved, customerId)) {
             orderService.removeOrderById(orderId);
             removeOrderAndCoupon(netId, orderToBeRemoved, storeId);
             return ResponseEntity.ok("Order with id " + orderId + " successfully removed");
@@ -144,18 +150,12 @@ public class OrderController {
         }
     }
 
-    private boolean isRegionalManagerOrOrderIsRemovable(String netId, String role, Order orderToBeRemoved, String customerId) {
-        return role.equals("ROLE_REGIONAL_MANAGER")
-            || (customerId.equals(netId) && orderService.getOrdersForCustomer(netId).contains(orderToBeRemoved)
-            && !orderToBeRemoved.getPickupTime().minusMinutes(30).isBefore(LocalDateTime.now()));
-    }
-
     private void removeOrderAndCoupon(String netId, Order orderToBeRemoved, long storeId) {
         if (orderToBeRemoved.getCoupon() != null) {
-            requestHelper.postRequest(8081, "/customers/" + netId + "/coupons/remove", orderToBeRemoved.getCoupon(),
-                String.class); // remove from customer's used coupons
+            requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8081, "/customers/" + netId + "/coupons/remove"),
+                orderToBeRemoved.getCoupon(), String.class); // remove from customer's used coupons
         }
-        requestHelper.postRequest(8084, "/store/notifyRemoveOrder", storeId,
+        requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/notifyRemoveOrder"), storeId,
             String.class); // notify store of remove order
     }
 
@@ -167,14 +167,7 @@ public class OrderController {
      */
     @GetMapping(path = {"", "/", "/all"})
     public List<Order> getAllOrders() {
-        UserRole role = authManager.getRole();
-        if (role == UserRole.REGIONAL_MANAGER) {
-            return orderService.getAllOrders();
-        } else if (role == UserRole.CUSTOMER) {
-            return orderService.getOrdersForCustomer(authManager.getNetId());
-        } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No access");
-        }
+        return orderService.getAllOrders(authManager.getNetId(), authManager.getRole());
     }
 
     /**
@@ -185,19 +178,7 @@ public class OrderController {
      */
     @GetMapping("/{id}")
     public Order getOrderById(@PathVariable("id") long orderId) {
-        String netId = authManager.getNetId();
-        UserRole role = authManager.getRole();
-        try {
-            Order order = orderService.getOrderById(orderId);
-            if (role == UserRole.REGIONAL_MANAGER || role == UserRole.STORE_OWNER
-                || (role == UserRole.CUSTOMER && order.getCustomerId().equals(netId))) {
-                return order;
-            } else {
-                throw new Exception("Order does not belong to customer, so they cannot check it");
-            }
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+        return orderService.getOrder(orderId, authManager.getNetId(), authManager.getRole());
     }
 
     /**
@@ -208,18 +189,7 @@ public class OrderController {
      */
     @GetMapping("/price/{id}")
     public double getOrderPrice(@PathVariable("id") long orderId) {
-        String netId = authManager.getNetId();
-        UserRole role = authManager.getRole();
-        try {
-            Order order = orderService.getOrderById(orderId);
-            if (role == UserRole.REGIONAL_MANAGER || role == UserRole.STORE_OWNER
-                || (role == UserRole.CUSTOMER && order.getCustomerId().equals(netId))) {
-                return order.calculatePriceWithoutDiscount();
-            } else {
-                throw new Exception("Order does not belong to customer, so they cannot check the price");
-            }
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+        return orderService.getPrice(orderId, authManager.getNetId(), authManager.getRole());
     }
+
 }
