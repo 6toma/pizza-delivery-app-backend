@@ -20,6 +20,8 @@ import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import nl.tudelft.sem.template.commons.models.CartPizza;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
+import nl.tudelft.sem.template.commons.utils.RequestObject;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -89,7 +91,8 @@ public class CartService {
 
     public Set<String> getUserAllergens(String netId) {
         try {
-            return Arrays.stream(requestHelper.getRequest(8081, "/customers/allergens/" + netId, String[].class))
+            return Arrays.stream(requestHelper.doRequest(new RequestObject(
+                    HttpMethod.GET, 8081, "/customers/allergens/" + netId), String[].class))
                 .collect(Collectors.toSet());
         } catch (Exception e) {
             e.printStackTrace();
