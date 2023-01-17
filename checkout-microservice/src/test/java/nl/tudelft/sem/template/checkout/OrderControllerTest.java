@@ -22,10 +22,12 @@ import nl.tudelft.sem.template.commons.models.CartPizza;
 import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.models.PricesCodesModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
+import nl.tudelft.sem.template.commons.utils.RequestObject;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
@@ -211,7 +213,8 @@ public class OrderControllerTest {
     public void add_order_store_not_found() {
         String storeName = "Store does not exist";
         StoreTimeCoupons stc = new StoreTimeCoupons(storeName, ldt, new ArrayList<>());
-        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", storeName, String.class)).thenReturn("-1");
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/getStoreIdFromName"), storeName,
+            String.class)).thenReturn("-1");
 
         ResponseEntity<String> response = orderController.addOrder(stc);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -224,7 +227,8 @@ public class OrderControllerTest {
     public void add_order_bad_pickup_time() {
         String storeName = "Delft Dehoven";
         StoreTimeCoupons stc = new StoreTimeCoupons(storeName, LocalDateTime.now(), new ArrayList<>());
-        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", storeName, String.class)).thenReturn("1");
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/getStoreIdFromName"), storeName,
+            String.class)).thenReturn("1");
 
         ResponseEntity<String> response = orderController.addOrder(stc);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -236,10 +240,11 @@ public class OrderControllerTest {
 
     @Test
     public void add_order_empty_cart() {
-        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", "Delft Dehoven", String.class)).thenReturn("1");
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/getStoreIdFromName"), "Delft Dehoven",
+            String.class)).thenReturn("1");
         when(authManager.getNetId()).thenReturn("Matt");
-        when(requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class)).thenReturn(
-            new CartPizza[0]);
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.GET, 8082, "/cart/getCart/" + authManager.getNetId()),
+            CartPizza[].class)).thenReturn(new CartPizza[0]);
 
         StoreTimeCoupons stc = new StoreTimeCoupons("Delft Dehoven", LocalDateTime.now().plusHours(1), new ArrayList<>());
         ResponseEntity<String> response = orderController.addOrder(stc);
@@ -247,20 +252,21 @@ public class OrderControllerTest {
         Assertions.assertThat(response.getBody()).isEqualTo("Cart is empty");
 
         verify(orderService, never()).addOrder(any());
-        verify(requestHelper, never()).postRequest(8084, "/store/notify", 1, String.class);
+        verify(requestHelper, never()).doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/notify"), 1, String.class);
     }
 
     @Test
     public void add_order_proper_cart_no_coupon() {
-        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", "Delft Dehoven", String.class)).thenReturn("1");
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/getStoreIdFromName"), "Delft Dehoven",
+            String.class)).thenReturn("1");
         when(authManager.getNetId()).thenReturn("Matt");
-        when(requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class)).thenReturn(
-            new CartPizza[] {pizza1, pizza2});
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.GET, 8082, "/cart/getCart/" + authManager.getNetId()),
+            CartPizza[].class)).thenReturn(new CartPizza[] {pizza1, pizza2});
 
 
         PricesCodesModel pcm = new PricesCodesModel("Matt", 1, List.of(11.0, 10.5, 10.5), new ArrayList<>());
-        when(requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class)).thenReturn(
-            new CouponFinalPriceModel("", 32.0));
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8085, "/selectCoupon"), pcm,
+            CouponFinalPriceModel.class)).thenReturn(new CouponFinalPriceModel("", 32.0));
 
         LocalDateTime pickupTime = LocalDateTime.now().plusHours(1);
         StoreTimeCoupons stc = new StoreTimeCoupons("Delft Dehoven", pickupTime, new ArrayList<>());
@@ -274,23 +280,26 @@ public class OrderControllerTest {
         Assertions.assertThat(response.getBody()).isEqualTo("Order added with id 0");
 
         verify(orderService, times(1)).addOrder(order1);
-        verify(requestHelper, never()).postRequest(eq(8081), eq("/customers/Matt/coupons/add"), any(), eq(String.class));
-        verify(requestHelper, times(1)).postRequest(eq(8084), eq("/store/notify"), any(), eq(String.class));
+        verify(requestHelper, never()).doRequest(eq(new RequestObject(HttpMethod.GET, 8081, "/customers/Matt/coupons/add")),
+            any());
+        verify(requestHelper, times(1)).doRequest(eq(new RequestObject(HttpMethod.POST, 8084, "/store/notify")), any(),
+            any());
     }
 
     @Test
     public void add_order_proper_cart_with_1_coupon_used_or_does_not_work() {
-        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", "Delft Dehoven", String.class)).thenReturn("1");
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/getStoreIdFromName"), "Delft Dehoven",
+            String.class)).thenReturn("1");
         when(authManager.getNetId()).thenReturn("Matt");
-        when(requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class)).thenReturn(
-            new CartPizza[] {pizza1, pizza2});
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.GET, 8082, "/cart/getCart/" + authManager.getNetId()),
+            CartPizza[].class)).thenReturn(new CartPizza[] {pizza1, pizza2});
 
         LocalDateTime pickupTime = LocalDateTime.now().plusHours(1);
         StoreTimeCoupons stc = new StoreTimeCoupons("Delft Dehoven", pickupTime, List.of("ABCD12"));
 
         PricesCodesModel pcm = new PricesCodesModel("Matt", 1, List.of(11.0, 10.5, 10.5), List.of("ABCD12"));
-        when(requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class)).thenReturn(
-            new CouponFinalPriceModel("", 32.0));
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8085, "/selectCoupon"), pcm,
+            CouponFinalPriceModel.class)).thenReturn(new CouponFinalPriceModel("", 32.0));
 
         Order order1 = Order.builder().withStoreId(1).withCustomerId("Matt").withPickupTime(pickupTime)
             .withPizzaList(List.of(pizza1, pizza2)).withCoupon(null).withFinalPrice(32.0).build();
@@ -301,23 +310,26 @@ public class OrderControllerTest {
         Assertions.assertThat(response.getBody()).isEqualTo("Order added with id 0");
 
         verify(orderService, times(1)).addOrder(order1);
-        verify(requestHelper, never()).postRequest(eq(8081), eq("/customers/Matt/coupons/add"), any(), eq(String.class));
-        verify(requestHelper, times(1)).postRequest(eq(8084), eq("/store/notify"), any(), eq(String.class));
+        verify(requestHelper, never()).doRequest(eq(new RequestObject(HttpMethod.POST, 8081, "/customers/Matt/coupons/add")),
+            any(), any());
+        verify(requestHelper, times(1)).doRequest(eq(new RequestObject(HttpMethod.POST, 8084, "/store/notify")), any(),
+            any());
     }
 
     @Test
     public void add_order_proper_cart_with_2_coupons_and_works() {
-        when(requestHelper.postRequest(8084, "/store/getStoreIdFromName", "Delft Dehoven", String.class)).thenReturn("1");
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/getStoreIdFromName"), "Delft Dehoven",
+            String.class)).thenReturn("1");
         when(authManager.getNetId()).thenReturn("Matt");
-        when(requestHelper.getRequest(8082, "/cart/getCart/" + authManager.getNetId(), CartPizza[].class)).thenReturn(
-            new CartPizza[] {pizza1, pizza2});
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.GET, 8082, "/cart/getCart/" + authManager.getNetId()),
+            CartPizza[].class)).thenReturn(new CartPizza[] {pizza1, pizza2});
 
         LocalDateTime pickupTime = LocalDateTime.now().plusHours(1);
         StoreTimeCoupons stc = new StoreTimeCoupons("Delft Dehoven", pickupTime, List.of("ABCD12", "MATT10"));
 
         PricesCodesModel pcm = new PricesCodesModel("Matt", 1, List.of(11.0, 10.5, 10.5), List.of("ABCD12", "MATT10"));
-        when(requestHelper.postRequest(8085, "/selectCoupon", pcm, CouponFinalPriceModel.class)).thenReturn(
-            new CouponFinalPriceModel("MATT10", 28.8));
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8085, "/selectCoupon"), pcm,
+            CouponFinalPriceModel.class)).thenReturn(new CouponFinalPriceModel("MATT10", 28.8));
 
         Order order1 = Order.builder().withStoreId(1).withCustomerId("Matt").withPickupTime(pickupTime)
             .withPizzaList(List.of(pizza1, pizza2)).withCoupon("MATT10").withFinalPrice(28.8).build();
@@ -328,8 +340,11 @@ public class OrderControllerTest {
         Assertions.assertThat(response.getBody()).isEqualTo("Order added with id 0");
 
         verify(orderService, times(1)).addOrder(order1);
-        verify(requestHelper, times(1)).postRequest(eq(8081), eq("/customers/Matt/coupons/add"), any(), eq(String.class));
-        verify(requestHelper, times(1)).postRequest(eq(8084), eq("/store/notify"), any(), eq(String.class));
+        verify(requestHelper, times(1)).doRequest(
+            eq(new RequestObject(HttpMethod.POST, 8081, "/customers/Matt/coupons/add")), any(), any());
+        verify(requestHelper, times(1)).doRequest(
+            eq(new RequestObject(HttpMethod.POST, 8084, "/store/notify")),
+            any(), any());
     }
 
     @Test
@@ -378,7 +393,8 @@ public class OrderControllerTest {
         Assertions.assertThat(response.getBody()).isEqualTo("Order with id 1 successfully removed");
 
         verify(orderService, times(1)).removeOrderById(orderId);
-        verify(requestHelper, never()).postRequest(eq(8081), eq("/customers/Matt/coupons/remove"), any(), eq(String.class));
+        verify(requestHelper, never()).doRequest(
+            eq(new RequestObject(HttpMethod.POST, 8081, "/customers/Matt/coupons/remove")), any(),any());
     }
 
     @Test
@@ -451,6 +467,8 @@ public class OrderControllerTest {
         Assertions.assertThat(response.getBody()).isEqualTo("Order with id 1 successfully removed");
 
         verify(orderService, times(1)).removeOrderById(orderId);
-        verify(requestHelper, times(1)).postRequest(eq(8081), eq("/customers/Matt/coupons/remove"), any(), eq(String.class));
+        verify(requestHelper, times(1)).doRequest(
+            eq(new RequestObject(HttpMethod.POST, 8081, "/customers/Matt/coupons/remove")), any(), any());
+
     }
 }
