@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class AuthenticationExceptionHandler {
     @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<String> handleUserDisabledException() {
+    ResponseEntity<String> handleUserDisabledException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("USER_DISABLED");
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> handleBadCredentialsException() {
+    ResponseEntity<String> handleBadCredentialsException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("INVALID_CREDENTIALS");
     }
 }
