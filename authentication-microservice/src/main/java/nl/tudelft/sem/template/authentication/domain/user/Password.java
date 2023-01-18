@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.EqualsAndHashCode;
 
 /**
@@ -14,6 +15,7 @@ public class Password {
         this.passwordValue = password;
     }
 
+    @JsonValue
     @Override
     public String toString() {
         return passwordValue;

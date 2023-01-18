@@ -2,7 +2,6 @@ package nl.tudelft.sem.template.authentication.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -74,8 +73,8 @@ public class UsersTests {
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
-        model.setNetId(testUser.toString());
-        model.setPassword(testPassword.toString());
+        model.setNetId(testUser);
+        model.setPassword(testPassword);
 
         // Act
         ResultActions resultActions = mockMvc.perform(post("/register")
@@ -89,7 +88,7 @@ public class UsersTests {
 
         assertThat(savedUser.getNetId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(testHashedPassword);
-        verify(mockRequestHelper, times(1)).postRequest(anyInt(), any(), any(), any());
+        verify(mockRequestHelper, times(1)).doRequest(any(),any(),any());
     }
 
     @Test
@@ -103,8 +102,8 @@ public class UsersTests {
         userRepository.save(existingAppUser);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
-        model.setNetId(testUser.toString());
-        model.setPassword(newTestPassword.toString());
+        model.setNetId(testUser);
+        model.setPassword(newTestPassword);
 
         // Act
         ResultActions resultActions = mockMvc.perform(post("/register")
@@ -142,8 +141,8 @@ public class UsersTests {
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
-        model.setNetId(testUser.toString());
-        model.setPassword(testPassword.toString());
+        model.setNetId(testUser);
+        model.setPassword(testPassword);
 
         // Act
         ResultActions resultActions = mockMvc.perform(post("/authenticate")
@@ -178,8 +177,8 @@ public class UsersTests {
         ))).thenThrow(new UsernameNotFoundException("User not found"));
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
-        model.setNetId(testUser);
-        model.setPassword(testPassword);
+        model.setNetId(new NetId(testUser));
+        model.setPassword(new Password(testPassword));
 
         // Act
         ResultActions resultActions = mockMvc.perform(post("/authenticate")
@@ -199,18 +198,18 @@ public class UsersTests {
     @Test
     public void login_withInvalidPassword_returns403() throws Exception {
         // Arrange
-        final String testUser = "someUser@gmail.com";
-        final String wrongPassword = "password1234";
-        final String testPassword = "password123";
+        final var testUser = new NetId("someUser@gmail.com");
+        final var wrongPassword = new Password("password1234");
+        final var testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
-        when(mockPasswordEncoder.hash(new Password(testPassword))).thenReturn(testHashedPassword);
+        when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         when(mockAuthenticationManager.authenticate(argThat(authentication ->
-            testUser.equals(authentication.getPrincipal())
-                && wrongPassword.equals(authentication.getCredentials())
+            testUser.toString().equals(authentication.getPrincipal())
+                && wrongPassword.toString().equals(authentication.getCredentials())
         ))).thenThrow(new BadCredentialsException("Invalid password"));
 
-        AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword);
+        AppUser appUser = new AppUser(testUser, testHashedPassword);
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
@@ -226,8 +225,8 @@ public class UsersTests {
         resultActions.andExpect(status().isUnauthorized());
 
         verify(mockAuthenticationManager).authenticate(argThat(authentication ->
-            testUser.equals(authentication.getPrincipal())
-                && wrongPassword.equals(authentication.getCredentials())));
+            testUser.toString().equals(authentication.getPrincipal())
+                && wrongPassword.toString().equals(authentication.getCredentials())));
 
         verify(mockJwtTokenGenerator, times(0)).generateToken(any());
     }
@@ -246,8 +245,8 @@ public class UsersTests {
         ))).thenThrow(new DisabledException("This account is disabled"));
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
-        model.setNetId(testUser);
-        model.setPassword(wrongPassword);
+        model.setNetId(new NetId(testUser));
+        model.setPassword(new Password(wrongPassword));
 
         // Act
         ResultActions resultActions = mockMvc.perform(post("/authenticate")

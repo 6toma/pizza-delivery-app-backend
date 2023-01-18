@@ -1,6 +1,5 @@
 package nl.tudelft.sem.template.customer.controllers;
 
-import java.util.Collections;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
@@ -79,13 +78,7 @@ public class CustomerController {
     @MicroServiceInteraction
     @PostMapping("/add")
     public ResponseEntity<String> addCustomer(@NotNull @RequestBody String netId) {
-
-        var customer = new Customer();
-        customer.setNetId(new NetId(netId));
-        customer.setAllergens(Collections.emptyList());
-        customer.setUsedCoupons(Collections.emptyList());
-
-        customerService.addCustomer(customer);
+        customerService.addCustomer(netId);
         return ResponseEntity.ok("Customer added.");
     }
 

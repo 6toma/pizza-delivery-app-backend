@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import nl.tudelft.sem.template.store.domain.Store;
-import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
+import nl.tudelft.sem.template.commons.models.StoreOwnerValidModel;
 import nl.tudelft.sem.testing.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;

@@ -2,7 +2,6 @@ package nl.tudelft.sem.template.coupon.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,16 +15,18 @@ import lombok.SneakyThrows;
 import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.models.PricesCodesModel;
+import nl.tudelft.sem.template.commons.utils.RequestObject;
 import nl.tudelft.sem.template.coupon.domain.Coupon;
 import nl.tudelft.sem.template.coupon.domain.CouponRepository;
 import nl.tudelft.sem.template.coupon.domain.CouponType;
 import nl.tudelft.sem.template.coupon.domain.Date;
-import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
+import nl.tudelft.sem.template.commons.models.StoreOwnerValidModel;
 import nl.tudelft.sem.testing.IntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -75,7 +76,8 @@ public class CouponIntegrationTest extends IntegrationTest {
         repository.save(c1);
         repository.save(c2);
         repository.save(c3);
-        when(requestHelper.postRequest(8084, "/store/existsByStoreId", 1L, Boolean.class)).thenReturn(true);
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/existsByStoreId"), 1L,
+            Boolean.class)).thenReturn(true);
         ResultActions res = getCouponsForStore(1L);
         res.andExpect(status().isOk());
         List<Coupon> fin = Arrays.asList(parseResponseJson(res, Coupon[].class));
@@ -88,7 +90,8 @@ public class CouponIntegrationTest extends IntegrationTest {
     @SneakyThrows
     @Test
     void testCouponsForStoreNotExists() {
-        when(requestHelper.postRequest(8084, "/store/existsByStoreId", 12345L, Boolean.class))
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/existsByStoreId"), 12345L,
+            Boolean.class))
             .thenReturn(false);
         ResultActions result = getCouponsForStore(12345L);
         result.andExpect(status().isBadRequest());
@@ -99,7 +102,8 @@ public class CouponIntegrationTest extends IntegrationTest {
     void testAddCouponStoreOwner() {
         Coupon c1 = new Coupon("ABCD12", new Date(10, 10, 2025), 1L, CouponType.ONE_PLUS_ONE);
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(TEST_USER, 1L);
-        when(requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class)).thenReturn(true);
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/checkStoreowner"), sovm,
+            Boolean.class)).thenReturn(true);
         ResultActions res = addCoupon(c1, UserRole.STORE_OWNER);
         res.andExpect(status().isOk());
         assertThat(repository.count()).isEqualTo(1);
@@ -182,7 +186,8 @@ public class CouponIntegrationTest extends IntegrationTest {
     void testAddCouponNotOwnerOfStore() {
         Coupon c1 = new Coupon("ABCD12", new Date(10, 10, 2025), 1L, CouponType.ONE_PLUS_ONE);
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(TEST_USER, 1L);
-        when(requestHelper.postRequest(8084, "/store/checkStoreowner", sovm, Boolean.class)).thenReturn(false);
+        when(requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/checkStoreowner"), sovm,
+            Boolean.class)).thenReturn(false);
         ResultActions res = addCoupon(c1, UserRole.STORE_OWNER);
         res.andExpect(status().isBadRequest());
         assertThat(repository.count()).isZero();
@@ -191,7 +196,7 @@ public class CouponIntegrationTest extends IntegrationTest {
     @SneakyThrows
     @Test
     void testAddCouponAlreadyExists() {
-        when(requestHelper.postRequest(anyInt(), any(), any(), any())).thenReturn(true);
+        when(requestHelper.doRequest(any(), any(), any())).thenReturn(true);
         Coupon c1 = new Coupon("ABCD12", new Date(10, 10, 2025), -1L, CouponType.ONE_PLUS_ONE);
         Coupon c2 = new Coupon("ABCD12", new Date(11, 10, 2025), -1L, CouponType.DISCOUNT, 20);
         addCoupon(c1, UserRole.REGIONAL_MANAGER).andExpect(status().isOk());
@@ -312,12 +317,15 @@ public class CouponIntegrationTest extends IntegrationTest {
 
     private void mockCheckUsedCoupons(PricesCodesModel model, List<String> response) {
         when(requestHelper
-            .postRequest(8081, "/customers/checkUsedCoupons/" + model.getNetId(), model.getCodes(), List.class))
+            .doRequest(new RequestObject(HttpMethod.POST, 8081, "/customers/checkUsedCoupons/" + model.getNetId()),
+                model.getCodes(), List.class))
             .thenReturn(response);
     }
 
     private void mockCheckUsedCoupons(List<String> response) {
-        when(requestHelper.postRequest(eq(8081), eq("/customers/checkUsedCoupons/" + TEST_USER), any(), eq(List.class)))
+        when(requestHelper.doRequest(
+            eq(new RequestObject(HttpMethod.POST, 8081, "/customers/checkUsedCoupons/" + TEST_USER)), any(),
+            eq(List.class)))
             .thenReturn(response);
     }
 
