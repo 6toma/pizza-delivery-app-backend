@@ -20,7 +20,7 @@ import nl.tudelft.sem.template.coupon.domain.Coupon;
 import nl.tudelft.sem.template.coupon.domain.CouponRepository;
 import nl.tudelft.sem.template.coupon.domain.CouponType;
 import nl.tudelft.sem.template.coupon.domain.Date;
-import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
+import nl.tudelft.sem.template.commons.models.StoreOwnerValidModel;
 import nl.tudelft.sem.testing.IntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

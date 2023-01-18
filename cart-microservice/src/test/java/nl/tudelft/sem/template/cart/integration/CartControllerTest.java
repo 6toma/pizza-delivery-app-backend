@@ -59,17 +59,18 @@ public class CartControllerTest extends IntegrationTest {
             Arrays.asList(new Topping("test4", 7), new Topping("test5", 10), new Topping("test6", 13)));
 
         defaultPizza2 = defaultRepository.saveAndFlush(new DefaultPizza("Default Pizza 2", toppings2, 10));
+        when(requestHelper.doRequest(any(), any())).thenReturn(new String[0]);
     }
 
     void deleteAll() {
-        toppingRepository.deleteAll();
-        toppingRepository.flush();
-        customRepository.deleteAll();
-        customRepository.flush();
         cartRepository.deleteAll();
         cartRepository.flush();
         defaultRepository.deleteAll();
         defaultRepository.flush();
+        customRepository.deleteAll();
+        customRepository.flush();
+        toppingRepository.deleteAll();
+        toppingRepository.flush();
     }
 
     @Test

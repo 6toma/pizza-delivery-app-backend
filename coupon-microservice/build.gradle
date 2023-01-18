@@ -4,10 +4,8 @@ plugins {
 apply plugin: 'info.solidsoft.pitest'
 
 dependencies {
-	implementation(project(":store-microservice"))
 	implementation(project(":authentication"))
 	implementation(project(":commons"))
-	implementation(project(":store-microservice"))
 	testImplementation(testFixtures(project(":commons")))
 }
 

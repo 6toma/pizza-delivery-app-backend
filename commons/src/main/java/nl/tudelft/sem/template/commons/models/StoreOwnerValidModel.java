@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.store.domain;
+package nl.tudelft.sem.template.commons.models;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

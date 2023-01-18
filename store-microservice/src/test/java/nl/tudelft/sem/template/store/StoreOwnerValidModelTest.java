@@ -4,7 +4,7 @@ package nl.tudelft.sem.template.store;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
+import nl.tudelft.sem.template.commons.models.StoreOwnerValidModel;
 import org.junit.jupiter.api.Test;
 
 public class StoreOwnerValidModelTest {

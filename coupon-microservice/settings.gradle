@@ -1,8 +1,6 @@
 rootProject.name = 'coupon-microservice'
 
 includeBuild '../build-logic'
-include 'store-microservice'
-project(':store-microservice').projectDir = new File('../store-microservice')
 include 'authentication'
 project(':authentication').projectDir = new File('../authentication')
 include 'commons'

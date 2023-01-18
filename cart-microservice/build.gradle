@@ -5,7 +5,6 @@ apply plugin: 'info.solidsoft.pitest'
 
 dependencies {
     implementation(project(":authentication"))
-    implementation(project(":checkout-microservice"))
     implementation(project(":commons"))
     testImplementation(testFixtures(project(":commons")))
 }
