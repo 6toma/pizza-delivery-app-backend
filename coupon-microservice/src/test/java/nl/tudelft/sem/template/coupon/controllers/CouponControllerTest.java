@@ -28,7 +28,7 @@ import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
 import nl.tudelft.sem.template.coupon.domain.InvalidStoreIdException;
 import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
 import nl.tudelft.sem.template.coupon.services.CouponService;
-import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
+import nl.tudelft.sem.template.commons.models.StoreOwnerValidModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

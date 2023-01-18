@@ -10,6 +10,7 @@ import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwnerOrR
 import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.models.PricesCodesModel;
+import nl.tudelft.sem.template.commons.models.StoreOwnerValidModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import nl.tudelft.sem.template.commons.utils.RequestObject;
 import nl.tudelft.sem.template.coupon.domain.Coupon;
@@ -21,7 +22,6 @@ import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
 import nl.tudelft.sem.template.coupon.domain.InvalidStoreIdException;
 import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
 import nl.tudelft.sem.template.coupon.services.CouponService;
-import nl.tudelft.sem.template.store.domain.StoreOwnerValidModel;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -108,8 +108,8 @@ public class CouponController {
             throw new IncompleteCouponException();
         }
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), coupon.getStoreId());
-        if (coupon.getStoreId() == -ONE ||
-            requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/checkStoreowner"), sovm,
+        if (coupon.getStoreId() == -ONE
+            || requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/checkStoreowner"), sovm,
                 Boolean.class)) {
             return ResponseEntity.ok(repo.save(coupon));
         } else {
@@ -133,8 +133,8 @@ public class CouponController {
         }
         PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
         List<String> unusedCodes = requestHelper.doRequest(
-            new RequestObject(HttpMethod.POST, 8081, "/customers/checkUsedCoupons/" + pricesCodesModel.getNetId()),
-            codes, List.class);
+            new RequestObject(HttpMethod.POST, 8081, "/customers/checkUsedCoupons/" + pricesCodesModel.getNetId()), codes,
+            List.class);
         if (unusedCodes == null || unusedCodes.isEmpty()) {
             return ResponseEntity.ok(
                 new CouponFinalPriceModel(null, prices.stream().mapToDouble(Double::doubleValue).sum()));
