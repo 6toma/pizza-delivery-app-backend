@@ -44,8 +44,7 @@ class CouponControllerTest {
     private CouponRepository repo;
     private AuthManager authManager;
     private RequestHelper requestHelper;
-    private CouponService couponService;
-    private Coupon coupon = new Coupon();
+    private final Coupon coupon = new Coupon();
 
     @Mock
     private Clock clock;
@@ -65,7 +64,7 @@ class CouponControllerTest {
         when(clock.instant()).thenReturn(fixedClock.instant());
         when(clock.getZone()).thenReturn(fixedClock.getZone());
 
-        couponService = new CouponService(fixedClock);
+        CouponService couponService = new CouponService(fixedClock);
         couponController = new CouponController(authManager, requestHelper, repo, couponService);
         coupon.setCode("ABCD12");
         coupon.setExpiryDate(new Date(10, 10, 2024));
@@ -140,25 +139,24 @@ class CouponControllerTest {
     @Test
     void addCouponInvalid() {
         String code = "AB56";
-        Coupon coupon = new Coupon();
         coupon.setCode(code);
         assertThrows(InvalidCouponCodeException.class, () -> couponController.addCoupon(coupon));
     }
 
     @Test
     void addCouponNoPercentage() {
-        String code = "ABCD56";
-        Coupon coupon = new Coupon();
-        coupon.setCode(code);
         coupon.setType(CouponType.DISCOUNT);
         assertThrows(DiscountCouponIncompleteException.class, () -> couponController.addCoupon(coupon));
     }
 
+    @SneakyThrows
     @Test
     void addCouponNoStoreId() {
         String code = "ABCD56";
         Coupon coupon = new Coupon();
         coupon.setCode(code);
+        coupon.setExpiryDate(new Date(10, 10, 2024));
+        coupon.setType(CouponType.ONE_PLUS_ONE);
         assertThrows(InvalidStoreIdException.class, () -> couponController.addCoupon(coupon));
     }
 
@@ -194,9 +192,6 @@ class CouponControllerTest {
 
     @Test
     void addCouponNotRegionalManager() {
-        String code = "ABCD56";
-        Coupon coupon = new Coupon();
-        coupon.setCode(code);
         coupon.setStoreId(-1L);
         when(authManager.getRoleAuthority())
             .thenReturn("ROLE_STORE_OWNER");
@@ -274,7 +269,7 @@ class CouponControllerTest {
     @Test
     void selectCouponUsedCoupon() {
         when(repo.existsById("ABCD12")).thenReturn(true);
-        when(repo.findById("ABCD12")).thenReturn(Optional.ofNullable(coupon));
+        when(repo.findById("ABCD12")).thenReturn(Optional.of(coupon));
         when(
             requestHelper.doRequest(new RequestObject(HttpMethod.POST,8081, "/customers/checkUsedCoupons/Tester"), List.of("ABCD12"), List.class)).thenReturn(
             new ArrayList());
@@ -287,7 +282,7 @@ class CouponControllerTest {
     @Test
     void selectCouponOtherStoreId() {
         when(repo.existsById("ABCD12")).thenReturn(true);
-        when(repo.findById("ABCD12")).thenReturn(Optional.ofNullable(coupon));
+        when(repo.findById("ABCD12")).thenReturn(Optional.of(coupon));
         when(
             requestHelper.doRequest(new RequestObject(HttpMethod.POST,8081, "/customers/checkUsedCoupons/Tester"), List.of("ABCD12"), List.class)).thenReturn(
             List.of("ABCD12"));

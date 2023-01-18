@@ -3,11 +3,9 @@ package nl.tudelft.sem.template.coupon.controllers;
 import java.util.List;
 import java.util.PriorityQueue;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.annotations.role.MicroServiceInteraction;
 import nl.tudelft.sem.template.authentication.annotations.role.RoleStoreOwnerOrRegionalManager;
-import nl.tudelft.sem.template.authentication.domain.user.UserRole;
 import nl.tudelft.sem.template.commons.models.CouponFinalPriceModel;
 import nl.tudelft.sem.template.commons.models.PricesCodesModel;
 import nl.tudelft.sem.template.commons.models.StoreOwnerValidModel;
@@ -15,15 +13,12 @@ import nl.tudelft.sem.template.commons.utils.RequestHelper;
 import nl.tudelft.sem.template.commons.utils.RequestObject;
 import nl.tudelft.sem.template.coupon.domain.Coupon;
 import nl.tudelft.sem.template.coupon.domain.CouponRepository;
-import nl.tudelft.sem.template.coupon.domain.CouponType;
 import nl.tudelft.sem.template.coupon.domain.DiscountCouponIncompleteException;
-import nl.tudelft.sem.template.coupon.domain.IncompleteCouponException;
 import nl.tudelft.sem.template.coupon.domain.InvalidCouponCodeException;
 import nl.tudelft.sem.template.coupon.domain.InvalidStoreIdException;
-import nl.tudelft.sem.template.coupon.domain.NotRegionalManagerException;
+import nl.tudelft.sem.template.coupon.services.CouponControllerService;
 import nl.tudelft.sem.template.coupon.services.CouponService;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
  * Coupon Controller.
  */
 @RestController
-@RequiredArgsConstructor
 @Data
 public class CouponController {
 
@@ -45,6 +39,16 @@ public class CouponController {
     private final RequestHelper requestHelper;
     private final CouponRepository repo;
     private final CouponService couponService;
+    private final CouponControllerService couponControllerService;
+
+    public CouponController(AuthManager authManager, RequestHelper requestHelper,
+                            CouponRepository repo, CouponService couponService) {
+        this.authManager = authManager;
+        this.requestHelper = requestHelper;
+        this.repo = repo;
+        this.couponService = couponService;
+        this.couponControllerService = new CouponControllerService(couponService, authManager, repo);
+    }
 
     /**
      * Retrieves coupon using passed code. throws InvalidCouponException if the coupon code format is incorrect.
@@ -88,28 +92,11 @@ public class CouponController {
     @RoleStoreOwnerOrRegionalManager
     @PostMapping("/addCoupon")
     public ResponseEntity<Coupon> addCoupon(@Validated @RequestBody Coupon coupon) {
-        if (coupon.getCode() == null) {
-            throw new InvalidCouponCodeException("No coupon code provided!");
-        }
-        if (!couponService.validCodeFormat(coupon.getCode())) {
-            throw new InvalidCouponCodeException(coupon.getCode());
-        }
-        if (coupon.getPercentage() == null && coupon.getType() == CouponType.DISCOUNT) {
-            throw new DiscountCouponIncompleteException();
-        }
-        if (coupon.getStoreId() == null) {
-            throw new InvalidStoreIdException();
-        }
-
-        if (coupon.getStoreId() == -ONE && authManager.getRole() != UserRole.REGIONAL_MANAGER) {
-            throw new NotRegionalManagerException();
-        }
-        if (coupon.getType() == null || coupon.getExpiryDate() == null) {
-            throw new IncompleteCouponException();
-        }
+        couponControllerService.checkIncompleteInput(coupon);
+        couponControllerService.checkValidInput(coupon);
         StoreOwnerValidModel sovm = new StoreOwnerValidModel(authManager.getNetId(), coupon.getStoreId());
-        if (coupon.getStoreId() == -ONE
-            || requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/checkStoreowner"), sovm,
+        if (coupon.getStoreId() == -ONE ||
+            requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8084, "/store/checkStoreowner"), sovm,
                 Boolean.class)) {
             return ResponseEntity.ok(repo.save(coupon));
         } else {
@@ -131,41 +118,21 @@ public class CouponController {
         if (prices == null || prices.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        PriorityQueue<CouponFinalPriceModel> pq = new PriorityQueue<>();
-        List<String> unusedCodes = requestHelper.doRequest(
-            new RequestObject(HttpMethod.POST, 8081, "/customers/checkUsedCoupons/" + pricesCodesModel.getNetId()), codes,
-            List.class);
+        List<String> unusedCodes =
+            requestHelper.doRequest(
+                new RequestObject(HttpMethod.POST, 8081, "/customers/checkUsedCoupons/" + pricesCodesModel.getNetId()),
+                codes, List.class);
         if (unusedCodes == null || unusedCodes.isEmpty()) {
             return ResponseEntity.ok(
                 new CouponFinalPriceModel(null, prices.stream().mapToDouble(Double::doubleValue).sum()));
         }
-        for (String code : unusedCodes) {
-            ResponseEntity<Coupon> c;
-            try {
-                c = getCouponByCode(code);
-            } catch (InvalidCouponCodeException e) {
-                continue;
-            }
-            if (c.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
-                continue;
-            }
-            Coupon coupon = c.getBody();
-            if (coupon.getStoreId() != -ONE && coupon.getStoreId() != pricesCodesModel.getStoreId()) {
-                continue;
-            }
-            if (coupon.getType() == CouponType.DISCOUNT) {
-                pq.add(new CouponFinalPriceModel(code, couponService.applyDiscount(coupon, prices)));
-            } else {
-                if (prices.size() == ONE) {
-                    continue;
-                }
-                pq.add(new CouponFinalPriceModel(code, couponService.applyOnePlusOne(coupon, prices)));
-            }
-        }
+        PriorityQueue<CouponFinalPriceModel> pq =
+            couponControllerService.buildPriorityQueue(pricesCodesModel, prices, unusedCodes);
         if (pq.isEmpty()) {
             return ResponseEntity.ok(
                 new CouponFinalPriceModel(null, prices.stream().mapToDouble(Double::doubleValue).sum()));
         }
         return ResponseEntity.ok(pq.peek());
     }
+
 }
