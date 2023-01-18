@@ -7,6 +7,8 @@ import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
 import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
 import nl.tudelft.sem.template.authentication.models.RegistrationRequestModel;
 import nl.tudelft.sem.template.commons.utils.RequestHelper;
+import nl.tudelft.sem.template.commons.utils.RequestObject;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,7 +50,8 @@ public class AuthenticationController {
 
         try {
             registrationService.registerUser(request.getNetId(), request.getPassword());
-            requestHelper.postRequest(8081, "/customers/add", request.getNetId().toString(), String.class);
+            requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8081, "/customers/add"),
+                request.getNetId().toString(), String.class);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
