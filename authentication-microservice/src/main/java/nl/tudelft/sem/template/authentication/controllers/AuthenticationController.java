@@ -46,17 +46,16 @@ public class AuthenticationController {
      * @throws Exception if a user with this netid already exists
      */
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody RegistrationRequestModel request) throws Exception {
+    public ResponseEntity<String> register(@RequestBody RegistrationRequestModel request) throws Exception {
 
         try {
             registrationService.registerUser(request.getNetId(), request.getPassword());
             requestHelper.doRequest(new RequestObject(HttpMethod.POST, 8081, "/customers/add"),
                 request.getNetId().toString(), String.class);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Registration successful");
     }
 }

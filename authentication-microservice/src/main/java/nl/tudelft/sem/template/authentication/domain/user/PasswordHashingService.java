@@ -14,6 +14,7 @@ public class PasswordHashingService {
     }
 
     public HashedPassword hash(Password password) {
-        return new HashedPassword(encoder.encode(password.toString()));
+        return null;
+//        return new HashedPassword(encoder.encode(password.toString()));
     }
 }
