@@ -86,6 +86,20 @@ public class OrderTest {
     }
 
     @Test
+    public void getFinalPriceTest() {
+        Order o = Order.builder()
+            .withStoreId(1L)
+            .withCustomerId("Matt")
+            .withPickupTime(ldt)
+            .withPizzaList(new ArrayList<>())
+            .withCoupon("ABCD12")
+            .withFinalPrice(10.5)
+            .build();
+
+        Assertions.assertThat(o.getFinalPrice()).isEqualTo(10.5);
+    }
+
+    @Test
     public void calculatePriceWithoutDiscountTest() {
         Assertions.assertThat(order.calculatePriceWithoutDiscount()).isEqualTo(0);
 
