@@ -100,7 +100,6 @@ public class StoreRestController {
         try {
             emailNotificationService.notifyOrder(store.getStoreOwnerNetId().toString());
         } catch (IOException | MessagingException e) {
-            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't send email notification");
         }
         return "Store " + storeId + " was notified of the order.";
@@ -122,7 +121,6 @@ public class StoreRestController {
         try {
             emailNotificationService.notifyOrderRemove(store.getStoreOwnerNetId().toString());
         } catch (IOException | MessagingException e) {
-            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't send email notification");
         }
         return "Store " + storeId + " was notified of the order.";
