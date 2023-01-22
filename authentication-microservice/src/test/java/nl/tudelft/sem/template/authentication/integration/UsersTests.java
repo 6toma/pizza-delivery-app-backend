@@ -82,13 +82,14 @@ public class UsersTests {
             .content(JsonUtil.serialize(model)));
 
         // Assert
-        resultActions.andExpect(status().isOk());
+        var result = resultActions.andExpect(status().isOk()).andReturn();
+        assertThat(result.getResponse().getContentAsString()).isEqualTo("Registration successful");
 
         AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
 
         assertThat(savedUser.getNetId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(testHashedPassword);
-        verify(mockRequestHelper, times(1)).doRequest(any(),any(),any());
+        verify(mockRequestHelper, times(1)).doRequest(any(), any(), any());
     }
 
     @Test

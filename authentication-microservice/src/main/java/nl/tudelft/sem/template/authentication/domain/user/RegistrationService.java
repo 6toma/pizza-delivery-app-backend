@@ -21,17 +21,19 @@ public class RegistrationService {
      * @param password The password of the user
      * @throws Exception if the user already exists
      */
-    public AppUser registerUser(NetId netId, Password password) throws Exception {
+    public void registerUser(NetId netId, Password password) throws Exception {
 
         if (checkNetIdIsUnique(netId)) {
             // Hash password
             HashedPassword hashedPassword = passwordHashingService.hash(password);
-
+            if (hashedPassword == null) {
+                throw new IllegalArgumentException();
+            }
             // Create new account
             AppUser user = new AppUser(netId, hashedPassword);
             userRepository.save(user);
 
-            return user;
+            return;
         }
         throw new NetIdAlreadyInUseException(netId);
     }
