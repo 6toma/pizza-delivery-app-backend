@@ -1,6 +1,8 @@
 package nl.tudelft.sem.template.store;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -15,6 +17,7 @@ import nl.tudelft.sem.template.store.controller.StoreRestController;
 import nl.tudelft.sem.template.store.domain.Store;
 import nl.tudelft.sem.template.store.domain.StoreRepository;
 import nl.tudelft.sem.template.store.services.EmailNotificationService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -39,12 +42,8 @@ public class StoreControllerTest {
         long storeId = 1;
         when(storeRepository.findById(storeId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> notifyStoreOnId(storeId)).isInstanceOf(ResponseStatusException.class)
+        assertThatThrownBy(() -> storeRestController.notifyStore(storeId)).isInstanceOf(ResponseStatusException.class)
             .hasMessageContaining("Store with id " + storeId);
-    }
-
-    private void notifyStoreOnId(long storeId) {
-        storeRestController.notifyStore(storeId);
     }
 
     @Test
@@ -56,7 +55,10 @@ public class StoreControllerTest {
         when(store.getStoreOwnerNetId()).thenReturn(new NetId("test@user.com"));
 
         // notify store on the mocked store
-        notifyStoreOnId(storeId);
+
+        String response = storeRestController.notifyStore(storeId);
+        assertNotNull(response);
+        assertFalse(response.isEmpty());
 
         // assert that the mocked store prepares pizza
         verify(emailNotificationService, times(1)).notifyOrder(any());
@@ -101,7 +103,9 @@ public class StoreControllerTest {
         when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
         when(store.getStoreOwnerNetId()).thenReturn(new NetId("test@user.com"));
 
-        storeRestController.notifyRemoveOrder(storeId);
+        String response = storeRestController.notifyRemoveOrder(storeId);
+        assertNotNull(response);
+        assertFalse(response.isEmpty());
 
         // assert that the mocked store prepares pizza
         verify(emailNotificationService, times(1)).notifyOrderRemove(any());
