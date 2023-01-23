@@ -362,13 +362,16 @@ public class CartControllerTest extends IntegrationTest {
     @Test
     void testGetCartDifferentUser() throws Exception {
         // make sure we add another user to the cart database before we proceed
-        Cart cartFirstUser = new Cart(new NetId("netId@gmail.com"), Map.of());
+        Cart cartFirstUser = new Cart(new NetId("anotherUser@gmail.com"), Map.of());
         cartRepository.save(cartFirstUser);
+        // we have one cart element now
         assertThat(cartRepository.count()).isOne();
 
-
+        // add two pizzas for the current authenticated user which is TEST_USER
         addPizzaRequest(defaultPizza1.getId());
         addPizzaRequest(defaultPizza2.getId());
+
+        // get the Cart from the TEST_USER
         var cart = cartRepository.findAll().stream().filter(c -> c.getNetId().equals(new NetId(TEST_USER))).findFirst().get();
         var result = getCartRequest(new NetId(TEST_USER)).andExpect(status().isOk());
         var cartPizzas = Arrays.asList(parseResponseJson(result, CartPizza[].class));
