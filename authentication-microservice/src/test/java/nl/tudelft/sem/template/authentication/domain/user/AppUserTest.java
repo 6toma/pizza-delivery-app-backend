@@ -44,11 +44,6 @@ class AppUserTest {
     }
 
     @Test
-    void constructorTest() {
-        
-    }
-
-    @Test
     void changePassword() {
         MockAppUser he = Mockito.mock(MockAppUser.class);
         PasswordWasChangedEvent passwordWasChangedEvent = new PasswordWasChangedEvent(he);
