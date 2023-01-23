@@ -78,4 +78,12 @@ public class ToppingServiceTest {
             ts.removeTopping("pineapple");
         });
     }
+
+    @Test
+    public void editToppingEmptyTest() throws Exception {
+        when(tr.findByName("pineapple")).thenReturn(Optional.empty());
+        assertThrows(ToppingNotFoundException.class, () -> {
+            ts.removeTopping("pineapple");
+        });
+    }
 }

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "pizzaName")
+@EqualsAndHashCode(of = "pizzaName",callSuper = true)
 public class DefaultPizza extends Pizza {
 
     @Column(name = "name", nullable = false, unique = true)
