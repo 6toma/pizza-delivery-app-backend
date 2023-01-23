@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.cart.CartRepository;
@@ -19,6 +20,7 @@ import nl.tudelft.sem.template.cart.CustomPizzaRepository;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
 import nl.tudelft.sem.template.cart.ToppingRepository;
 import nl.tudelft.sem.template.cart.models.AddToCartResponse;
+import nl.tudelft.sem.template.commons.entity.Cart;
 import nl.tudelft.sem.template.commons.entity.CustomPizza;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
@@ -348,6 +350,28 @@ public class CartControllerTest extends IntegrationTest {
         var result = getCartRequest(new NetId(TEST_USER)).andExpect(status().isOk());
         var cartPizzas = Arrays.asList(parseResponseJson(result, CartPizza[].class));
         assertThat(cartRepository.count()).isZero();
+        assertEquals(cart.getPizzasMap().size(), cartPizzas.size());
+        cartPizzas.forEach(cp -> {
+            var pizzaInMap =
+                cart.getPizzasMap().entrySet().stream().filter(e -> e.getKey().getId() == cp.getPizza().getId()).findFirst();
+            assertTrue(pizzaInMap.isPresent());
+            assertEquals(pizzaInMap.get().getValue(), cp.getAmount());
+        });
+    }
+
+    @Test
+    void testGetCartDifferentUser() throws Exception {
+        // make sure we add another user to the cart database before we proceed
+        Cart cartFirstUser = new Cart(new NetId("netId@gmail.com"), Map.of());
+        cartRepository.save(cartFirstUser);
+        assertThat(cartRepository.count()).isOne();
+
+
+        addPizzaRequest(defaultPizza1.getId());
+        addPizzaRequest(defaultPizza2.getId());
+        var cart = cartRepository.findAll().stream().filter(c -> c.getNetId().equals(new NetId(TEST_USER))).findFirst().get();
+        var result = getCartRequest(new NetId(TEST_USER)).andExpect(status().isOk());
+        var cartPizzas = Arrays.asList(parseResponseJson(result, CartPizza[].class));
         assertEquals(cart.getPizzasMap().size(), cartPizzas.size());
         cartPizzas.forEach(cp -> {
             var pizzaInMap =
