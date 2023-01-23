@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.authentication.NetId;
 import nl.tudelft.sem.template.cart.CartRepository;
@@ -134,6 +135,16 @@ public class CartControllerTest extends IntegrationTest {
         addPizzaRequest(id).andExpect(status().isOk());
         assertEquals(2, customRepository.count());
         customRepository.findAll().forEach(pizza -> assertEqualsPizzas(defaultPizza1, pizza));
+    }
+
+    @Test
+    void testAddToCartSingleCart() throws Exception {
+        int id1 = defaultPizza1.getId();
+        int id2 = defaultPizza2.getId();
+        addPizzaRequest(id1).andExpect(status().isOk());
+        addPizzaRequest(id2).andExpect(status().isOk());
+        var cart = cartRepository.findAll().stream().filter(x -> x.getNetId().equals(new NetId(TEST_USER))).collect(Collectors.toList()).get(0);
+        assertEquals(cart.getPizzasMap().size(), 2);
     }
 
     @Test
