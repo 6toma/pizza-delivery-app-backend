@@ -24,6 +24,8 @@ class OrderControllerTest extends IntegrationTest {
 
     @Test
     void testGetOrdersCustomer() throws Exception {
+        orderRepository.deleteAll();
+        orderRepository.flush();
         var pizza = new CustomPizza("pizza", 10, List.of(new Topping("salami", 5)));
         var order = orderRepository.save(
             Order.builder()

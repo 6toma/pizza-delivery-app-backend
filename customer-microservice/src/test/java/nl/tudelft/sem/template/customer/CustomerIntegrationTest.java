@@ -84,9 +84,10 @@ public class CustomerIntegrationTest extends IntegrationTest {
     @Test
     public void testRemoveFromUsedCoupon() throws Exception {
         postAddToUsedCoupons("someUser@gmail.com", "ABCD123").andExpect(status().isOk());
-        postRemoveFromUsedCoupons("someUser@gmail.com", "ABCD123").andExpect(status().isOk());
+        var result = postRemoveFromUsedCoupons("someUser@gmail.com", "ABCD123").andExpect(status().isOk());
         Customer customer = customerRepository.findAll().get(0);
         assertThat(customer.getUsedCoupons().size()).isEqualTo(0);
+        assertResponseEqualsText("Coupon unused.", result);
     }
 
     @Test
@@ -120,8 +121,9 @@ public class CustomerIntegrationTest extends IntegrationTest {
 
     @Test
     public void testUpdateAllergens() throws Exception {
-        postUpdateAllergens(List.of("salami", "tomato"));
+        var result = postUpdateAllergens(List.of("salami", "tomato")).andExpect(status().isOk());
         Customer customer = customerRepository.findAll().get(0);
+        assertResponseEqualsText("Allergens updated.", result);
         assertThat(customer.getAllergens().get(0)).isEqualTo("salami");
         assertThat(customer.getAllergens().get(1)).isEqualTo("tomato");
     }

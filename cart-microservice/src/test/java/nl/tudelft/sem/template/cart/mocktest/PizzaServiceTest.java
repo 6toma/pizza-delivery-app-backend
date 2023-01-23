@@ -9,8 +9,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
-import java.util.Optional;
+import java.lang.reflect.Array;
+import java.util.*;
+
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameNotFoundException;
@@ -85,4 +86,34 @@ public class PizzaServiceTest {
             ps.removePizza("hawaii");
         });
     }
+
+    @Test
+    public void filterPizzasNoAllergens() {
+        when(pr.findAll()).thenReturn(Arrays.asList(p1));
+        var res = ps.getAllByFilter(Set.of());
+        assertEquals(res, Arrays.asList(p1));
+    }
+
+    @Test
+    public void filterPizzasContainingAllergen() {
+        when(pr.findAll()).thenReturn(Arrays.asList(p1));
+        var res = ps.getAllByFilter(Set.of("pineapple"));
+        assertEquals(res, Arrays.asList());
+    }
+
+    @Test
+    public void getPizzaTest() {
+        when(pr.findByPizzaName("pineapple")).thenReturn(Optional.of(p1));
+        var res = ps.getPizza("pineapple");
+        assertEquals(res.get(), p1);
+    }
+
+    @Test
+    public void editPizzaTest() throws Exception{
+        when(pr.findByPizzaName("pineapple")).thenReturn(Optional.of(p1));
+        ps.editPizza("pineapple", Arrays.asList(), 10.0);
+        assertEquals(p1.getPrice(), 10.0);
+        assertEquals(p1.getToppings(), Arrays.asList());
+    }
+
 }
