@@ -28,10 +28,12 @@ class AppUserTest {
 
     class MockAppUser extends AppUser {
 
-        private final transient List<Object> domainEvents = new ArrayList<>();
+        private transient List<Object> domainEvents = new ArrayList<>();
 
         @Override
         public void recordThat(Object event) {
+            if (domainEvents == null)
+                domainEvents = new ArrayList<>();
             domainEvents.add(Objects.requireNonNull(event));
         }
     }
