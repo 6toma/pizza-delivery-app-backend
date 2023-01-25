@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mail.javamail.JavaMailSender;
 
 class EmailNotificationServiceTest {
-
     private JavaMailSender emailSender;
     private EmailNotificationService notificationService;
 
@@ -33,15 +32,24 @@ class EmailNotificationServiceTest {
         notificationService.notifyOrder("test@email.com");
         verify(emailSender, times(1)).send(mimeMessage);
         assertThat(mimeMessage.getContent()).isEqualTo("Hello World!");
+        assertThat(mimeMessage.getFrom()).hasSize(1);
+        assertThat(mimeMessage.getFrom()[0].toString()).isEqualTo("notifications@test.com");
+        assertThat(mimeMessage.getSubject()).isEqualTo("An order has been placed");
     }
 
     @Test
     @SneakyThrows
     void notifyOrderCancelOrder() {
+        String email = "test@email.com";
         var mimeMessage = new MimeMessage(Session.getInstance(new Properties()));
         when(emailSender.createMimeMessage()).thenReturn(mimeMessage);
-        notificationService.notifyOrderRemove("test@email.com");
+        notificationService.notifyOrderRemove(email);
         verify(emailSender, times(1)).send(mimeMessage);
         assertThat(mimeMessage.getContent()).isEqualTo("Delete order!");
+        assertThat(mimeMessage.getAllRecipients()).hasSize(1);
+        assertThat(mimeMessage.getAllRecipients()[0].toString()).isEqualTo(email);
+        assertThat(mimeMessage.getFrom()).hasSize(1);
+        assertThat(mimeMessage.getFrom()[0].toString()).isEqualTo("notifications@test.com");
+        assertThat(mimeMessage.getSubject()).isEqualTo("An order was cancelled");
     }
 }

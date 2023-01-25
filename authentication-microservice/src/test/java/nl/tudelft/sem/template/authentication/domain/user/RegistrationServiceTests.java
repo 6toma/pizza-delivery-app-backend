@@ -2,12 +2,15 @@ package nl.tudelft.sem.template.authentication.domain.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import nl.tudelft.sem.template.authentication.NetId;
+import nl.tudelft.sem.template.authentication.NetIdAlreadyInUseException;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -62,12 +65,27 @@ public class RegistrationServiceTests {
         ThrowingCallable action = () -> registrationService.registerUser(testUser, newTestPassword);
 
         // Assert
-        assertThatExceptionOfType(Exception.class)
-                .isThrownBy(action);
+        assertThatExceptionOfType(NetIdAlreadyInUseException.class).isThrownBy(action);
 
         AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
 
         assertThat(savedUser.getNetId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(existingTestPassword);
+    }
+
+    @Test
+    void createUser_NoHashingService() {
+        PasswordHashingService passwordHashingServiceReturnsNull = Mockito.mock(PasswordHashingService.class);
+
+        when(passwordHashingServiceReturnsNull.hash(any())).thenReturn(null);
+        RegistrationService service = new RegistrationService(userRepository, passwordHashingServiceReturnsNull);
+        final NetId testUser = new NetId("SomeUser@test.com");
+        final Password testPassword = new Password("password456");
+
+        // Act
+        ThrowingCallable action = () -> service.registerUser(testUser, testPassword);
+
+        // Assert
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(action);
     }
 }

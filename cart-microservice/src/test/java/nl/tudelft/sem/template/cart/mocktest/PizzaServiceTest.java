@@ -9,18 +9,20 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import nl.tudelft.sem.template.cart.DefaultPizzaRepository;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameAlreadyInUseException;
 import nl.tudelft.sem.template.cart.exceptions.PizzaNameNotFoundException;
 import nl.tudelft.sem.template.cart.services.PizzaService;
-import nl.tudelft.sem.template.cart.services.ToppingService;
 import nl.tudelft.sem.template.commons.entity.DefaultPizza;
 import nl.tudelft.sem.template.commons.entity.Pizza;
 import nl.tudelft.sem.template.commons.entity.Topping;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 public class PizzaServiceTest {
@@ -29,11 +31,9 @@ public class PizzaServiceTest {
     private final DefaultPizza p1 = new DefaultPizza("hawaii", List.of(t1), 6);
     private PizzaService ps;
     private DefaultPizzaRepository pr;
-    private ToppingService toppingService;
 
     @BeforeEach
     void beforeEach() {
-        toppingService = Mockito.mock(ToppingService.class);
         pr = Mockito.mock(DefaultPizzaRepository.class);
         ps = new PizzaService(pr);
     }
@@ -53,7 +53,7 @@ public class PizzaServiceTest {
     @Test
     public void addPizzaTest() throws Exception {
         when(pr.existsByPizzaName("pineapple")).thenReturn(false);
-        when(pr.save(any())).thenReturn(p1);
+        when(pr.save(any())).thenAnswer(i -> i.getArguments()[0]);
         Pizza res = ps.addPizza("hawaii", List.of(t1), 6);
         assertEquals(p1, res);
         verify(pr, times(1)).save(p1);
@@ -85,4 +85,37 @@ public class PizzaServiceTest {
             ps.removePizza("hawaii");
         });
     }
+
+    @Test
+    public void filterPizzasNoAllergens() {
+        when(pr.findAll()).thenReturn(Arrays.asList(p1));
+        var res = ps.getAllByFilter(Set.of());
+        assertEquals(res, Arrays.asList(p1));
+    }
+
+    @Test
+    public void filterPizzasContainingAllergen() {
+        when(pr.findAll()).thenReturn(Arrays.asList(p1));
+        var res = ps.getAllByFilter(Set.of("pineapple"));
+        assertEquals(res, Arrays.asList());
+    }
+
+    @Test
+    public void getPizzaTest() {
+        when(pr.findByPizzaName("pineapple")).thenReturn(Optional.of(p1));
+        var res = ps.getPizza("pineapple");
+        assertEquals(res.get(), p1);
+    }
+
+    @Test
+    public void editPizzaTest() throws Exception {
+        when(pr.findByPizzaName("pineapple")).thenReturn(Optional.of(p1));
+        ps.editPizza("pineapple", Arrays.asList(), 10.0);
+        assertEquals(p1.getPrice(), 10.0);
+        assertEquals(p1.getToppings(), Arrays.asList());
+        ArgumentCaptor<DefaultPizza> argument = ArgumentCaptor.forClass(DefaultPizza.class);
+        DefaultPizza newPizza = new DefaultPizza("hawaii", List.of(), 10.0);
+        verify(pr).save(newPizza);
+    }
+
 }

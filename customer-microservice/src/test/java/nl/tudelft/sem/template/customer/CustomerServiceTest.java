@@ -94,7 +94,6 @@ public class CustomerServiceTest {
     }
 
 
-
     @Test
     void testAddToUsedCouponsSuccess() {
         String coupon = "coupon3";
@@ -129,6 +128,14 @@ public class CustomerServiceTest {
     @Test
     void testCheckUsedCoupons() {
         List<String> res = List.of("coupon3");
+        List<String> coupons = Arrays.asList("coupon1", "coupon3");
+        assertEquals(customerService.checkUsedCoupons(new NetId("example123@test.com"), coupons), res);
+    }
+
+    @Test
+    void testCheckUsedCouponsEmpty() {
+        customer.setUsedCoupons(Collections.emptyList());
+        List<String> res = List.of("coupon1", "coupon3");
         List<String> coupons = Arrays.asList("coupon1", "coupon3");
         assertEquals(customerService.checkUsedCoupons(new NetId("example123@test.com"), coupons), res);
     }
